@@ -1,89 +1,113 @@
 # AGENTS.md
 
-Instructions for AI assistants and coding agents working in this repository. Read this file first, then the documents it points to.
+Rules for AI agents working in this repository. Read this file first. Follow it exactly.
 
 ## Project
 
-RestLab is a browser-based REST API playground built with Next.js. Users configure an HTTP request, run it (directly from the browser or through a Next.js backend proxy), and inspect the response. It is a portfolio project built by one developer who is also using it to learn. Repository: https://github.com/Shreyas262/RestLab
+RestLab is a browser-based REST API playground built with Next.js. Users configure an HTTP request, run it directly from the browser or through a Next.js backend proxy, and inspect the response.
 
-## Source of truth
+Documentation in `docs/` is the single source of truth. Do not duplicate it here.
 
-The `docs/` directory is the single source of truth. Do not duplicate its content here or elsewhere.
+| Need                                | Read                                               |
+| ----------------------------------- | -------------------------------------------------- |
+| Scope and MVP boundaries            | `docs/REQUIREMENTS.md`, `docs/PROJECT_OVERVIEW.md` |
+| Logical design                      | `docs/SYSTEM_DESIGN.md`                            |
+| Code structure and dependency rules | `docs/ARCHITECTURE.md`                             |
+| Past decisions and reasons          | `docs/DECISIONS.md`                                |
+| HTTP, proxy contract, SSRF rules    | `docs/API_INTEGRATION.md`                          |
+| Stack                               | `docs/TECH_STACK.md`                               |
+| UI behavior                         | `docs/UI_UX_GUIDELINES.md`                         |
+| Testing                             | `docs/TESTING_STRATEGY.md`                         |
+| Plan and status                     | `docs/PROJECT_PLAN.md`, `docs/PROGRESS.md`         |
 
-| Need | Read |
-|---|---|
-| Product scope and MVP boundaries | `docs/REQUIREMENTS.md`, `docs/PROJECT_OVERVIEW.md` |
-| Logical design | `docs/SYSTEM_DESIGN.md` |
-| Code structure and dependency rules | `docs/ARCHITECTURE.md` |
-| Why things were decided | `docs/DECISIONS.md` |
-| HTTP, proxy contract, SSRF rules | `docs/API_INTEGRATION.md` |
-| Technology choices | `docs/TECH_STACK.md` |
-| UI behavior | `docs/UI_UX_GUIDELINES.md` |
-| Testing | `docs/TESTING_STRATEGY.md` |
-| Plan and current status | `docs/PROJECT_PLAN.md`, `docs/PROGRESS.md` |
+Do not assume the code matches the docs. Inspect the code. If a document is missing or out of date, say so.
 
-If a document is missing or looks out of date, say so. Do not assume that something described in the docs already exists in the code. Inspect the code.
+## Workflow
 
-## How to work with the developer
+Every task follows these steps in order. No exceptions.
 
-- The developer owns the project. Default to explaining, reviewing, and giving hints. Write or change code only when explicitly asked.
-- Explain trade-offs. Challenge decisions that look wrong, and say why.
-- Do not restart product discovery or silently change finalized decisions. Propose changes, and record accepted ones in `docs/DECISIONS.md`.
-- Keep responses concise and technically precise. One document or one task at a time.
-- Do not claim files were changed, committed, or pushed unless that actually happened.
+1. **Understand.** Read the relevant docs and code. Ask one question only if something blocking is unclear.
+2. **Plan.** Present a short plan: what will change, which files, which commands, any new dependency, and any risk.
+3. **Get approval.** Stop and wait for an explicit go-ahead. Do not edit files, install packages, or run state-changing commands before it. Reading files and running read-only commands is allowed.
+4. **Execute.** Do only what the approved plan says. If the plan needs to change, stop, say why, and get approval again.
+5. **Verify.** Run the relevant checks (lint, type check, tests, build) and report the real results. Never claim something works without running it. If a check could not be run, say so.
+6. **Explain.** Summarize what changed and why: files touched, behavior affected, anything left undone.
 
-## Before any feature work
+## Git
 
-1. Read `docs/PROGRESS.md`, `docs/ARCHITECTURE.md`, and `docs/DECISIONS.md`.
-2. Inspect the existing code and dependencies for the area involved.
-3. Agree on scope and acceptance criteria.
-4. Check official documentation for anything version-sensitive. Do not rely on remembered conventions.
-5. Wait for the developer to be ready before implementing.
+- Never commit, push, or open or update a pull request without explicit approval each time. Earlier approval does not carry over to the next commit or PR.
+- Before asking, show the proposed commit message or PR title and description, and the list of files included.
+- Do not mention any AI tool, assistant, or model name in commit messages, PR titles, or PR descriptions. Do not add `Co-authored-by` lines or any AI attribution or generated-by notes.
+- Write commit messages in the imperative mood with a short, specific subject. Follow the existing history style. One logical change per commit.
+- Never force-push, rewrite history, delete branches, change git configuration, or skip hooks.
+- Never commit to a protected branch unless told to. Do not stage unrelated changes.
 
-At the end of a feature, produce `HANDOFF.md`: objective, status, files changed, decisions, concepts learned, dependency changes, tests and results, outstanding issues, docs to update, context for the next conversation.
+## Scope and safety
+
+- Change only what the approved task requires. No drive-by refactors, renames, or formatting changes in untouched files.
+- Do not delete or overwrite files, or run destructive commands, without approval.
+- Never add, remove, or upgrade a dependency without approval. Justify the need first.
+- Never read, print, or commit secrets, tokens, `.env` files, or credentials. Never hardcode them.
+- Do not run commands that reach external services beyond what the task needs.
+- Do not edit generated files, lockfiles, or build output by hand. Use the tool that generates them.
+- If something unexpected shows up (failing tests you did not cause, uncommitted changes you did not make), report it and ask before touching it.
+
+## Responses
+
+- Be brief and direct. No preamble, no restating the request, no filler.
+- Do not paste large files or long command output. Quote only the relevant lines.
+- Report only what the person needs: the plan, the result, the problem, or the question.
+- State uncertainty plainly. Do not guess and present the guess as fact.
 
 ## Stack
 
 Next.js (App Router), React with the React Compiler, TypeScript in strict mode, Tailwind CSS v4, shadcn/ui, React Hook Form with Zod, native Fetch, Vitest and React Testing Library. Package manager: npm. Check `package.json` for what is actually installed.
 
-Next.js, React, and Tailwind versions in this project are recent. Consult the official documentation (https://nextjs.org/docs, https://tailwindcss.com/docs) before using any API or setup pattern.
+Versions are recent. Before using any version-sensitive API or setup pattern, check the official documentation (https://nextjs.org/docs, https://react.dev, https://tailwindcss.com/docs). Do not rely on remembered conventions.
+
+The developer works on Windows. Do not introduce Unix-only commands into scripts or documentation.
 
 ## Commands
 
-Currently available: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`.
+Available: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`.
 
-Planned (not yet present): `test`, `typecheck`, `format:check`. See `docs/PROJECT_PLAN.md`, milestone M0.
+Planned and not yet present: `test`, `typecheck`, `format:check` (see `docs/PROJECT_PLAN.md`, M0). Check `package.json` before running anything, and do not assume a script exists.
 
-## Code structure rules
+## Code rules
 
-Full detail is in `docs/ARCHITECTURE.md`. The essentials:
+Details are in `docs/ARCHITECTURE.md`. The essentials:
 
 - Application code lives under `src/`. `src/app/` is for routing only.
-- `domain/` is plain TypeScript. It imports no React, Next.js, or other layers.
-- Both execution strategies return the same result type. UI code does not depend on which strategy ran.
+- `domain/` is plain TypeScript. It imports no React, no Next.js, and nothing from other layers.
+- Both execution strategies return the same result type. UI code must not depend on which strategy ran.
 - `server/` code must never reach the client bundle.
 - Components render state. They do not make execution or normalization decisions.
 - Prefer Server Components. Use Client Components only for interactivity and browser-specific code.
-- Do not add manual `useMemo`, `useCallback`, or `memo` without measured need (React Compiler is enabled).
+- React Compiler is enabled. Do not add `useMemo`, `useCallback`, or `memo` without measured need.
+- TypeScript strict mode. No `any` and no unchecked type assertions without a stated reason.
+- Do not add comments that restate the code. Comment only the reason for non-obvious decisions.
+- Prefer the platform and framework before adding a library.
 
-## Behavior rules that must not be broken
+## Behavior that must not be broken
 
-- An HTTP 4xx or 5xx is a valid response, not a network failure. Its status, headers, and body must stay available.
+- An HTTP 4xx or 5xx is a valid response, not a network failure. Keep its status, headers, and body available.
 - A parse failure must not discard the raw body or metadata.
 - Read a response body once. Preserve the raw text and derive parsed data separately.
 - Never switch execution strategy silently after a failure.
 - Never render response content as HTML. No `dangerouslySetInnerHTML` with response data.
 - User-triggered requests must not be served from cache.
-- Do not store request data: no history, persistence, or browser storage in the MVP.
+- No request history, persistence, or browser storage in the MVP.
 
-## Security rules
+## Security
 
-The proxy accepts user-provided URLs and is an SSRF risk. Do not weaken or bypass the controls in `docs/API_INTEGRATION.md` §6. Do not build an unrestricted relay. Do not log header values or request and response bodies. Error messages must not expose internal details.
+The proxy accepts user-provided URLs and is an SSRF risk. Do not weaken or bypass the controls in `docs/API_INTEGRATION.md` section 6. Do not build an unrestricted relay. Do not log header values or request and response bodies. Error messages must not expose internal details.
 
-## Dependencies
+## Tests
 
-Add a dependency only for a demonstrated need, and record significant choices in `docs/DECISIONS.md`. Do not add an HTTP client library or Redux for the MVP. Choose the syntax-highlighting library only after evaluating bundle size, performance, and maintenance.
+- New behavior needs tests. Bug fixes start with a failing test.
+- Tests never call live external APIs. Mock `fetch` and DNS.
+- Do not weaken, skip, or delete a test to make a check pass. Report the failure instead.
 
-## Documentation upkeep
+## Documentation
 
-When behavior, structure, or decisions change, update the affected document in `docs/` in the same piece of work, and add a line to `CHANGELOG.md`. Keep `docs/PROGRESS.md` current.
+When behavior, structure, or a decision changes, include the doc update in the plan, and make it as part of the same task once approved. Record significant decisions in `docs/DECISIONS.md`. Keep `docs/PROGRESS.md` and `CHANGELOG.md` current.
