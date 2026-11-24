@@ -227,6 +227,7 @@ Template:
 - Decision: Follow the Next.js guide. Use the Node environment for domain, execution, and server tests, and jsdom for component tests.
 - Consequences: Async Server Components are covered by end-to-end tests later, not by Vitest. Each package is still approved individually in M0.
 - Alternatives considered: happy-dom; Jest.
+- Note (2026-11-25): `vite-tsconfig-paths` is not used. Its dependency `tsconfck` is marked unmaintained, and Vite 8 resolves tsconfig paths natively with `resolve.tsconfigPaths: true`. The two environments are configured as Vitest projects in `vitest.config.mts`: `unit` (Node) runs `*.test.ts`, `dom` (jsdom) runs `*.test.tsx`. `@types/node` was raised to `^22` because Vitest 5 requires it.
 
 ## ADR-020: Browser-direct by default; strategy selector ships with M6
 

@@ -1,13 +1,13 @@
 # Progress
 
 **Last updated:** 2026-11-25
-**Current milestone:** M0 Foundation, in progress (tasks 1 and 2 of 4 done)
+**Current milestone:** M0 Foundation, in progress (tasks 1 to 3 of 4 done)
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a minimal Next.js application shell and a finalized documentation set. No product features are implemented. M0 (Foundation) is in progress: task 1 (app shell and config) and task 2 (formatting and scripts) are done.
+RestLab has a minimal Next.js application shell and a finalized documentation set. No product features are implemented. M0 (Foundation) is in progress: task 1 (app shell and config) task 2 (formatting and scripts), and task 3 (testing) are done.
 
 ## 2. Documentation Status
 
@@ -26,7 +26,7 @@ RestLab has a minimal Next.js application shell and a finalized documentation se
 | ------------------------------------------- | ------------------------------------------------------------------------------------ |
 | `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported |
 | Domain, execution, server, and feature code | Not started                                                                          |
-| Tests                                       | Not started                                                                          |
+| Tests                                       | Setup only: one page render test proves the Vitest and Testing Library setup         |
 
 ## 4. Tooling Status
 
@@ -41,13 +41,14 @@ RestLab has a minimal Next.js application shell and a finalized documentation se
 | Path alias `@/*`                                             | Points at `./src/*` (ADR-001)                                              |
 | React Hook Form, Zod, `@hookform/resolvers`                  | Not installed                                                              |
 | shadcn/ui                                                    | Not initialized                                                            |
-| Vitest, React Testing Library, jsdom                         | Not installed                                                              |
+| Vitest, React Testing Library, jsdom                         | Vitest 5.1.1 with `unit` (Node) and `dom` (jsdom) projects (ADR-019)       |
 | Prettier                                                     | 3.10.1 with `eslint-config-prettier`; LF line endings via `.gitattributes` |
 | Scripts `typecheck`, `format`, `format:check`                | Present                                                                    |
-| Scripts `test`, `test:watch`                                 | Missing                                                                    |
+| Scripts `test`, `test:watch`                                 | Present                                                                    |
 
 ## 5. Recent Decisions
 
+- Vite's native `resolve.tsconfigPaths` replaces `vite-tsconfig-paths`; `@types/node` raised to `^22` for Vitest 5 (ADR-019 note, 2026-11-25).
 - Documentation finalized (2026-11-24): ADR-013 to ADR-021 added, ADR-009 accepted, one open-decisions register.
 - Theme toggle with a preference cookie (ADR-018).
 - Optional DELETE body (ADR-017); in-house JSON highlighting (ADR-015).
@@ -59,5 +60,5 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits M0 task 2.
-2. Start M0, task 3: testing (`PROJECT_PLAN.md` §3).
+1. Project owner reviews and commits M0 task 3.
+2. Start M0, task 4: forms, UI kit, structure (`PROJECT_PLAN.md` §3).

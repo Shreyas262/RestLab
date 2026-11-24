@@ -73,9 +73,9 @@ The developer works on Windows. Do not introduce Unix-only commands into scripts
 
 ## Commands
 
-Available: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`, `npm run typecheck`, `npm run format`, `npm run format:check`.
+Available: `npm run dev`, `npm run build`, `npm run start`, `npm run lint`, `npm run typecheck`, `npm run format`, `npm run format:check`, `npm run test`, `npm run test:watch`.
 
-Planned and not yet present: `test`, `test:watch` (see `docs/PROJECT_PLAN.md`, M0). Check `package.json` before running anything, and do not assume a script exists.
+Check `package.json` before running anything, and do not assume a script exists.
 
 ## Code rules
 

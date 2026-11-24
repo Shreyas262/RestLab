@@ -26,7 +26,7 @@ Suggested as four separate tasks and commits:
 
 1. **App shell and config.** Fix the root layout (`<html>`, `<body>`, render `children`, import `globals.css`). Point the `@/*` alias at `./src/*` (ADR-001). Replace `@tailwindcss/turbopack` with `@tailwindcss/postcss` and `postcss.config.mjs`, and remove the Turbopack CSS rule (ADR-003).
 2. **Formatting and scripts.** Install and configure Prettier. Add `typecheck`, `format`, and `format:check` scripts. Format existing files in a separate, formatting-only commit.
-3. **Testing.** Install Vitest, `@vitejs/plugin-react`, `vite-tsconfig-paths`, jsdom, and React Testing Library (ADR-019). Add `test` and `test:watch`. One trivial passing test proves the setup.
+3. **Testing.** Install Vitest, `@vitejs/plugin-react`, jsdom, and React Testing Library (ADR-019; `vite-tsconfig-paths` replaced by Vite's native `resolve.tsconfigPaths`). Add `test` and `test:watch`. One trivial passing test proves the setup.
 4. **Forms, UI kit, structure.** Install React Hook Form, Zod, and `@hookform/resolvers`. Run `shadcn init` (review the packages it adds). Create the folder skeleton (`ARCHITECTURE.md` §5). Add ESLint import-direction rules (ADR-021). Write `README.md` (purpose, requirements, setup, scripts).
 
 Optional: decide OD-10 and add a CI workflow that runs lint, typecheck, format check, tests, and build.

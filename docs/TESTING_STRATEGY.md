@@ -20,13 +20,13 @@ This document defines what RestLab tests, with which tools, at which layer, and 
 
 | Purpose                 | Tool                                     | Status                   |
 | ----------------------- | ---------------------------------------- | ------------------------ |
-| Test runner, unit tests | Vitest                                   | Planned for M0           |
-| Component tests         | React Testing Library in jsdom (ADR-019) | Planned for M0           |
+| Test runner, unit tests | Vitest                                   | Present (`test`)         |
+| Component tests         | React Testing Library in jsdom (ADR-019) | Present                  |
 | End-to-end              | Playwright                               | Future scope             |
 | Static checks           | TypeScript strict mode, ESLint           | Present (`strict: true`) |
 | Formatting check        | Prettier                                 | Present (`format:check`) |
 
-Planned scripts (added in M0): `test`, `test:watch`. Current scripts: `dev`, `build`, `start`, `lint`, `typecheck`, `format`, `format:check`.
+Scripts: `dev`, `build`, `start`, `lint`, `typecheck`, `format`, `format:check`, `test` (single run), `test:watch`.
 
 Vitest environments: Node for domain, execution, and server tests; jsdom only for component tests. Vitest does not support async Server Components, so those are left to end-to-end tests.
 
@@ -113,6 +113,8 @@ Keep this table current when requirements change. Test names should reference th
 ## 6. Conventions
 
 - Tests sit next to the code they cover and are named `*.test.ts` or `*.test.tsx`.
+- The extension selects the environment (Vitest projects in `vitest.config.mts`): `*.test.ts` runs in Node, `*.test.tsx` runs in jsdom with `src/test/setup.ts`. Hook and component tests use `.tsx`.
+- Test files import `describe`, `test`, and `expect` from `vitest`; globals are off.
 - Shared fixtures (sample responses, request configs) live in `src/test/`. Fixtures represent realistic API output, including large, malformed, and empty payloads.
 - No snapshot tests for large rendered output. Assert on specific content.
 - No arbitrary time delays. Use fake timers for timeout and duration tests.

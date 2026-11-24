@@ -21,6 +21,9 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `postcss.config.mjs` and dev dependencies `@tailwindcss/postcss` 4.3.3 and `postcss` 8.5.33 (ADR-003).
 - Prettier 3.10.1 with `.prettierrc.json` (defaults) and `.prettierignore`; `eslint-config-prettier` 10.1.8 turns off conflicting ESLint style rules.
 - Scripts `typecheck`, `format`, and `format:check`.
+- Vitest 5.1.1 with `@vitejs/plugin-react` 6.3.0, jsdom 31.0.1, `@testing-library/react` 16.3.3, and `@testing-library/dom` 10.4.2. `vitest.config.mts` defines a `unit` project (Node, `*.test.ts`) and a `dom` project (jsdom, `*.test.tsx`), with `src/test/setup.ts` for Testing Library cleanup (ADR-019).
+- Scripts `test` (single run) and `test:watch`.
+- First test: `src/app/page.test.tsx` renders the home page heading.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
@@ -29,6 +32,8 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Documentation location settled as root `docs/`, with application code under `src/` (ADR-001, ADR-002).
 - Tailwind integration moved from `@tailwindcss/turbopack` to `@tailwindcss/postcss` (ADR-003); the `turbopack.rules` CSS entry was removed from `next.config.ts`. Rationale corrected on 2026-11-24.
 - Path alias `@/*` now points at `./src/*` (ADR-001).
+- `@types/node` raised from `^20` to `^22`, required by Vitest 5.
+- `vite-tsconfig-paths` replaced by Vite's native `resolve.tsconfigPaths` (ADR-019 note).
 - ADR-009 (proxy envelope) accepted; field names remain open.
 - Documentation finalized on 2026-11-24: statuses updated to match the repository, error categories aligned, inspector tabs defined, headers model corrected to match Fetch, execution plan revised in `PROJECT_PLAN.md`.
 

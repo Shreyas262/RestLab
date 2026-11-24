@@ -71,7 +71,7 @@ JSON highlighting is written in-house, with no highlighting library (ADR-015).
 Following the Next.js 16.4 Vitest guide (ADR-019):
 
 - Vitest — test runner and unit tests.
-- `@vitejs/plugin-react`, `vite-tsconfig-paths` — Vitest integration.
+- `@vitejs/plugin-react` — Vitest integration. The `@/` alias resolves through Vite's native `resolve.tsconfigPaths` (ADR-019 note).
 - React Testing Library (`@testing-library/react`, `@testing-library/dom`) — component tests.
 - jsdom — DOM environment for component tests only.
 
