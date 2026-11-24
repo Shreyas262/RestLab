@@ -11,14 +11,14 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 2. Documentation Status
 
-| Document                                                                                                                 | Status                                 |
-| ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
-| `PROJECT_OVERVIEW`, `REQUIREMENTS`, `SYSTEM_DESIGN`, `ARCHITECTURE`, `API_INTEGRATION`, `TECH_STACK`, `UI_UX_GUIDELINES` | Accepted, reviewed 2026-11-24          |
-| `TESTING_STRATEGY`, `ROADMAP`, `PROJECT_PLAN`                                                                            | Accepted, reviewed 2026-11-24          |
-| `DECISIONS`                                                                                                              | ADR-001 to ADR-021; OD-1 to OD-11 open |
-| `PROGRESS`, `CHANGELOG`                                                                                                  | Living documents                       |
-| Root `AGENTS.md`                                                                                                         | Present                                |
-| `README.md`                                                                                                              | Purpose, requirements, setup, scripts  |
+| Document                                                                                                                 | Status                                          |
+| ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
+| `PROJECT_OVERVIEW`, `REQUIREMENTS`, `SYSTEM_DESIGN`, `ARCHITECTURE`, `API_INTEGRATION`, `TECH_STACK`, `UI_UX_GUIDELINES` | Accepted, reviewed 2026-11-24                   |
+| `TESTING_STRATEGY`, `ROADMAP`, `PROJECT_PLAN`                                                                            | Accepted, reviewed 2026-11-24                   |
+| `DECISIONS`                                                                                                              | ADR-001 to ADR-022; OD-1 to OD-9 and OD-11 open |
+| `PROGRESS`, `CHANGELOG`                                                                                                  | Living documents                                |
+| Root `AGENTS.md`                                                                                                         | Present                                         |
+| `README.md`                                                                                                              | Purpose, requirements, setup, scripts           |
 
 ## 3. Implementation Status
 
@@ -45,9 +45,11 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 | Prettier                                                     | 3.10.1 with `eslint-config-prettier`; LF line endings via `.gitattributes` |
 | Scripts `typecheck`, `format`, `format:check`                | Present                                                                    |
 | Scripts `test`, `test:watch`                                 | Present                                                                    |
+| Continuous integration                                       | GitHub Actions on push and PR to `main` (ADR-022)                          |
 
 ## 5. Recent Decisions
 
+- CI with GitHub Actions; OD-10 resolved (ADR-022, 2026-11-25).
 - shadcn/ui initialized on Radix with the Nova preset; `cn` package replaces `clsx` and `tailwind-merge` (2026-11-25).
 - Import-direction rules implemented; `app → lib` arrow added (ADR-021 note, 2026-11-25).
 - Vite's native `resolve.tsconfigPaths` replaces `vite-tsconfig-paths`; `@types/node` raised to `^22` for Vitest 5 (ADR-019 note, 2026-11-25).
@@ -62,6 +64,5 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits M0 task 4.
-2. Optional: decide OD-10 (CI workflow).
-3. Start M1: Domain Core (`PROJECT_PLAN.md` §3).
+1. Project owner reviews and commits the CI workflow, then confirms the first run passes on GitHub.
+2. Start M1: Domain Core (`PROJECT_PLAN.md` §3).

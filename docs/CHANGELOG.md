@@ -29,6 +29,8 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Layer folders `src/domain`, `src/execution`, `src/server`, `src/features`.
 - ESLint `no-restricted-imports` rules enforcing the layer import direction (ADR-021).
 - `README.md` with purpose, requirements, setup, and scripts.
+- GitHub Actions CI (`.github/workflows/ci.yml`) running format check, lint, type check, tests, and build on pushes and pull requests to `main` (ADR-022).
+- ADR-022; OD-10 resolved.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 

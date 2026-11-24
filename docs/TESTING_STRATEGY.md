@@ -25,6 +25,7 @@ This document defines what RestLab tests, with which tools, at which layer, and 
 | End-to-end              | Playwright                               | Future scope             |
 | Static checks           | TypeScript strict mode, ESLint           | Present (`strict: true`) |
 | Formatting check        | Prettier                                 | Present (`format:check`) |
+| Continuous integration  | GitHub Actions (ADR-022)                 | Present                  |
 
 Scripts: `dev`, `build`, `start`, `lint`, `typecheck`, `format`, `format:check`, `test` (single run), `test:watch`.
 
@@ -135,11 +136,11 @@ Not all qualities are automated. Before the MVP is considered complete:
 
 1. Tests for the new behavior written and passing.
 2. Existing tests pass.
-3. `lint`, `typecheck`, `format:check`, and `build` pass.
+3. `lint`, `typecheck`, `format:check`, and `build` pass, locally and in CI (`.github/workflows/ci.yml`).
 4. Requirements traceability updated if scope changed.
 5. Affected documentation updated, including `PROGRESS.md` and `CHANGELOG.md`.
 6. Changes left uncommitted for the project owner to review and commit.
 
 ## 9. Open Items
 
-Tracked in `DECISIONS.md` §5 (OD-10 continuous integration, OD-11 coverage and automated accessibility checks).
+Tracked in `DECISIONS.md` §5 (OD-11 coverage and automated accessibility checks). Continuous integration was decided in ADR-022.

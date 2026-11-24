@@ -53,6 +53,7 @@ Template:
 | 019 | Vitest with jsdom for component tests                        | Accepted |
 | 020 | Browser-direct by default; strategy selector ships with M6   | Accepted |
 | 021 | Enforce import direction with ESLint `no-restricted-imports` | Accepted |
+| 022 | Continuous integration with GitHub Actions                   | Accepted |
 
 ## 4. Records
 
@@ -248,6 +249,15 @@ Template:
 - Alternatives considered: `eslint-plugin-boundaries` or `dependency-cruiser` (extra dependencies); review only.
 - Note (2026-11-25): Implemented in `eslint.config.mjs` from an allowed-imports map that mirrors `ARCHITECTURE.md` §4. Regex patterns match both `@/layer/...` and relative `../layer/...` specifiers. An `app → lib` arrow was added to §4 because the root layout uses `cn`. `src/test/` is not restricted.
 
+## ADR-022: Continuous integration with GitHub Actions
+
+- Status: Accepted
+- Date: 2026-11-25
+- Context: OD-10 asked which checks run automatically. The repository is public on GitHub, and GitHub Actions needs no new dependency.
+- Decision: `.github/workflows/ci.yml` runs on pushes and pull requests to `main`: `npm ci`, then `format:check`, `lint`, `typecheck`, `test`, and `build`, on `ubuntu-latest` with Node 24. Actions are pinned to major tags (`actions/checkout@v7`, `actions/setup-node@v7`). The token has `contents: read` only, and a newer run on the same ref cancels the older one.
+- Consequences: Every check in `TESTING_STRATEGY.md` §8 item 3 runs on each push. The build downloads the Geist font from Google Fonts, so a Fonts outage can fail CI. Windows and other Node versions are not tested in CI.
+- Alternatives considered: A Node 22 and 24 matrix; pinning actions to commit SHAs; no CI until M8.
+
 ## 5. Open Decisions Register
 
 This is the only list of open decisions. Other documents link here.
@@ -263,5 +273,6 @@ This is the only list of open decisions. Other documents link here.
 | OD-7  | Binary response display                               | MVP default: metadata and a "not displayed" message only                               | M4        |
 | OD-8  | Theme implementation                                  | Cookie read on server vs pre-paint script; Cache Components impact; library or not     | M7        |
 | OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                            | M8        |
-| OD-10 | Continuous integration                                | Which scripts run on each push; GitHub Actions needs no dependency                     | M0 or M8  |
 | OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                                 | M8        |
+
+Resolved: OD-10 (continuous integration) by ADR-022 on 2026-11-25.
