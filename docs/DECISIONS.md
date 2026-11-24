@@ -1,19 +1,20 @@
 # Decisions
 
-**Status:** Draft v0.1 — 20 November 2026
+**Status:** Living document · **Last reviewed:** 2026-11-24
 
 ## 1. Purpose
 
-This file records significant architectural and project decisions as Architecture Decision Records (ADRs). It captures what was decided, why, and what follows from it, so later work does not reopen settled questions without a reason.
+This file records significant architectural and project decisions as Architecture Decision Records (ADRs). It captures what was decided, why, and what follows from it, so later work does not reopen settled questions without a reason. It also holds the single register of decisions that are still open (§5).
 
-Related documents: `ARCHITECTURE.md`, `SYSTEM_DESIGN.md`, `TECH_STACK.md`.
+Related documents: `ARCHITECTURE.md`, `SYSTEM_DESIGN.md`, `TECH_STACK.md`, `API_INTEGRATION.md`.
 
 ## 2. How to Use This File
 
 - One ADR per decision. Number sequentially. Never renumber.
 - **Status:** Proposed, Accepted, or Superseded by ADR-NNN.
-- Do not edit an accepted ADR to change its decision. Write a new ADR that supersedes it and update the old one's status.
+- Do not edit an accepted ADR to change its decision. Write a new ADR that supersedes it and update the old one's status. Factual corrections to context are allowed as a dated note.
 - Keep each record short. Link to other documents rather than copying them.
+- When an open item in §5 is decided, write the ADR and remove the item from §5.
 
 Template:
 
@@ -29,20 +30,29 @@ Template:
 
 ## 3. Index
 
-| ADR | Title                                                      | Status   |
-| --- | ---------------------------------------------------------- | -------- |
-| 001 | Use a `src/` directory                                     | Accepted |
-| 002 | Keep documentation in root `docs/`                         | Accepted |
-| 003 | Integrate Tailwind through `@tailwindcss/postcss`          | Accepted |
-| 004 | Enable React Compiler; no manual memoization by default    | Accepted |
-| 005 | Hybrid execution with explicit strategy selection          | Accepted |
-| 006 | One request model with shared Zod schemas                  | Accepted |
-| 007 | Preserve raw response; derive parsed data separately       | Accepted |
-| 008 | Separate error categories; HTTP errors are responses       | Accepted |
-| 009 | Proxy envelope separates proxy status from upstream status | Proposed |
-| 010 | Execution state machine with per-execution abort           | Accepted |
-| 011 | Minimal dependencies: native Fetch, no Redux               | Accepted |
-| 012 | Layered structure with enforced dependency direction       | Accepted |
+| ADR | Title                                                       | Status   |
+| --- | ----------------------------------------------------------- | -------- |
+| 001 | Use a `src/` directory                                      | Accepted |
+| 002 | Keep documentation in root `docs/`                          | Accepted |
+| 003 | Integrate Tailwind through `@tailwindcss/postcss`           | Accepted |
+| 004 | Enable React Compiler; no manual memoization by default     | Accepted |
+| 005 | Hybrid execution with explicit strategy selection           | Accepted |
+| 006 | One request model with shared Zod schemas                   | Accepted |
+| 007 | Preserve raw response; derive parsed data separately        | Accepted |
+| 008 | Separate error categories; HTTP errors are responses        | Accepted |
+| 009 | Proxy envelope separates proxy status from upstream status  | Accepted |
+| 010 | Execution state machine with per-execution abort            | Accepted |
+| 011 | Minimal dependencies: native Fetch, no Redux                | Accepted |
+| 012 | Layered structure with enforced dependency direction        | Accepted |
+| 013 | Enforce server-only code with `import "server-only"`        | Accepted |
+| 014 | Response size is the decoded body bytes read                | Accepted |
+| 015 | In-house JSON highlighting, no library                      | Accepted |
+| 016 | Keep Cache Components and Partial Prefetching enabled       | Accepted |
+| 017 | Optional body for DELETE; GET never sends a body            | Accepted |
+| 018 | Theme toggle with a preference cookie                       | Accepted |
+| 019 | Vitest with jsdom for component tests                       | Accepted |
+| 020 | Browser-direct by default; strategy selector ships with M6  | Accepted |
+| 021 | Enforce import direction with ESLint `no-restricted-imports` | Accepted |
 
 ## 4. Records
 
@@ -59,10 +69,10 @@ Template:
 
 - Status: Accepted
 - Date: 2026-11-20
-- Context: The documentation strategy names `/docs` as the single source of truth. The docs were briefly under `src/docs/`.
-- Decision: Documentation lives in `docs/` at the repository root.
-- Consequences: Docs are not part of the application source tree. The documentation strategy needs no change.
-- Alternatives considered: Keeping `src/docs/` and amending the strategy.
+- Context: Documentation is the single source of truth for the project. The docs were briefly under `src/docs/`.
+- Decision: Documentation lives in `docs/` at the repository root and is tracked in Git.
+- Consequences: Docs are not part of the application source tree.
+- Alternatives considered: Keeping `src/docs/`.
 
 ## ADR-003: Integrate Tailwind through `@tailwindcss/postcss`
 
@@ -70,14 +80,15 @@ Template:
 - Date: 2026-11-20
 - Context: `package.json` listed `@tailwindcss/turbopack`. The official Next.js and Tailwind installation guides use `@tailwindcss/postcss` with a `postcss.config.mjs`. The project rule is to follow official documentation for version-sensitive setup.
 - Decision: Follow the official guides. Use `@tailwindcss/postcss`.
-- Consequences: Remove `@tailwindcss/turbopack`, install `@tailwindcss/postcss` and `postcss`, and add `postcss.config.mjs`. Check the guide again at the time of the change, since the installed versions are recent.
-- Alternatives considered: Keeping `@tailwindcss/turbopack`, rejected because it is not in the official guides.
+- Consequences: Remove `@tailwindcss/turbopack` and the `turbopack.rules` entry in `next.config.ts`, install `@tailwindcss/postcss` and `postcss`, and add `postcss.config.mjs`. Check the guide again at the time of the change, since the installed versions are recent.
+- Alternatives considered: Keeping `@tailwindcss/turbopack`.
+- Note (2026-11-24): `@tailwindcss/turbopack` is an official Tailwind Labs package (repository `tailwindlabs/tailwindcss`), so the original reason "not in the official guides" was imprecise. The decision stands because the Next.js 16.4.6 CSS guide (`node_modules/next/dist/docs/01-app/01-getting-started/11-css.md`) documents `@tailwindcss/postcss`.
 
 ## ADR-004: Enable React Compiler; no manual memoization by default
 
 - Status: Accepted
 - Date: 2026-11-20
-- Context: `babel-plugin-react-compiler` is installed and the project owner confirmed it is enabled.
+- Context: `babel-plugin-react-compiler` is installed and `reactCompiler: true` is set in `next.config.ts`.
 - Decision: Rely on React Compiler for memoization. Do not add `useMemo`, `useCallback`, or `memo` unless profiling shows a need.
 - Consequences: Components must follow the Rules of React so the compiler can optimize them. Any manual memoization added later needs a measured justification. Build or lint output should be checked for compiler bailouts on critical components.
 - Alternatives considered: Manual memoization throughout.
@@ -106,7 +117,7 @@ Template:
 - Date: 2026-11-20
 - Context: The native Fetch `Response` has a one-time-consumable body and is not a serializable domain object. Parsing can fail.
 - Decision: Read the body once and store it raw. Derive parsed data separately and only when parsing succeeds. Use one normalized response shape for both strategies, produced by a shared normalization function.
-- Consequences: A parse failure never discards the raw body or metadata. Size and some headers may be unmeasurable in browser-direct mode and must be shown as unavailable rather than zero.
+- Consequences: A parse failure never discards the raw body or metadata. Some headers are not visible in browser-direct mode and are shown as a limitation, not as empty data. Size measurement is defined in ADR-014.
 - Alternatives considered: Passing the Fetch `Response` through the application; parsing before storing.
 
 ## ADR-008: Separate error categories; HTTP errors are responses
@@ -120,20 +131,20 @@ Template:
 
 ## ADR-009: Proxy envelope separates proxy status from upstream status
 
-- Status: Proposed
-- Date: 2026-11-20
+- Status: Accepted (field names open, OD-1)
+- Date: 2026-11-20; accepted 2026-11-24
 - Context: If the proxy returned the upstream status as its own transport status, an upstream 404 would be indistinguishable from a missing proxy route, which breaks ADR-008.
-- Decision (proposed): A successful proxy call returns a normalized response, including upstream 4xx and 5xx. Proxy-level problems (invalid request, blocked destination, timeout, unreachable upstream) use a separate failure shape. The proxy executor maps both into the same execution result as the browser executor.
-- Consequences: Defines the proxy contract the client and server must both follow. The exact field layout, status codes, and failure identifiers are still to be decided.
+- Decision: A successful proxy call returns HTTP 200 with a normalized response, including upstream 4xx and 5xx. Proxy-level problems return a separate failure shape carrying a failure code from the shared set in `API_INTEGRATION.md` §5. The proxy executor maps both into the same execution result as the browser executor.
+- Consequences: Defines the proxy contract the client and server must both follow. Exact field names are fixed when the types are written in M1.
 - Alternatives considered: Passing the upstream status through as the proxy's HTTP status.
 
 ## ADR-010: Execution state machine with per-execution abort
 
 - Status: Accepted
 - Date: 2026-11-20
-- Context: Requirements call for loading feedback, prevention of duplicate submissions, and no permanent loading state after failures. Overlapping requests could otherwise let a stale response overwrite newer state.
-- Decision: Model execution as a small state machine (idle, executing, completed with a result) owned by one hook. Create an `AbortController` per execution. Disable Send while executing.
-- Consequences: A cancelled or superseded request cannot update state. Timeouts and aborts need to map to execution errors. The state shape is easy to test without rendering components.
+- Context: Requirements call for loading feedback, prevention of duplicate submissions, cancellation, and no permanent loading state after failures. Overlapping requests could otherwise let a stale response overwrite newer state.
+- Decision: Model execution as a small state machine (idle, executing, completed with a result) owned by one hook. Create an `AbortController` per execution. Disable Send while executing. Cancel and unmount abort the current execution.
+- Consequences: A cancelled or superseded request cannot update state. Timeouts and aborts map to the `TIMEOUT` and `CANCELLED` failure codes. The state shape is easy to test without rendering components.
 - Alternatives considered: Independent boolean flags for loading and error; disabling the button only.
 
 ## ADR-011: Minimal dependencies: native Fetch, no Redux
@@ -142,7 +153,7 @@ Template:
 - Date: 2026-11-20
 - Context: `TECH_STACK.md` requires dependencies to be justified by actual requirements. The MVP has no persistence and a small state surface.
 - Decision: Use native Fetch in both the browser and the Route Handler. Use React state and Hook Form for state, with Context only if props cannot reasonably carry shared state. Do not use Redux or an HTTP client library for the MVP.
-- Consequences: Timeouts, aborts, and body handling are written against Fetch directly. Revisit only if a demonstrated need appears.
+- Consequences: Timeouts, aborts, and body handling are written against Fetch directly. The DNS rebinding decision (OD-2) may require a non-Fetch upstream transport in the proxy; if so, it gets its own ADR that amends this one.
 - Alternatives considered: Redux Toolkit; Axios or similar HTTP client.
 
 ## ADR-012: Layered structure with enforced dependency direction
@@ -151,20 +162,104 @@ Template:
 - Date: 2026-11-20
 - Context: The design requires domain logic independent of React, both execution strategies sharing one result contract, and server-only code kept out of the client bundle.
 - Decision: Keep `app/` for routing only. Place domain, execution, server, and feature code in separate folders under `src/`, with the import directions defined in `ARCHITECTURE.md` §4.
-- Consequences: Domain code is unit-testable without React. Violations of import direction should be caught by lint rules or review. The enforcement mechanism for server-only code is a pending decision.
+- Consequences: Domain code is unit-testable without React. Enforcement is defined in ADR-013 and ADR-021.
 - Alternatives considered: Colocating logic inside route folders; a flat shared folder.
 
-## 5. Pending Decisions
+## ADR-013: Enforce server-only code with `import "server-only"`
 
-These are open items from `ARCHITECTURE.md` §13 that will become ADRs when decided.
+- Status: Accepted
+- Date: 2026-11-24
+- Context: Proxy code must never reach the client bundle. The Next.js 16.4 docs (Server and Client Components) state that Next.js handles `server-only` imports internally and installing the package is optional.
+- Decision: Every entry module in `src/server/` starts with `import "server-only"`. Do not install the `server-only` package unless lint flags the import as an extraneous dependency.
+- Consequences: An accidental client import fails at build time. No new dependency.
+- Alternatives considered: Convention and review only; installing the package up front.
 
-| Topic                    | Notes                                            |
-| ------------------------ | ------------------------------------------------ |
-| Server-only enforcement  | Build-time failure versus convention             |
-| Proxy envelope contract  | Finalize ADR-009                                 |
-| Proxy limits             | Timeout, maximum body size, redirect policy      |
-| SSRF control set         | Destination rules, DNS rebinding handling        |
-| Size measurement         | Browser versus server, headers versus bytes read |
-| Syntax highlighter       | Bundle size, performance, maintenance            |
-| Large-response threshold | Highlighting and display fallback                |
-| Binary response handling | Display and size behavior                        |
+## ADR-014: Response size is the decoded body bytes read
+
+- Status: Accepted
+- Date: 2026-11-24
+- Context: `Content-Length` can be missing or describe compressed bytes. Both executors read the body as bytes anyway (ADR-007), so the count is always available when a response exists.
+- Decision: Size is the number of decoded body bytes actually read. It is shown for every Response result and labelled as the decoded body size. Failure results have no size.
+- Consequences: Size can differ from bytes on the wire. The same byte count drives the response-size limit.
+- Alternatives considered: Using `Content-Length`; showing size only in proxy mode.
+
+## ADR-015: In-house JSON highlighting, no library
+
+- Status: Accepted
+- Date: 2026-11-24
+- Context: The MVP highlights JSON only. Highlighting libraries add bundle weight and usually need lazy loading. Some produce HTML strings, which conflicts with the rule against injecting HTML.
+- Decision: Write a small tokenizer over the formatted JSON text that returns React elements (text inside styled spans). No highlighting library.
+- Consequences: No dependency, no `dangerouslySetInnerHTML`, easy to test. Large bodies above the display threshold (OD-6) skip highlighting. Revisit if other languages need highlighting.
+- Alternatives considered: Shiki, Prism-based libraries, highlight.js.
+
+## ADR-016: Keep Cache Components and Partial Prefetching enabled
+
+- Status: Accepted
+- Date: 2026-11-24
+- Context: `next.config.ts` sets `cacheComponents: true` and `partialPrefetching: true`. Partial Prefetching changes what `<Link>` prefetches and only works with Cache Components. RestLab has one page and no links.
+- Decision: Keep both flags as configured.
+- Consequences: Partial Prefetching has no effect today. With Cache Components, request-time data such as cookies must be read inside a `<Suspense>` boundary or in client code; this matters for the theme cookie (ADR-018). `GET` Route Handlers follow the page caching model; RestLab's proxy is `POST` only.
+- Alternatives considered: Removing both flags to stay on the default model.
+
+## ADR-017: Optional body for DELETE; GET never sends a body
+
+- Status: Accepted
+- Date: 2026-11-24
+- Context: `fetch` rejects a GET with a body but allows one on DELETE. Some APIs expect a DELETE body; others ignore it.
+- Decision: The body type is `none`, `json`, or `text`. POST, PUT, PATCH, and DELETE accept an optional body. For GET the body editor is disabled and any text is kept but not sent.
+- Consequences: Switching methods never loses typed content. Validation does not block GET because of leftover body text.
+- Alternatives considered: Never sending a DELETE body; failing validation for GET with a body.
+
+## ADR-018: Theme toggle with a preference cookie
+
+- Status: Accepted
+- Date: 2026-11-24
+- Context: A developer tool should offer light and dark themes, and users who dislike the default need a visible way to change it. The MVP stores no request data.
+- Decision: Provide a theme toggle. The default follows the operating system preference. The user's explicit choice is stored in a single first-party cookie holding only the theme value. This is the only stored value in the MVP; the "no persistence" rule applies to request data.
+- Consequences: The theme must be applied before first paint to avoid a flash of the wrong theme. How to read the cookie under Cache Components (ADR-016), and whether a library is warranted, is open item OD-8, decided in M7. The cookie is not `HttpOnly` if client code must read it, and is never used for anything else.
+- Alternatives considered: System preference only, no toggle; `localStorage`.
+
+## ADR-019: Vitest with jsdom for component tests
+
+- Status: Accepted
+- Date: 2026-11-24
+- Context: The Next.js 16.4 Vitest guide uses `vitest`, `@vitejs/plugin-react`, `jsdom`, `@testing-library/react`, `@testing-library/dom`, and `vite-tsconfig-paths`. It notes Vitest does not support async Server Components.
+- Decision: Follow the Next.js guide. Use the Node environment for domain, execution, and server tests, and jsdom for component tests.
+- Consequences: Async Server Components are covered by end-to-end tests later, not by Vitest. Each package is still approved individually in M0.
+- Alternatives considered: happy-dom; Jest.
+
+## ADR-020: Browser-direct by default; strategy selector ships with M6
+
+- Status: Accepted
+- Date: 2026-11-24
+- Context: ADR-005 requires an explicit strategy choice but no default was set. The proxy is built in M6, after the request editor (M3).
+- Decision: Browser-direct is the default strategy. The strategy selector is added in M6 together with the proxy, so the UI never offers an option that does not work yet.
+- Consequences: M3 to M5 run browser-direct only. JSONPlaceholder and DummyJSON examples work in browser-direct mode as long as they keep allowing cross-origin requests.
+- Alternatives considered: Proxy by default; showing a disabled selector before M6.
+
+## ADR-021: Enforce import direction with ESLint `no-restricted-imports`
+
+- Status: Accepted
+- Date: 2026-11-24
+- Context: ADR-012 asks for the dependency direction in `ARCHITECTURE.md` §4 to be enforced, not only reviewed.
+- Decision: Add per-folder `no-restricted-imports` rules to `eslint.config.mjs` that block imports against the allowed direction.
+- Consequences: Violations fail `npm run lint`. No new dependency. The rules are updated whenever §4 changes.
+- Alternatives considered: `eslint-plugin-boundaries` or `dependency-cruiser` (extra dependencies); review only.
+
+## 5. Open Decisions Register
+
+This is the only list of open decisions. Other documents link here.
+
+| ID    | Decision                                         | Notes                                                                                     | Decide in |
+| ----- | ------------------------------------------------ | ----------------------------------------------------------------------------------------- | --------- |
+| OD-1  | Envelope and result field names                  | ADR-009 shape is settled; names are fixed when types are written                          | M1        |
+| OD-2  | Pinning the validated address (DNS rebinding)    | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent        | M6 spike  |
+| OD-3  | Limit values                                     | Proposed: 15 s timeout and 5 MB size (needed in M2); 3 redirects and ports 80/443 (M6)    | M2, M6    |
+| OD-4  | Proxy request body and header limits             | Values to set                                                                             | M6        |
+| OD-5  | Proxy content-type and origin checks             | Proposed in `API_INTEGRATION.md` §6.3                                                     | M6        |
+| OD-6  | Large-response display threshold                 | Above it, no formatting or highlighting                                                   | M4        |
+| OD-7  | Binary response display                          | MVP default: metadata and a "not displayed" message only                                  | M4        |
+| OD-8  | Theme implementation                             | Cookie read on server vs pre-paint script; Cache Components impact; library or not        | M7        |
+| OD-9  | Deployment target and rate limiting             | Must be in place before the proxy is public                                               | M8        |
+| OD-10 | Continuous integration                           | Which scripts run on each push; GitHub Actions needs no dependency                        | M0 or M8  |
+| OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                              | M8        |

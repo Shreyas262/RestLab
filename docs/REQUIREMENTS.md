@@ -1,5 +1,7 @@
 # RestLab — Requirements
 
+**Status:** Accepted · **Last reviewed:** 2026-11-24
+
 ## 1. Purpose
 
 This document defines the functional and non-functional requirements for RestLab.
@@ -17,12 +19,14 @@ Requirements:
 - Enter and edit a request URL.
 - Select an HTTP method.
 - Configure query parameters.
-- Add, edit, and remove query parameters.
+- Add, edit, remove, enable, and disable query parameters.
 - Configure request headers.
-- Add, edit, and remove request headers.
+- Add, edit, remove, enable, and disable request headers.
 - Configure request bodies for supported methods.
-- Support JSON and plain-text request bodies.
+- Support no body, JSON, and plain-text request bodies.
 - Validate required request configuration before execution.
+
+Body rules per method are defined in `API_INTEGRATION.md` §2.2 (GET never sends a body; DELETE may send an optional body).
 
 ### FR-02: HTTP Method Support
 
@@ -62,10 +66,14 @@ Presets must act as starting configurations rather than restricting customizatio
 The application must:
 
 - Execute configured HTTP requests.
+- Let the user choose the execution strategy: browser-direct or backend proxy. Browser-direct is the default.
+- Never switch execution strategy automatically after a failure.
 - Send configured query parameters and headers.
 - Send request bodies where applicable.
 - Display an appropriate loading state.
 - Prevent accidental duplicate submissions while a request is executing.
+- Let the user cancel a request that is executing.
+- Stop waiting after a timeout and report it as an execution failure.
 - Handle unsuccessful requests and network failures.
 - Display the resulting response.
 
@@ -94,13 +102,14 @@ The complete response information and response body must be distinguishable in t
 
 ### FR-06: Error Handling
 
-The application must distinguish between different failure categories.
+The application must distinguish four outcome categories (ADR-008):
 
-- HTTP error responses.
-- Network failures.
-- Invalid request configuration.
-- Response parsing failures.
-- Unexpected response formats.
+| Category            | Covers                                                           |
+| ------------------- | ---------------------------------------------------------------- |
+| Validation          | Invalid request configuration, detected before any network call  |
+| Execution           | Network failures, timeouts, cancellation, proxy failures         |
+| HTTP error response | Responses with a 4xx or 5xx status                               |
+| Response-processing | Parsing failures and unexpected or unsupported response formats  |
 
 Error messages must be understandable and provide useful information without exposing sensitive internal details.
 
@@ -111,15 +120,21 @@ An HTTP error status must not automatically be treated as a network failure.
 The application must provide appropriate states for:
 
 - Initial state.
+- Validation error.
 - Request execution.
 - Successful response.
 - HTTP error response.
-- Network failure.
-- Response parsing failure.
+- Execution failure (network, timeout, proxy).
+- Cancelled request.
+- Response-processing failure.
 
 Request configurations will remain temporary during the initial MVP.
 
-No request history, saved requests, or persistent browser storage is required.
+No request history, saved requests, or persistent storage of request data is required. The only stored value is the user's theme preference, kept in a cookie (ADR-018).
+
+### FR-08: Theme
+
+The application must offer light and dark themes with a visible toggle. The default follows the operating system preference. The user's choice persists across visits.
 
 ## 3. Non-Functional Requirements
 
@@ -159,8 +174,8 @@ Specific performance targets will be established during implementation and optim
 
 - Validate and handle user-provided URLs safely.
 - Avoid exposing sensitive information in error messages.
-- Avoid introducing unnecessary storage of request information.
-- Apply appropriate security measures to request execution architecture.
+- Do not store request information.
+- Protect the backend proxy against Server-Side Request Forgery and abuse (`API_INTEGRATION.md` §6).
 - Prevent unsafe rendering of external response content.
 
 ### NFR-06: Accessibility
@@ -192,13 +207,15 @@ The initial MVP includes:
 7. Generic request presets.
 8. Public API example requests.
 9. Custom request configuration.
-10. Request execution.
-11. Response metadata inspection.
-12. Response body formatting.
-13. JSON syntax highlighting.
-14. Response copying.
-15. Loading, success, and error states.
-16. Basic response content-type handling.
+10. Request execution with a user-selected strategy: browser-direct or backend proxy.
+11. Request cancellation and timeout.
+12. Response metadata inspection.
+13. Response body formatting.
+14. JSON syntax highlighting.
+15. Response copying.
+16. Loading, success, cancelled, and error states.
+17. Basic response content-type handling.
+18. Light and dark themes with a toggle.
 
 ## 5. Out of Scope for MVP
 
@@ -234,7 +251,7 @@ External API availability, response behavior, and browser access policies are ou
 - The application is browser-based.
 - The initial release does not require user authentication.
 - Request configurations are temporary.
-- External APIs may impose CORS restrictions.
+- External APIs may impose CORS restrictions. In browser-direct mode a CORS block cannot be told apart from an unreachable server.
 - Different APIs may require different request headers, payload structures, and authentication mechanisms.
 - Response content types and response sizes may vary.
 - Public APIs may become unavailable or change their behavior.
@@ -244,6 +261,9 @@ External API availability, response behavior, and browser access policies are ou
 The MVP will be considered functionally complete when:
 
 - Users can configure and execute all five supported HTTP methods.
+- Users can choose browser-direct or proxy execution, and the strategy never changes on its own.
+- The proxy blocks the destinations listed in `API_INTEGRATION.md` §6.4, verified by tests.
+- Users can cancel an executing request.
 - Users can manage query parameters and request headers.
 - Users can submit JSON and plain-text request bodies.
 - Users can use and customize generic presets.
@@ -253,6 +273,7 @@ The MVP will be considered functionally complete when:
 - Users can copy response content.
 - Loading and failure states behave correctly.
 - The application remains usable across desktop, tablet, and mobile displays.
+- Users can switch between light and dark themes, and the choice persists.
 - The documented functional requirements pass their corresponding tests.
 
 ## 9. Requirement Evolution

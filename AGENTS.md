@@ -19,6 +19,9 @@ Documentation in `docs/` is the single source of truth. Do not duplicate it here
 | UI behavior                         | `docs/UI_UX_GUIDELINES.md`                         |
 | Testing                             | `docs/TESTING_STRATEGY.md`                         |
 | Plan and status                     | `docs/PROJECT_PLAN.md`, `docs/PROGRESS.md`         |
+| Direction beyond the MVP            | `docs/ROADMAP.md`                                  |
+| History of changes                  | `docs/CHANGELOG.md`                                |
+| Open decisions                      | `docs/DECISIONS.md` §5                             |
 
 Do not assume the code matches the docs. Inspect the code. If a document is missing or out of date, say so.
 
@@ -35,8 +38,9 @@ Every task follows these steps in order. No exceptions.
 
 ## Git
 
-- Never commit, push, or open or update a pull request without explicit approval each time. Earlier approval does not carry over to the next commit or PR.
-- Before asking, show the proposed commit message or PR title and description, and the list of files included.
+- Never commit or push. Leave all changes uncommitted; the project owner reviews and commits them.
+- At the end of a task, list the changed files and suggest a commit message for the owner to use.
+- Never open or update a pull request without explicit approval each time. Before asking, show the proposed PR title and description.
 - Do not mention any AI tool, assistant, or model name in commit messages, PR titles, or PR descriptions. Do not add `Co-authored-by` lines or any AI attribution or generated-by notes.
 - Write commit messages in the imperative mood with a short, specific subject. Follow the existing history style. One logical change per commit.
 - Never force-push, rewrite history, delete branches, change git configuration, or skip hooks.
@@ -96,7 +100,7 @@ Details are in `docs/ARCHITECTURE.md`. The essentials:
 - Never switch execution strategy silently after a failure.
 - Never render response content as HTML. No `dangerouslySetInnerHTML` with response data.
 - User-triggered requests must not be served from cache.
-- No request history, persistence, or browser storage in the MVP.
+- No request history, persistence, or browser storage of request data in the MVP. The theme preference cookie is the only stored value (ADR-018).
 
 ## Security
 
@@ -110,4 +114,4 @@ The proxy accepts user-provided URLs and is an SSRF risk. Do not weaken or bypas
 
 ## Documentation
 
-When behavior, structure, or a decision changes, include the doc update in the plan, and make it as part of the same task once approved. Record significant decisions in `docs/DECISIONS.md`. Keep `docs/PROGRESS.md` and `CHANGELOG.md` current.
+When behavior, structure, or a decision changes, include the doc update in the plan, and make it as part of the same task once approved. Record significant decisions in `docs/DECISIONS.md`. Keep `docs/PROGRESS.md` and `docs/CHANGELOG.md` current.

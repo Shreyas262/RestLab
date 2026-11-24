@@ -1,5 +1,7 @@
 # System Design
 
+**Status:** Accepted · **Last reviewed:** 2026-11-24
+
 ## 1. Purpose
 
 This document describes RestLab's logical architecture, primary data flows, request execution model, response representation, and error-handling strategy.
@@ -81,7 +83,7 @@ A predefined public API may still require proxy execution because of CORS restri
 
 Therefore, API source must not determine execution strategy.
 
-Users should be able to select the execution strategy. RestLab may provide guidance, but must not silently switch strategies when execution fails.
+Users select the execution strategy. Browser-direct is the default (ADR-020). RestLab may provide guidance, but must not silently switch strategies when execution fails.
 
 ## 4. Request Lifecycle
 
@@ -117,6 +119,7 @@ The lifecycle should:
 - Validate request configuration before execution.
 - Provide clear loading feedback.
 - Prevent accidental duplicate submissions while a request is executing.
+- Allow the user to cancel an executing request, and stop waiting after a timeout.
 - Preserve the distinction between HTTP responses and transport failures.
 - Return a consistent execution result to the presentation layer.
 
@@ -169,7 +172,7 @@ The backend proxy design must account for:
 - Avoiding unintended forwarding of sensitive headers or credentials.
 - Preventing the proxy from becoming an unrestricted network relay.
 
-The exact validation and infrastructure controls will be specified during implementation and security design.
+The controls are specified in `API_INTEGRATION.md` §6.
 
 Browser-direct execution also requires safe handling of user-provided URLs and response content.
 
@@ -185,10 +188,12 @@ Instead, RestLab will use a normalized response representation containing releva
 - Status text.
 - Response headers.
 - Response duration.
-- Response size, when measurable.
+- Response size, measured as the decoded body bytes read (ADR-014).
 - Content type.
 - Raw response body.
 - Parsed response body, when parsing succeeds.
+
+The exact fields are defined in `API_INTEGRATION.md` §4.2.
 
 The response body should be consumed only once. Parsing and display operations should work from the preserved body content.
 
@@ -200,9 +205,9 @@ The response inspector will provide three tabs.
 
 ### 7.1 Overview
 
-Displays a consolidated representation of the normalized response, making the complete response information accessible in one place.
+Displays the complete normalized response in one place: a short summary line (outcome, status, duration, size) followed by the whole normalized response as read-only, formatted JSON, including headers and body.
 
-This is an application-level representation, not the native Fetch `Response` object.
+This is an application-level representation, not the native Fetch `Response` object. It answers "what exactly came back?"; the Body and Metadata tabs are focused views of parts of it.
 
 ### 7.2 Body
 
@@ -223,8 +228,9 @@ Displays response information, including:
 - Status code and status text.
 - Response headers.
 - Duration.
-- Response size, when measurable.
+- Response size.
 - Content type.
+- Execution strategy used.
 - Execution outcome.
 
 Execution outcome is logically separate from HTTP metadata, even though the UI presents it in this tab.
@@ -233,7 +239,7 @@ The inspector must remain useful when a response has an empty body or its conten
 
 ## 8. Error Handling
 
-Errors will be separated into three primary categories.
+Outcomes are separated into four categories (ADR-008): request validation errors, execution errors, response-processing errors, and HTTP error responses. Only the first three are errors; an HTTP error response is a valid response.
 
 ### 8.1 Request validation errors
 
@@ -257,6 +263,7 @@ Examples:
 - Network failures.
 - Connection failures.
 - Timeouts.
+- Cancellation by the user.
 - Proxy execution failures.
 
 These errors should be distinguishable from HTTP error responses.
@@ -316,7 +323,7 @@ For the MVP:
 
 - Request configuration exists temporarily in the active application session.
 - No request history or saved requests.
-- No persistent browser storage.
+- No persistent storage of request data. The theme preference cookie is the only stored value (ADR-018).
 - No account or cloud synchronization.
 
 The design should avoid making future persistence impossible, but should not introduce persistence infrastructure prematurely.
@@ -332,16 +339,8 @@ The design should avoid making future persistence impossible, but should not int
 - Keep the architecture extensible without introducing unnecessary abstractions.
 - Prefer explicit execution behavior over silent fallbacks.
 
-## 11. Open Implementation Decisions
+## 11. Where Details Live
 
-The following details remain for later design and implementation:
-
-- Exact request and response TypeScript types.
-- Proxy endpoint contract and validation rules.
-- Destination allow/block policy and redirect handling.
-- Timeout and response-size limits.
-- Response-size measurement behavior.
-- Binary response handling and display limitations.
-- Exact module and folder boundaries.
-
-These decisions should be made when the relevant implementation requirements are clear.
+- Module and folder boundaries: `ARCHITECTURE.md`.
+- Request construction, response fields, proxy contract, and SSRF controls: `API_INTEGRATION.md`.
+- Settled decisions and the open-decisions register: `DECISIONS.md`.

@@ -1,5 +1,7 @@
 # RestLab — Project Overview
 
+**Status:** Accepted · **Last reviewed:** 2026-11-24
+
 ## 1. Project Vision
 
 RestLab is a browser-based REST API playground designed to help developers explore, configure, execute, and inspect HTTP requests through an intuitive and developer-friendly interface.
@@ -52,7 +54,9 @@ Its focus is on simplifying API experimentation rather than replicating every ca
 ### Request Execution
 
 - Execute HTTP requests against external APIs.
+- Choose between browser-direct execution and a Next.js backend proxy for APIs that block cross-origin browser requests.
 - Support common HTTP methods.
+- Cancel a running request.
 - Display loading and execution states.
 - Handle unsuccessful requests and network failures.
 
@@ -89,6 +93,7 @@ Additional API sources may be introduced when required.
 - Desktop-first interface.
 - Responsive across desktop, tablet, and mobile displays.
 - Developer-focused interface.
+- Light and dark themes with a toggle.
 - Clear visual hierarchy for request configuration and response inspection.
 - Accessible and consistent interaction patterns.
 
@@ -102,10 +107,12 @@ The initial development will prioritize:
 - Common HTTP methods.
 - Query parameters and headers.
 - Request body configuration.
-- Request execution.
+- Request execution, browser-direct and through the backend proxy.
 - Comprehensive response inspection.
 - Error handling.
 - Predefined request configurations.
+
+The exact MVP boundary is defined in `REQUIREMENTS.md` §4 and §5.
 
 ### Future Enhancements
 
@@ -123,13 +130,9 @@ These enhancements will be evaluated incrementally based on actual requirements.
 
 ## 9. Technology Foundation
 
-The application will use:
+The application uses Next.js (App Router), React, and TypeScript. The full stack is in `TECH_STACK.md`.
 
-- Next.js.
-- React.
-- TypeScript.
-
-Additional technologies and dependencies will be selected through documented technical evaluations.
+Additional technologies and dependencies are selected through documented technical evaluations (`DECISIONS.md`).
 
 ## 10. Long-Term Vision
 

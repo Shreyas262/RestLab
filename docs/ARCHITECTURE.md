@@ -1,46 +1,41 @@
 # Architecture
 
-**Status:** Draft v0.3 — 20 November 2026
+**Status:** Accepted · **Last reviewed:** 2026-11-24
 **Depends on:** `SYSTEM_DESIGN.md` (logical design), `TECH_STACK.md`, `REQUIREMENTS.md`, `UI_UX_GUIDELINES.md`
 
 ## 1. Purpose
 
 This document translates the logical design in `SYSTEM_DESIGN.md` into application structure: folders, module boundaries, dependency rules, runtime boundaries (server vs client), and the contracts between modules.
 
-It does not repeat product requirements or the logical design. Individual decisions that need justification are recorded in `DECISIONS.md` and referenced here as `ADR-?` until written.
+It does not repeat product requirements or the logical design. Decisions that need justification are recorded in `DECISIONS.md` and referenced here by ADR number.
 
 ## 2. Current Repository State
 
-Verified from the files and directory listing supplied by the project owner on 20 Nov 2026. Re-verify before implementation.
+Verified against the repository on 2026-11-24. Re-verify before relying on it; `PROGRESS.md` is the living status.
 
-| Item                      | State                                                                                                                                                 |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app/`                | `layout.tsx`, `page.tsx`, `globals.css` only                                                                                                          |
-| `docs/` (repository root) | `PROJECT_OVERVIEW`, `REQUIREMENTS`, `SYSTEM_DESIGN`, `TECH_STACK`, `UI_UX_GUIDELINES`                                                                 |
-| `AGENTS.md`               | Empty                                                                                                                                                 |
-| `README.md`               | Empty (as of previous inspection)                                                                                                                     |
-| Runtime dependencies      | `next` 16.4.6, `react` / `react-dom` 19.3.0                                                                                                           |
-| Dev dependencies          | `tailwindcss` 4.3.3, `@tailwindcss/turbopack` 4.3.3, `typescript`, `eslint`, `eslint-config-next`, `babel-plugin-react-compiler` 1.0.0, type packages |
-| Scripts                   | `dev`, `build`, `start`, `lint`                                                                                                                       |
+| Item                 | State                                                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/`           | `layout.tsx`, `page.tsx`, `globals.css`. All three are stubs (see below)                                                     |
+| Other `src/` folders | None                                                                                                                         |
+| `next.config.ts`     | `reactCompiler: true`, `cacheComponents: true`, `partialPrefetching: true`, Turbopack CSS rule for `@tailwindcss/turbopack` |
+| `tsconfig.json`      | `strict: true`. Path alias `@/*` maps to `./*`                                                                               |
+| Runtime dependencies | `next` 16.4.6, `react` / `react-dom` 19.3.0                                                                                  |
+| Dev dependencies     | `tailwindcss` and `@tailwindcss/turbopack` 4.3.3, `typescript` 5.9, `eslint` 9, `eslint-config-next` 16.4.6, `babel-plugin-react-compiler` 1.0.0, `@types/*` |
+| Scripts              | `dev`, `build`, `start`, `lint`                                                                                              |
+| Checks               | `npm run lint` and `tsc --noEmit` pass                                                                                       |
 
-### Gaps against `TECH_STACK.md`
+### Known gaps (all fixed in M0, `PROJECT_PLAN.md`)
 
-Not yet installed or configured: React Hook Form, Zod, `@hookform/resolvers`, shadcn/ui, Vitest, React Testing Library, Prettier. No `test`, `typecheck`, or `format` scripts exist.
-
-### Decisions taken in this revision
-
-- **`src/` directory.** All application code lives under `src/`. Folder paths in this document are relative to `src/` unless stated otherwise (ADR-001).
-- **Tailwind integration.** Follow the official Next.js and Tailwind installation guides, which use `@tailwindcss/postcss` with a `postcss.config.mjs`. Replace the installed `@tailwindcss/turbopack` accordingly (ADR-003).
-- **React Compiler.** Enabled (ADR-004). Do not add manual `useMemo` / `useCallback` / `memo` unless profiling shows a need.
-- **Execution state.** Modeled as a small state machine with an `AbortController` per execution (§9, ADR-010).
-
-- **Docs location.** Documentation lives in `docs/` at the repository root, matching the documentation strategy (ADR-002).
+- `layout.tsx` returns a `<div>`. The root layout must define `<html>` and `<body>` and render `children` (Next.js layout reference). `globals.css` is empty and not imported.
+- The `@/*` alias must map to `./src/*` (ADR-001).
+- Tailwind is wired through the Turbopack loader. ADR-003 moves it to `@tailwindcss/postcss`.
+- Not installed: React Hook Form, Zod, `@hookform/resolvers`, shadcn/ui, Vitest, React Testing Library, Prettier. No `test`, `typecheck`, or `format:check` scripts.
 
 ## 3. Architectural Principles
 
 Inherited from `SYSTEM_DESIGN.md` §10 and `TECH_STACK.md` §2, stated here as enforceable structure rules:
 
-1. `src/app/` is for routing only. Application code lives in shared folders beside it under `src/` (one of the strategies Next.js documents; Next.js itself is unopinionated here).
+1. `src/app/` is for routing only. Application code lives in shared folders beside it under `src/`.
 2. Domain code is plain TypeScript. It imports no React, no Next.js, and no browser or Node-specific globals beyond what Fetch provides in both runtimes.
 3. Both execution strategies produce the same result type. UI code never knows which strategy ran, except to display it.
 4. Server-only code never reaches the client bundle.
@@ -53,15 +48,20 @@ flowchart TD
     APP["app/ — routes, layout, Route Handler"]
     FEAT["features/ — playground UI and hooks"]
     UIK["components/ui — shadcn primitives"]
+    LIB["lib/ — small shared helpers (for example cn)"]
     DOM["domain/ — request, response, errors, validation, presets"]
-    EXE["execution/ — executors and result contract"]
-    SRV["server/ — proxy guard (server only)"]
+    EXE["execution/ — executors, result and envelope contracts"]
+    SRV["server/ — proxy guard and upstream transport (server only)"]
 
     APP --> FEAT
     APP --> SRV
+    APP --> DOM
+    APP --> UIK
     FEAT --> UIK
+    FEAT --> LIB
     FEAT --> EXE
     FEAT --> DOM
+    UIK --> LIB
     EXE --> DOM
     SRV --> DOM
     SRV --> EXE
@@ -70,163 +70,169 @@ flowchart TD
 Rules:
 
 - Arrows are the only permitted import directions.
-- `domain/` imports nothing from the other layers.
-- `features/` never imports from `server/`.
+- `domain/` and `lib/` import nothing from the other layers.
+- `features/`, `components/`, and `execution/` never import from `server/`.
 - `app/api/**/route.ts` stays thin: parse input, call into `server/` and `domain/`, return a response.
+- Enforcement: ESLint `no-restricted-imports` rules per folder in `eslint.config.mjs`, plus `import "server-only"` in every `server/` entry module (ADR-013, ADR-021).
 
-## 5. Proposed Folder Structure
+## 5. Folder Structure
 
-This is a proposal, not the current state. Only `src/app/` exists today under `src/`. Paths are relative to `src/`, except `docs/`, which is at the repository root.
+Target structure. Created in M0; only `src/app/` exists today. Paths are relative to `src/`.
 
 ```
 app/
-  layout.tsx
+  layout.tsx                # Server Component; html, body, theme class
   page.tsx                  # Server Component; renders the playground
   globals.css
-  api/execute/route.ts      # Route Handler: proxy entry point
+  api/execute/route.ts      # Route Handler: proxy entry point (POST only)
 
-components/ui/              # shadcn/ui primitives (generated)
+components/ui/              # shadcn/ui primitives (generated by the shadcn CLI)
 
-features/playground/
-  components/               # request editor, response inspector, tabs, layout
-  hooks/                    # execution state, send handler
-  playground.tsx            # Client Component boundary
+lib/                        # small helpers shared by UI code (shadcn's cn)
+
+features/
+  playground/
+    components/             # request editor, response inspector, tabs, layout
+    hooks/                  # execution state, send and cancel handlers
+    playground.tsx          # Client Component boundary
+  theme/                    # theme toggle and preference cookie handling
 
 domain/
-  request/                  # request model, Zod schemas, validation
-  response/                 # normalized response model, parsing, content-type handling
-  errors/                   # error categories and shapes
+  request/                  # request model, Zod schemas, URL building, validation
+  response/                 # normalized response model, decoding, parsing, classification
+  errors/                   # outcome categories and failure codes
   presets/                  # generic and public-API presets as data
 
 execution/
-  contract                  # executor interface and ExecutionResult
+  contract                  # executor interface, ExecutionResult, proxy envelope types
   browser-executor          # browser-direct strategy
   proxy-executor            # calls the Route Handler, maps the envelope
   normalize                 # shared Response -> normalized response
 
 server/
-  proxy/                    # SSRF guard, timeout, size limit, header policy
+  proxy/                    # SSRF guard, upstream transport, timeout, size limit, header policy
 
+test/                       # shared fixtures and test helpers
 ```
 
-Exact file names are left to implementation. The boundaries above are what matter.
+Exact file names are left to implementation. The boundaries above are what matter. Tests sit next to the code they cover (`TESTING_STRATEGY.md` §6).
 
 ## 6. Module Responsibilities
 
 ### 6.1 `domain/request`
 
-Holds the single request model (URL, method, params, headers, body, execution strategy) and its Zod schemas. The schemas are the shared source of truth: the form uses them through `@hookform/resolvers`, and the Route Handler re-validates incoming requests with the same schemas. Client-side validation is a convenience; server-side validation is the control.
+Holds the single request model (URL, method, parameter rows, header rows, body, execution strategy) and its Zod schemas. The schemas are the shared source of truth: the form uses them through `@hookform/resolvers`, and the Route Handler re-validates incoming requests with the same schemas. Client-side validation is a convenience; server-side validation is the control (ADR-006). Also owns building the final URL from the base URL and enabled parameter rows (`API_INTEGRATION.md` §2.1).
 
 ### 6.2 `domain/response`
 
 Holds the normalized response model and body handling:
 
-- Raw body preserved as text.
+- Raw body preserved as text when the content is textual.
 - Parsed body derived separately, only when the content type and content allow it.
-- Content-type classification (JSON, text, other) that drives the Body tab.
+- Content-type classification (JSON, text, binary, empty) that drives the Body tab.
 - Parse failures return the raw body plus a processing error. They never discard metadata.
 
 ### 6.3 `domain/errors`
 
-Four categories, kept as distinct types: validation, execution, response-processing, and HTTP error response. HTTP error responses are not errors at the type level: they are normal responses with an error status.
+Four outcome categories, kept as distinct types: validation, execution, response-processing, and HTTP error response (ADR-008). HTTP error responses are not errors at the type level: they are normal responses with an error status. Also holds the failure codes shared by both executors (`API_INTEGRATION.md` §5).
 
 ### 6.4 `execution/`
 
-Defines one executor contract: given a validated request, return an `ExecutionResult`.
+Defines one executor contract: given a validated request and an abort signal, return an `ExecutionResult`.
 
 `ExecutionResult` is one of:
 
 - **Response:** a normalized response, including HTTP 4xx/5xx, optionally carrying a processing error.
-- **Failure:** an execution error (network, timeout, proxy failure) with no HTTP response.
+- **Failure:** an execution error (network, timeout, cancelled, response too large, proxy failure) with a failure code and no HTTP response.
 
 Validation errors occur before an executor is called and never produce an `ExecutionResult`.
 
-Both executors use the same normalization function, so the response model is identical regardless of strategy. The selected executor is chosen by the user's explicit strategy choice. There is no fallback logic anywhere in this layer.
+Both executors use the same normalization function, so the response model is identical regardless of strategy. The executor is chosen by the user's explicit strategy choice. There is no fallback logic anywhere in this layer (ADR-005).
+
+The proxy envelope types live in `execution/contract`, because both `server/` (producer) and `execution/proxy-executor` (consumer) depend on them and both may import `execution/`.
 
 ### 6.5 `server/proxy`
 
-Contains all SSRF and resource controls from `SYSTEM_DESIGN.md` §5.3. Isolated so it can be reviewed and tested on its own, and so it cannot be imported by client code.
+Contains all SSRF and resource controls from `API_INTEGRATION.md` §6. Isolated so it can be reviewed and tested on its own, and so it cannot be imported by client code. The upstream transport (the code that opens the connection) is passed in as a dependency so tests can replace it and DNS (`TESTING_STRATEGY.md` §4.3).
 
 ### 6.6 `features/playground`
 
 UI only. Consumes domain types and the executor contract. Owns the execution state machine and layout (resizable split on desktop, stacked on smaller screens).
 
+### 6.7 `features/theme`
+
+The theme toggle and the code that reads and writes the theme preference cookie (ADR-018). It stores nothing else.
+
 ## 7. Server and Client Boundary
 
 - `app/page.tsx` and `layout.tsx` are Server Components.
 - The playground is a Client Component, because nearly everything in it is interactive (forms, tabs, resizable panels, execution state). Keep the `"use client"` boundary at the playground root. Static page chrome stays on the server.
-- The Route Handler is the only server execution path. Use `POST`, since the request configuration travels in the body.
-- Mark `server/` modules as server-only so an accidental client import fails at build time (mechanism: `ADR-?`).
-- Verify Route Handler caching behavior for the installed Next.js version at implementation time (`TECH_STACK.md` §4 requires explicit caching control). Set it explicitly on the server-side upstream fetch regardless of defaults.
+- The Route Handler is the only server execution path. It exports `POST` only, since the request configuration travels in the body.
+- The Route Handler runs on the Node.js runtime (the default). The proxy needs `node:dns` and control over the connection, which the Edge runtime does not provide.
+- `server/` modules start with `import "server-only"`, so an accidental client import fails at build time (ADR-013).
+- Caching: Route Handlers are not cached by default, and non-`GET` handlers are never cached (Next.js Route Handlers docs, 16.4). With Cache Components enabled (ADR-016), `GET` handlers follow the page model; RestLab exposes no `GET` handler. The upstream request still opts out of caching explicitly (`API_INTEGRATION.md` §2.5).
 
 ## 8. Execution Flows
 
 ### 8.1 Browser-direct
 
 1. Form values are validated against the request schema.
-2. The browser executor builds a Fetch call (headers, body, abort signal).
-3. The body is read once as text, timing is captured, and the result is normalized.
-4. Network-level failures become Failure results. Any received response, regardless of status, becomes a Response result.
+2. The browser executor builds a Fetch call (final URL, headers, body, abort signal, `cache: "no-store"`).
+3. The body is read once as bytes with a size limit, timing is captured, and the result is normalized.
+4. Network-level failures, timeouts, and cancellation become Failure results. Any received response, regardless of status, becomes a Response result.
 
-**Known limits.** CORS blocks many APIs, and browsers expose only CORS-safelisted response headers unless the server exposes more. Response size and some headers may not be measurable. The UI should show these as "not available", not as zero or empty.
+**Known limits.** CORS blocks many APIs, and browsers expose only CORS-safelisted response headers unless the server lists more in `Access-Control-Expose-Headers`. `Set-Cookie` is never visible. The UI shows these limits as a note, not as missing data.
 
 ### 8.2 Backend proxy
 
 1. The browser posts the validated request to the Route Handler.
-2. The handler re-validates with the shared schema, then runs the proxy guard.
-3. The server performs the upstream Fetch with a timeout and a size limit.
+2. The handler checks the request origin and content type, re-validates with the shared schema, then runs the proxy guard.
+3. The server performs the upstream request to the validated address, with a timeout, a size limit, and manual redirect handling.
 4. The server normalizes the response with the shared function and returns it inside a proxy envelope.
 
-**Envelope rule.** The transport status of the proxy call and the upstream HTTP status are different things. An upstream 404 must arrive as a successful proxy call carrying a normalized response with status 404. Proxy-level problems (invalid request, blocked destination, timeout, upstream unreachable) use a separate failure shape. The proxy executor maps both into the same `ExecutionResult`. The envelope is proposed in ADR-009; the exact contract is still open.
+**Envelope rule.** The transport status of the proxy call and the upstream HTTP status are different things. An upstream 404 arrives as a successful proxy call carrying a normalized response with status 404. Proxy-level problems use a separate failure shape. The proxy executor maps both into the same `ExecutionResult` (ADR-009, `API_INTEGRATION.md` §6.2).
 
 ## 9. State Management
 
-- **Request configuration:** React Hook Form, validated by Zod.
-- **Execution state:** a small state machine owned by one hook: idle, executing, completed (holding an `ExecutionResult`).
-- **Duplicate-submission control:** disable Send while executing, and hold an `AbortController` per execution so a superseded or cancelled request cannot overwrite newer state.
+- **Request configuration:** React Hook Form, validated by Zod. Parameter and header rows use field arrays.
+- **Execution state:** a small state machine owned by one hook: idle, executing, completed (holding an `ExecutionResult`) (ADR-010).
+- **Duplicate-submission control:** Send is disabled while executing. Each execution holds its own `AbortController`; Cancel aborts it, and unmounting aborts it. A result from an aborted execution never updates state.
+- **Theme:** read from the preference cookie; the toggle writes it (ADR-018).
 - **Context:** only if the request editor and response inspector genuinely need shared state that props cannot reasonably carry. Do not introduce it up front.
-- **Persistence:** none in the MVP.
+- **Persistence:** none for request data in the MVP.
 
 ## 10. Response Rendering
 
 - Render response content as text. Never use `dangerouslySetInnerHTML` with response content, including HTML responses.
-- The syntax-highlighting library is not yet chosen (`TECH_STACK.md` §6). Whichever is selected should be loaded lazily, since it is needed only after a response arrives.
-- Large bodies: avoid highlighting or formatting very large payloads synchronously. Define a size threshold and a plain-text fallback during implementation.
+- JSON highlighting is an in-house tokenizer that emits React text nodes inside styled spans (ADR-015). No highlighting library and no lazy loading.
+- Large bodies: above the display threshold, skip formatting and highlighting and show plain text (threshold is open item OD-6 in `DECISIONS.md`).
 - Rendering code reads the normalized response and does no parsing of its own.
 
 ## 11. Error Handling Architecture
 
-| Category            | Origin                  | Result shape                   | Body/metadata kept         |
-| ------------------- | ----------------------- | ------------------------------ | -------------------------- |
-| Validation          | Before execution        | No `ExecutionResult`           | n/a                        |
-| Execution           | Network, timeout, proxy | Failure                        | None available             |
-| HTTP error          | Upstream status 4xx/5xx | Response                       | Yes                        |
-| Response-processing | After receipt           | Response plus processing error | Raw body and metadata kept |
+| Category            | Origin                                  | Result shape                   | Body/metadata kept         |
+| ------------------- | --------------------------------------- | ------------------------------ | -------------------------- |
+| Validation          | Before execution                        | No `ExecutionResult`           | n/a                        |
+| Execution           | Network, timeout, cancel, size, proxy   | Failure with a failure code    | None available             |
+| HTTP error          | Upstream status 4xx/5xx                 | Response                       | Yes                        |
+| Response-processing | After receipt                           | Response plus processing error | Raw body and metadata kept |
 
 Error messages shown to users must not expose internal details (stack traces, internal hostnames, resolved IPs from blocked destinations).
 
 ## 12. Testing Boundaries
 
-Matches `TECH_STACK.md` §7. Structure supports this directly:
+Detailed in `TESTING_STRATEGY.md` §4. The structure supports it directly:
 
-- `domain/` and `execution/normalize`: pure unit tests (Vitest), no React.
-- `server/proxy`: unit tests for destination rules, with security cases written before the handler is exposed.
-- Executors: unit tests with a mocked Fetch.
-- `features/playground`: React Testing Library for states (initial, loading, success, HTTP error, failure, processing error).
+- `domain/` and `execution/normalize`: pure unit tests (Vitest, Node environment), no React.
+- `server/proxy`: unit tests with a fake DNS resolver and a fake upstream transport; security cases written before the handler is exposed.
+- Executors: unit tests with a mocked `fetch`.
+- `features/`: React Testing Library in jsdom (ADR-019).
 - Playwright: deferred.
 
 ## 13. Open Decisions
 
-| #   | Decision                          | Notes                                    |
-| --- | --------------------------------- | ---------------------------------------- |
-| 1   | Server-only enforcement mechanism | Build-time failure vs convention         |
-| 2   | Proxy envelope contract           | Success and failure shapes               |
-| 3   | Proxy limits                      | Timeout, max body size, redirect policy  |
-| 4   | Size measurement                  | Browser vs server, headers vs bytes read |
-| 5   | Syntax highlighter                | Bundle size, performance, maintenance    |
-| 6   | Large-response threshold          | Highlighting and display fallback        |
-| 7   | Binary response handling          | Display and size behavior                |
+Tracked in one place: `DECISIONS.md` §5.
 
 ## 14. Maintenance
 
-Update this document when module boundaries or dependency rules change. Record the reason in `DECISIONS.md`. When the folder structure is created, replace §5's "proposal" wording with the actual structure.
+Update this document when module boundaries or dependency rules change. Record the reason in `DECISIONS.md`. Update §2 when the repository state changes in a way that affects the structure, and remove the "Known gaps" list once M0 is done.

@@ -1,15 +1,24 @@
 # Tech Stack
 
+**Status:** Accepted · **Last reviewed:** 2026-11-24
+
 ## 1. Core Technologies
 
-| Area            | Technology   | Decision                                           |
-| --------------- | ------------ | -------------------------------------------------- |
-| Framework       | Next.js      | Latest stable version, App Router                  |
-| UI library      | React        | Version compatible with selected Next.js release   |
-| Language        | TypeScript   | Strict mode                                        |
-| Styling         | Tailwind CSS | Primary styling system                             |
-| Components      | shadcn/ui    | Reusable, customizable UI components               |
-| Package manager | npm          | Use `package-lock.json` for dependency consistency |
+| Area            | Technology     | Decision                                                        |
+| --------------- | -------------- | --------------------------------------------------------------- |
+| Runtime         | Node.js        | 20.9 or later (Next.js 16 requirement). Developed on Node 24    |
+| Framework       | Next.js        | 16.4, App Router, React Compiler, Cache Components (ADR-016)    |
+| UI library      | React          | 19.3, as paired with the Next.js release                        |
+| Language        | TypeScript     | 5.9, strict mode                                                |
+| Styling         | Tailwind CSS   | v4 through `@tailwindcss/postcss` (ADR-003)                     |
+| Components      | shadcn/ui      | Reusable, customizable UI components                            |
+| Package manager | npm            | Use `package-lock.json` for dependency consistency              |
+
+Installed versions are the source of truth; check `package.json`. The current state of installation is in `PROGRESS.md`.
+
+### Dependencies brought in by shadcn/ui
+
+`shadcn init` and individual components add their own packages (typically `clsx`, `tailwind-merge`, `class-variance-authority`, `lucide-react`, `tw-animate-css`, Radix primitives, and `react-resizable-panels` for the resizable layout). Each `init` or `add` that installs packages needs approval like any other dependency. Review the package list the CLI prints before accepting it.
 
 ## 2. Application Architecture
 
@@ -31,7 +40,7 @@ Use shared validation schemas where appropriate to maintain consistent request v
 ## 4. HTTP and API Integration
 
 - Use the native Fetch API for browser-direct execution.
-- Use Fetch within Next.js Route Handlers for backend proxy execution.
+- Use Fetch within Next.js Route Handlers for backend proxy execution, on the Node.js runtime. The upstream transport may change to `node:https` if needed to close DNS rebinding (`DECISIONS.md` OD-2).
 - Avoid additional HTTP client dependencies unless a demonstrated requirement justifies them.
 - Normalize responses into the application's response model.
 - Handle network errors, HTTP error responses, and response-processing errors separately.
@@ -42,6 +51,7 @@ Use shared validation schemas where appropriate to maintain consistent request v
 - Use React component state for local UI state.
 - Use Context only when state genuinely needs to be shared across component boundaries.
 - Do not use Redux Toolkit for the MVP.
+- No browser storage for request data. The theme preference cookie is the only stored value (ADR-018).
 - Keep request configuration and execution state organized around the agreed domain model.
 
 Reconsider external state management only if application complexity demonstrates a need.
@@ -52,14 +62,20 @@ Reconsider external state management only if application complexity demonstrates
 - Support plain-text responses and appropriate fallbacks.
 - Keep response rendering separate from response processing.
 
-The specific syntax-highlighting library remains an implementation decision. Evaluate bundle size, rendering performance, supported languages, and maintenance before selecting one.
+JSON highlighting is written in-house, with no highlighting library (ADR-015).
 
 ## 7. Testing
 
 ### MVP testing stack
 
-- Vitest — unit testing.
-- React Testing Library — component testing.
+Following the Next.js 16.4 Vitest guide (ADR-019):
+
+- Vitest — test runner and unit tests.
+- `@vitejs/plugin-react`, `vite-tsconfig-paths` — Vitest integration.
+- React Testing Library (`@testing-library/react`, `@testing-library/dom`) — component tests.
+- jsdom — DOM environment for component tests only.
+
+Optional, each approved separately when first needed: `@testing-library/user-event` for realistic interactions, `@testing-library/jest-dom` for DOM matchers.
 
 ### Future scope
 
@@ -69,8 +85,9 @@ Introduce Playwright when the core application workflows are sufficiently establ
 
 ## 8. Code Quality
 
-- ESLint — linting.
-- TypeScript strict mode — static type checking.
+- ESLint — linting, including import-direction rules (ADR-021).
+- TypeScript strict mode — static type checking (`npm run typecheck`).
+- Prettier — formatting (`npm run format:check`).
 - Follow consistent project formatting and naming conventions.
 - Avoid unnecessary dependencies and abstractions.
 
@@ -93,12 +110,14 @@ Introduce Playwright when the core application workflows are sufficiently establ
 
 ## 11. Official References
 
-- Next.js: https://nextjs.org/docs
+- Next.js: https://nextjs.org/docs. The version-matched copy ships in `node_modules/next/dist/docs/` and takes precedence when it differs from the website.
 - Next.js Route Handlers: https://nextjs.org/docs/app/getting-started/route-handlers
 - Next.js Fetch: https://nextjs.org/docs/app/api-reference/functions/fetch
 - shadcn/ui: https://ui.shadcn.com/docs
 - React Hook Form: https://react-hook-form.com/get-started
 - Zod: https://zod.dev
 - React Hook Form Resolvers: https://github.com/react-hook-form/resolvers
+- Tailwind CSS: https://tailwindcss.com/docs
+- Prettier: https://prettier.io/docs
 - Vitest: https://vitest.dev/guide/
 - Playwright: https://playwright.dev/docs/intro

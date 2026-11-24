@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Draft v0.1 — 20 November 2026
+**Status:** Accepted · **Last reviewed:** 2026-11-24
 **Depends on:** `PROJECT_OVERVIEW.md`, `REQUIREMENTS.md`
 
 ## 1. Purpose
@@ -21,7 +21,8 @@ RestLab is a portfolio project that may later become a public developer tool. Th
 Make the repository ready for feature work.
 
 - Tooling and dependencies from `TECH_STACK.md` installed and configured.
-- Repository documentation complete, including `AGENTS.md` and `README.md`.
+- Working root layout and folder skeleton.
+- `README.md` written. (`AGENTS.md` and the `docs/` set are already in place.)
 - Scripts for linting, type checking, formatting, and testing.
 
 ## 4. Phase 2: MVP
@@ -29,11 +30,11 @@ Make the repository ready for feature work.
 Everything listed under "MVP Scope" in `REQUIREMENTS.md`:
 
 - Request configuration (URL, method, parameters, headers, JSON and plain-text body).
-- Request execution with browser-direct and backend proxy strategies.
+- Request execution with user-selected browser-direct or backend proxy strategy, cancellation, and timeout.
 - Response inspection (Overview, Body, Metadata) with JSON formatting and highlighting, and copy.
 - Generic presets and public API examples.
 - Distinct handling of validation, execution, HTTP, and processing outcomes.
-- Responsive layout and accessibility baseline.
+- Responsive layout, light and dark themes, and accessibility baseline.
 - A proxy with the security controls in `API_INTEGRATION.md` §6 in place.
 
 ## 5. Phase 3: Hardening and Quality

@@ -1,5 +1,7 @@
 # UI/UX Guidelines
 
+**Status:** Accepted · **Last reviewed:** 2026-11-24
+
 ## 1. Design Direction
 
 RestLab should have a clean, modern developer-tool aesthetic.
@@ -37,17 +39,24 @@ The request editor should contain:
 
 - URL input.
 - HTTP method selector.
-- Send button.
-- Execution strategy selector.
+- Send button, which becomes Cancel while a request is executing.
+- Execution strategy selector (browser-direct or proxy; browser-direct by default). Added in M6 with the proxy (ADR-020).
+- A read-only preview of the final URL, including enabled query parameters.
 - Tabs for Params, Headers, and Body.
 
 Support:
 
-- Adding, editing, and removing query parameters.
-- Adding, editing, and removing headers.
-- Editing request body content.
-- Clear validation feedback.
+- Adding, editing, removing, enabling, and disabling query parameter rows.
+- Adding, editing, removing, enabling, and disabling header rows.
+- Choosing a body type (none, JSON, text) and editing body content. For GET the body editor is disabled and its content is kept but not sent (ADR-017).
+- Clear validation feedback, shown next to the field it concerns.
+- A warning on headers the browser will not send in browser-direct mode.
 - Visible execution state.
+
+### Strategy guidance
+
+- After a browser-direct `NETWORK_ERROR`, show a hint that CORS may be the cause and that the proxy strategy might help. Never switch strategy automatically.
+- After a proxy `DESTINATION_BLOCKED`, explain that private and local addresses can only be reached with browser-direct execution.
 
 ## 4. Response Inspector
 
@@ -55,17 +64,17 @@ Provide three tabs:
 
 ### Overview
 
-Consolidated normalized response information.
+A one-line summary (outcome, status, duration, size) followed by the complete normalized response as read-only, formatted JSON (`SYSTEM_DESIGN.md` §7.1).
 
 ### Body
 
-Formatted response content with syntax highlighting where supported.
+The response body only. Formatted and highlighted JSON, plain text for textual types, an explicit empty state, and a "not displayed" message for binary content. Copy button for textual bodies.
 
 ### Metadata
 
-Status, headers, duration, size, content type, and execution outcome.
+A scannable view of status and status text, headers (as a table), duration, size (decoded body), content type, execution strategy, and execution outcome. In browser-direct mode, note that only CORS-exposed headers are visible.
 
-The inspector must handle empty bodies, parsing failures, and unsupported content types gracefully.
+The inspector must handle empty bodies, parsing failures, and unsupported content types gracefully. On a Failure result there is no response: show the failure state with its message instead of the tabs.
 
 ## 5. Visual Language
 
@@ -75,6 +84,13 @@ The inspector must handle empty bodies, parsing failures, and unsupported conten
 - Maintain consistent spacing, sizing, borders, and visual hierarchy.
 - Avoid unnecessary decoration and excessive color.
 
+### Theme
+
+- Light and dark themes, both meeting the contrast requirements in §8.
+- The default follows the operating system preference.
+- A theme toggle is always visible in the page header. The user's choice is remembered in a cookie (ADR-018).
+- The correct theme is applied before first paint, with no flash of the other theme.
+
 ## 6. Interaction and Feedback
 
 Clearly communicate:
@@ -83,13 +99,14 @@ Clearly communicate:
 - Loading state.
 - Successful HTTP response.
 - HTTP error response.
-- Network or execution failure.
+- Network or execution failure (with the failure reason).
+- Cancelled request (neutral, not an error).
 - Validation error.
 - Response-processing error.
 
 Prevent accidental duplicate submissions while execution is in progress.
 
-Provide clear feedback for copy actions and other user interactions.
+Provide clear feedback for copy actions and other user interactions. Copy feedback is shown inline (for example the button briefly reads "Copied"), without a toast library.
 
 ## 7. Responsive Design
 
