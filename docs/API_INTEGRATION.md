@@ -18,7 +18,7 @@ Both executors build the call from the same validated request model. Differences
 - The URL field holds the base URL. Query parameters are managed as rows (key, value, enabled) and merged into the final URL at execution time.
 - Parameters already present in the URL string are preserved. Duplicate keys are allowed, since many APIs accept repeated keys.
 - Disabled rows and rows with an empty key are skipped.
-- Keys and values are percent-encoded when the final URL is built.
+- Keys and values are percent-encoded with `encodeURIComponent` when the final URL is built, so a space becomes `%20`, not `+`. New parameters are appended after any existing query string, which is kept as written.
 - Only `http` and `https` are accepted. Any other scheme fails validation.
 - URLs containing credentials (`user:password@host`) fail validation in both strategies. Browser `fetch` rejects them, and the proxy must not forward them.
 - The editor shows the final URL, read-only, so the user can see exactly what will be called.
@@ -35,7 +35,7 @@ The body has a type: `none`, `json`, or `text`.
 
 ### 2.3 Headers
 
-- Users add, edit, remove, enable, and disable headers as rows. Names are validated as HTTP header tokens. Disabled rows and rows with an empty name are skipped.
+- Users add, edit, remove, enable, and disable headers as rows. Names are trimmed and validated as HTTP header tokens (RFC 9110 §5.6.2). Values must not contain CR, LF, or NUL, which Fetch rejects. Disabled rows and rows with an empty name are skipped.
 - When a body is sent, `Content-Type` is derived from the body type (`json`: `application/json`, `text`: `text/plain`) unless the user sets one explicitly. A user-set value always wins.
 - **Browser-direct:** browsers refuse to set certain "forbidden" request headers (for example `Host`, `Cookie`, `Origin`). Validation warns when a configured header cannot be sent in this strategy rather than letting it fail silently. See MDN's "forbidden request header" list.
 - **Proxy:** only headers the user configured are forwarded. Nothing is copied from the incoming request to RestLab itself (§6.5).

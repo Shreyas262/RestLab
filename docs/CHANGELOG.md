@@ -31,6 +31,9 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `README.md` with purpose, requirements, setup, and scripts.
 - GitHub Actions CI (`.github/workflows/ci.yml`) running format check, lint, type check, tests, and build on pushes and pull requests to `main` (ADR-022).
 - ADR-022; OD-10 resolved.
+- `src/domain/errors`: the shared failure codes with user-safe messages, processing error codes (`JSON_PARSE_ERROR`, `DECODE_ERROR`), and the validation issue type.
+- `src/domain/request`: Zod request schema as the single request model (ADR-006), `validateRequest`, `buildFinalUrl`, `prepareRequest` (derived `Content-Type`, no GET body), and forbidden-header detection from the MDN list.
+- Request fixtures in `src/test/fixtures/requests.ts` and unit tests for errors and request handling.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
@@ -41,6 +44,7 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Path alias `@/*` now points at `./src/*` (ADR-001).
 - `@types/node` raised from `^20` to `^22`, required by Vitest 5.
 - `ARCHITECTURE.md` §4 allows `app → lib`.
+- `API_INTEGRATION.md` §2.1 and §2.3: query values are encoded with `encodeURIComponent` (`%20` for spaces); header values containing CR, LF, or NUL fail validation.
 - `vite-tsconfig-paths` replaced by Vite's native `resolve.tsconfigPaths` (ADR-019 note).
 - ADR-009 (proxy envelope) accepted; field names remain open.
 - Documentation finalized on 2026-11-24: statuses updated to match the repository, error categories aligned, inspector tabs defined, headers model corrected to match Fetch, execution plan revised in `PROJECT_PLAN.md`.
