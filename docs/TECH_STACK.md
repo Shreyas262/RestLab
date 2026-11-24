@@ -4,15 +4,15 @@
 
 ## 1. Core Technologies
 
-| Area            | Technology     | Decision                                                        |
-| --------------- | -------------- | --------------------------------------------------------------- |
-| Runtime         | Node.js        | 20.9 or later (Next.js 16 requirement). Developed on Node 24    |
-| Framework       | Next.js        | 16.4, App Router, React Compiler, Cache Components (ADR-016)    |
-| UI library      | React          | 19.3, as paired with the Next.js release                        |
-| Language        | TypeScript     | 5.9, strict mode                                                |
-| Styling         | Tailwind CSS   | v4 through `@tailwindcss/postcss` (ADR-003)                     |
-| Components      | shadcn/ui      | Reusable, customizable UI components                            |
-| Package manager | npm            | Use `package-lock.json` for dependency consistency              |
+| Area            | Technology   | Decision                                                     |
+| --------------- | ------------ | ------------------------------------------------------------ |
+| Runtime         | Node.js      | 20.9 or later (Next.js 16 requirement). Developed on Node 24 |
+| Framework       | Next.js      | 16.4, App Router, React Compiler, Cache Components (ADR-016) |
+| UI library      | React        | 19.3, as paired with the Next.js release                     |
+| Language        | TypeScript   | 5.9, strict mode                                             |
+| Styling         | Tailwind CSS | v4 through `@tailwindcss/postcss` (ADR-003)                  |
+| Components      | shadcn/ui    | Reusable, customizable UI components                         |
+| Package manager | npm          | Use `package-lock.json` for dependency consistency           |
 
 Installed versions are the source of truth; check `package.json`. The current state of installation is in `PROGRESS.md`.
 

@@ -18,15 +18,15 @@ This document defines what RestLab tests, with which tools, at which layer, and 
 
 ## 3. Tooling
 
-| Purpose                 | Tool                                         | Status                       |
-| ----------------------- | -------------------------------------------- | ---------------------------- |
-| Test runner, unit tests | Vitest                                       | Planned for M0               |
-| Component tests         | React Testing Library in jsdom (ADR-019)     | Planned for M0               |
-| End-to-end              | Playwright                                   | Future scope                 |
-| Static checks           | TypeScript strict mode, ESLint               | Present (`strict: true`)     |
-| Formatting check        | Prettier                                     | Planned for M0               |
+| Purpose                 | Tool                                     | Status                   |
+| ----------------------- | ---------------------------------------- | ------------------------ |
+| Test runner, unit tests | Vitest                                   | Planned for M0           |
+| Component tests         | React Testing Library in jsdom (ADR-019) | Planned for M0           |
+| End-to-end              | Playwright                               | Future scope             |
+| Static checks           | TypeScript strict mode, ESLint           | Present (`strict: true`) |
+| Formatting check        | Prettier                                 | Present (`format:check`) |
 
-Planned scripts (added in M0): `test`, `test:watch`, `typecheck`, `format`, `format:check`. Current scripts: `dev`, `build`, `start`, `lint`.
+Planned scripts (added in M0): `test`, `test:watch`. Current scripts: `dev`, `build`, `start`, `lint`, `typecheck`, `format`, `format:check`.
 
 Vitest environments: Node for domain, execution, and server tests; jsdom only for component tests. Vitest does not support async Server Components, so those are left to end-to-end tests.
 

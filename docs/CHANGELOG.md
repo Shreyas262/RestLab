@@ -19,6 +19,9 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Shared failure codes for both executors and proposed proxy origin and content-type checks (`API_INTEGRATION.md`).
 - Single open-decisions register (`DECISIONS.md` §5).
 - `postcss.config.mjs` and dev dependencies `@tailwindcss/postcss` 4.3.3 and `postcss` 8.5.33 (ADR-003).
+- Prettier 3.10.1 with `.prettierrc.json` (defaults) and `.prettierignore`; `eslint-config-prettier` 10.1.8 turns off conflicting ESLint style rules.
+- Scripts `typecheck`, `format`, and `format:check`.
+- `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
 ### Changed
@@ -28,6 +31,8 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Path alias `@/*` now points at `./src/*` (ADR-001).
 - ADR-009 (proxy envelope) accepted; field names remain open.
 - Documentation finalized on 2026-11-24: statuses updated to match the repository, error categories aligned, inspector tabs defined, headers model corrected to match Fetch, execution plan revised in `PROJECT_PLAN.md`.
+
+- Existing files formatted with Prettier.
 
 ### Removed
 

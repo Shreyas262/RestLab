@@ -153,16 +153,16 @@ M0 comes before everything. M5 and M6 can run in either order once M3 is done. M
 
 ## 5. Risks
 
-| Risk                                             | Mitigation                                                                                                          |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
-| SSRF protection incomplete or bypassable         | Test matrix first, proxy kept private until M6 acceptance, security review in M8 before public exposure           |
-| DNS rebinding cannot be closed with native Fetch | Spike at the start of M6; `node:https` with a custom `lookup` is a no-dependency fallback                          |
-| CORS limits browser-direct usefulness            | Clear UI hints; user-chosen proxy strategy; documented limits                                                       |
-| Public example APIs change or go down            | Presets treated as starting points; manual verification step; no live APIs in automated tests                      |
-| Large responses freeze the UI                    | Size limit while reading (M2); display threshold and plain-text fallback (M4)                                       |
-| Theme flash or Cache Components friction         | OD-8 decided at the start of M7, checked against the bundled Next.js docs                                           |
-| Version drift in Next.js, React, or Tailwind     | Check official documentation before version-sensitive work; record upgrades in `CHANGELOG.md`                      |
-| Scope creep in a first production-level project  | Follow the roadmap; record scope changes in `REQUIREMENTS.md` and `DECISIONS.md` before implementing them          |
+| Risk                                             | Mitigation                                                                                                |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| SSRF protection incomplete or bypassable         | Test matrix first, proxy kept private until M6 acceptance, security review in M8 before public exposure   |
+| DNS rebinding cannot be closed with native Fetch | Spike at the start of M6; `node:https` with a custom `lookup` is a no-dependency fallback                 |
+| CORS limits browser-direct usefulness            | Clear UI hints; user-chosen proxy strategy; documented limits                                             |
+| Public example APIs change or go down            | Presets treated as starting points; manual verification step; no live APIs in automated tests             |
+| Large responses freeze the UI                    | Size limit while reading (M2); display threshold and plain-text fallback (M4)                             |
+| Theme flash or Cache Components friction         | OD-8 decided at the start of M7, checked against the bundled Next.js docs                                 |
+| Version drift in Next.js, React, or Tailwind     | Check official documentation before version-sensitive work; record upgrades in `CHANGELOG.md`             |
+| Scope creep in a first production-level project  | Follow the roadmap; record scope changes in `REQUIREMENTS.md` and `DECISIONS.md` before implementing them |
 
 ## 6. Out of Plan
 

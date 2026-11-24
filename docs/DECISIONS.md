@@ -30,28 +30,28 @@ Template:
 
 ## 3. Index
 
-| ADR | Title                                                       | Status   |
-| --- | ----------------------------------------------------------- | -------- |
-| 001 | Use a `src/` directory                                      | Accepted |
-| 002 | Keep documentation in root `docs/`                          | Accepted |
-| 003 | Integrate Tailwind through `@tailwindcss/postcss`           | Accepted |
-| 004 | Enable React Compiler; no manual memoization by default     | Accepted |
-| 005 | Hybrid execution with explicit strategy selection           | Accepted |
-| 006 | One request model with shared Zod schemas                   | Accepted |
-| 007 | Preserve raw response; derive parsed data separately        | Accepted |
-| 008 | Separate error categories; HTTP errors are responses        | Accepted |
-| 009 | Proxy envelope separates proxy status from upstream status  | Accepted |
-| 010 | Execution state machine with per-execution abort            | Accepted |
-| 011 | Minimal dependencies: native Fetch, no Redux                | Accepted |
-| 012 | Layered structure with enforced dependency direction        | Accepted |
-| 013 | Enforce server-only code with `import "server-only"`        | Accepted |
-| 014 | Response size is the decoded body bytes read                | Accepted |
-| 015 | In-house JSON highlighting, no library                      | Accepted |
-| 016 | Keep Cache Components and Partial Prefetching enabled       | Accepted |
-| 017 | Optional body for DELETE; GET never sends a body            | Accepted |
-| 018 | Theme toggle with a preference cookie                       | Accepted |
-| 019 | Vitest with jsdom for component tests                       | Accepted |
-| 020 | Browser-direct by default; strategy selector ships with M6  | Accepted |
+| ADR | Title                                                        | Status   |
+| --- | ------------------------------------------------------------ | -------- |
+| 001 | Use a `src/` directory                                       | Accepted |
+| 002 | Keep documentation in root `docs/`                           | Accepted |
+| 003 | Integrate Tailwind through `@tailwindcss/postcss`            | Accepted |
+| 004 | Enable React Compiler; no manual memoization by default      | Accepted |
+| 005 | Hybrid execution with explicit strategy selection            | Accepted |
+| 006 | One request model with shared Zod schemas                    | Accepted |
+| 007 | Preserve raw response; derive parsed data separately         | Accepted |
+| 008 | Separate error categories; HTTP errors are responses         | Accepted |
+| 009 | Proxy envelope separates proxy status from upstream status   | Accepted |
+| 010 | Execution state machine with per-execution abort             | Accepted |
+| 011 | Minimal dependencies: native Fetch, no Redux                 | Accepted |
+| 012 | Layered structure with enforced dependency direction         | Accepted |
+| 013 | Enforce server-only code with `import "server-only"`         | Accepted |
+| 014 | Response size is the decoded body bytes read                 | Accepted |
+| 015 | In-house JSON highlighting, no library                       | Accepted |
+| 016 | Keep Cache Components and Partial Prefetching enabled        | Accepted |
+| 017 | Optional body for DELETE; GET never sends a body             | Accepted |
+| 018 | Theme toggle with a preference cookie                        | Accepted |
+| 019 | Vitest with jsdom for component tests                        | Accepted |
+| 020 | Browser-direct by default; strategy selector ships with M6   | Accepted |
 | 021 | Enforce import direction with ESLint `no-restricted-imports` | Accepted |
 
 ## 4. Records
@@ -250,16 +250,16 @@ Template:
 
 This is the only list of open decisions. Other documents link here.
 
-| ID    | Decision                                         | Notes                                                                                     | Decide in |
-| ----- | ------------------------------------------------ | ----------------------------------------------------------------------------------------- | --------- |
-| OD-1  | Envelope and result field names                  | ADR-009 shape is settled; names are fixed when types are written                          | M1        |
-| OD-2  | Pinning the validated address (DNS rebinding)    | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent        | M6 spike  |
-| OD-3  | Limit values                                     | Proposed: 15 s timeout and 5 MB size (needed in M2); 3 redirects and ports 80/443 (M6)    | M2, M6    |
-| OD-4  | Proxy request body and header limits             | Values to set                                                                             | M6        |
-| OD-5  | Proxy content-type and origin checks             | Proposed in `API_INTEGRATION.md` §6.3                                                     | M6        |
-| OD-6  | Large-response display threshold                 | Above it, no formatting or highlighting                                                   | M4        |
-| OD-7  | Binary response display                          | MVP default: metadata and a "not displayed" message only                                  | M4        |
-| OD-8  | Theme implementation                             | Cookie read on server vs pre-paint script; Cache Components impact; library or not        | M7        |
-| OD-9  | Deployment target and rate limiting             | Must be in place before the proxy is public                                               | M8        |
-| OD-10 | Continuous integration                           | Which scripts run on each push; GitHub Actions needs no dependency                        | M0 or M8  |
-| OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                              | M8        |
+| ID    | Decision                                              | Notes                                                                                  | Decide in |
+| ----- | ----------------------------------------------------- | -------------------------------------------------------------------------------------- | --------- |
+| OD-1  | Envelope and result field names                       | ADR-009 shape is settled; names are fixed when types are written                       | M1        |
+| OD-2  | Pinning the validated address (DNS rebinding)         | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent    | M6 spike  |
+| OD-3  | Limit values                                          | Proposed: 15 s timeout and 5 MB size (needed in M2); 3 redirects and ports 80/443 (M6) | M2, M6    |
+| OD-4  | Proxy request body and header limits                  | Values to set                                                                          | M6        |
+| OD-5  | Proxy content-type and origin checks                  | Proposed in `API_INTEGRATION.md` §6.3                                                  | M6        |
+| OD-6  | Large-response display threshold                      | Above it, no formatting or highlighting                                                | M4        |
+| OD-7  | Binary response display                               | MVP default: metadata and a "not displayed" message only                               | M4        |
+| OD-8  | Theme implementation                                  | Cookie read on server vs pre-paint script; Cache Components impact; library or not     | M7        |
+| OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                            | M8        |
+| OD-10 | Continuous integration                                | Which scripts run on each push; GitHub Actions needs no dependency                     | M0 or M8  |
+| OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                                 | M8        |

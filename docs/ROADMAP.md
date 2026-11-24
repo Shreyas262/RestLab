@@ -51,16 +51,16 @@ Raise confidence before sharing the tool more widely.
 
 Listed in `PROJECT_OVERVIEW.md` §8 and not yet scheduled. Order depends on actual need.
 
-| Enhancement | Notes |
-|---|---|
-| Request history | Introduces persistence. Needs a storage decision. The request model is already designed to be serializable |
-| Saved requests | Builds on history and persistence |
-| Collections and folders | Builds on saved requests |
-| Authentication support | Requires care with credential handling in the browser and proxy |
-| Environment variables | Substitution in URLs, headers, and bodies |
-| cURL import and export | Depends on the request model staying stable |
-| Response search and filtering | Particularly useful for large JSON |
-| OpenAPI integration | Largest of the group |
+| Enhancement                   | Notes                                                                                                      |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Request history               | Introduces persistence. Needs a storage decision. The request model is already designed to be serializable |
+| Saved requests                | Builds on history and persistence                                                                          |
+| Collections and folders       | Builds on saved requests                                                                                   |
+| Authentication support        | Requires care with credential handling in the browser and proxy                                            |
+| Environment variables         | Substitution in URLs, headers, and bodies                                                                  |
+| cURL import and export        | Depends on the request model staying stable                                                                |
+| Response search and filtering | Particularly useful for large JSON                                                                         |
+| OpenAPI integration           | Largest of the group                                                                                       |
 
 ## 7. Explicitly Out of Scope for Now
 

@@ -11,25 +11,22 @@ It does not repeat product requirements or the logical design. Decisions that ne
 
 ## 2. Current Repository State
 
-Verified against the repository on 2026-11-24. Re-verify before relying on it; `PROGRESS.md` is the living status.
+Verified against the repository on 2026-11-25. Re-verify before relying on it; `PROGRESS.md` is the living status.
 
-| Item                 | State                                                                                                                        |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `src/app/`           | `layout.tsx`, `page.tsx`, `globals.css`. All three are stubs (see below)                                                     |
-| Other `src/` folders | None                                                                                                                         |
-| `next.config.ts`     | `reactCompiler: true`, `cacheComponents: true`, `partialPrefetching: true`, Turbopack CSS rule for `@tailwindcss/turbopack` |
-| `tsconfig.json`      | `strict: true`. Path alias `@/*` maps to `./*`                                                                               |
-| Runtime dependencies | `next` 16.4.6, `react` / `react-dom` 19.3.0                                                                                  |
-| Dev dependencies     | `tailwindcss` and `@tailwindcss/turbopack` 4.3.3, `typescript` 5.9, `eslint` 9, `eslint-config-next` 16.4.6, `babel-plugin-react-compiler` 1.0.0, `@types/*` |
-| Scripts              | `dev`, `build`, `start`, `lint`                                                                                              |
-| Checks               | `npm run lint` and `tsc --noEmit` pass                                                                                       |
+| Item                 | State                                                                                                                                                                                                                         |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app/`           | Root `layout.tsx` (`<html>`, `<body>`, metadata), placeholder `page.tsx`, `globals.css` importing Tailwind                                                                                                                    |
+| Other `src/` folders | None                                                                                                                                                                                                                          |
+| `next.config.ts`     | `reactCompiler: true`, `cacheComponents: true`, `partialPrefetching: true`                                                                                                                                                    |
+| `tsconfig.json`      | `strict: true`. Path alias `@/*` maps to `./src/*`                                                                                                                                                                            |
+| Runtime dependencies | `next` 16.4.6, `react` / `react-dom` 19.3.0                                                                                                                                                                                   |
+| Dev dependencies     | `tailwindcss` and `@tailwindcss/postcss` 4.3.3, `postcss` 8.5, `prettier` 3.10.1, `eslint-config-prettier` 10.1.8, `typescript` 5.9, `eslint` 9, `eslint-config-next` 16.4.6, `babel-plugin-react-compiler` 1.0.0, `@types/*` |
+| Scripts              | `dev`, `build`, `start`, `lint`, `typecheck`, `format`, `format:check`                                                                                                                                                        |
+| Checks               | `lint`, `typecheck`, `format:check`, and `build` pass                                                                                                                                                                         |
 
 ### Known gaps (all fixed in M0, `PROJECT_PLAN.md`)
 
-- `layout.tsx` returns a `<div>`. The root layout must define `<html>` and `<body>` and render `children` (Next.js layout reference). `globals.css` is empty and not imported.
-- The `@/*` alias must map to `./src/*` (ADR-001).
-- Tailwind is wired through the Turbopack loader. ADR-003 moves it to `@tailwindcss/postcss`.
-- Not installed: React Hook Form, Zod, `@hookform/resolvers`, shadcn/ui, Vitest, React Testing Library, Prettier. No `test`, `typecheck`, or `format:check` scripts.
+- Not installed: React Hook Form, Zod, `@hookform/resolvers`, shadcn/ui, Vitest, React Testing Library. No `test` script.
 
 ## 3. Architectural Principles
 
@@ -210,12 +207,12 @@ The theme toggle and the code that reads and writes the theme preference cookie 
 
 ## 11. Error Handling Architecture
 
-| Category            | Origin                                  | Result shape                   | Body/metadata kept         |
-| ------------------- | --------------------------------------- | ------------------------------ | -------------------------- |
-| Validation          | Before execution                        | No `ExecutionResult`           | n/a                        |
-| Execution           | Network, timeout, cancel, size, proxy   | Failure with a failure code    | None available             |
-| HTTP error          | Upstream status 4xx/5xx                 | Response                       | Yes                        |
-| Response-processing | After receipt                           | Response plus processing error | Raw body and metadata kept |
+| Category            | Origin                                | Result shape                   | Body/metadata kept         |
+| ------------------- | ------------------------------------- | ------------------------------ | -------------------------- |
+| Validation          | Before execution                      | No `ExecutionResult`           | n/a                        |
+| Execution           | Network, timeout, cancel, size, proxy | Failure with a failure code    | None available             |
+| HTTP error          | Upstream status 4xx/5xx               | Response                       | Yes                        |
+| Response-processing | After receipt                         | Response plus processing error | Raw body and metadata kept |
 
 Error messages shown to users must not expose internal details (stack traces, internal hostnames, resolved IPs from blocked destinations).
 

@@ -27,11 +27,11 @@ Both executors build the call from the same validated request model. Differences
 
 The body has a type: `none`, `json`, or `text`.
 
-| Method           | Body                                                                                                                                                                      |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Method           | Body                                                                                                                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | GET              | Never sent. `fetch` rejects a GET with a body. The body editor is disabled; text typed earlier is kept in the editor but not sent, so switching methods loses nothing. |
-| POST, PUT, PATCH | Optional (`none`, `json`, or `text`).                                                                                                                                     |
-| DELETE           | Optional (`none`, `json`, or `text`). Some servers ignore a DELETE body; that is the server's choice (ADR-017).                                                         |
+| POST, PUT, PATCH | Optional (`none`, `json`, or `text`).                                                                                                                                  |
+| DELETE           | Optional (`none`, `json`, or `text`). Some servers ignore a DELETE body; that is the server's choice (ADR-017).                                                        |
 
 ### 2.3 Headers
 
@@ -68,27 +68,27 @@ The body is read once, as bytes, counting bytes as they arrive so the size limit
 
 ### 4.2 Normalized response fields
 
-| Field            | Source               | Notes                                                                                                                                                                                                         |
-| ---------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Status           | Response status      | Always present when a response exists                                                                                                                                                                         |
-| Status text      | Response status text | May be empty. HTTP/2 and HTTP/3 have no reason phrase, so display "not provided", not a blank                                                                                                                 |
+| Field            | Source               | Notes                                                                                                                                                                                                                                                                                                                                   |
+| ---------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Status           | Response status      | Always present when a response exists                                                                                                                                                                                                                                                                                                   |
+| Status text      | Response status text | May be empty. HTTP/2 and HTTP/3 have no reason phrase, so display "not provided", not a blank                                                                                                                                                                                                                                           |
 | Headers          | Response headers     | List of name/value pairs as Fetch exposes them: names lowercased and sorted, repeated headers combined with `, `. On the server, `Set-Cookie` values are read with `getSetCookie()` and listed one per entry. Browser-direct exposes only CORS-safelisted headers plus those in `Access-Control-Expose-Headers`, and never `Set-Cookie` |
-| Duration         | §3                   | Milliseconds                                                                                                                                                                                                  |
-| Size             | Bytes read           | Decoded body bytes actually received (ADR-014). `Content-Length` is not used, since it can describe compressed bytes or be missing. Zero only for a genuinely empty body                                       |
-| Content type     | `Content-Type`       | Stored as received, plus a derived classification                                                                                                                                                             |
-| Raw body         | §4.1                 | Text, or absent for binary or empty bodies                                                                                                                                                                    |
-| Parsed body      | Parsing step         | Present only when parsing succeeds                                                                                                                                                                            |
-| Processing error | Parsing step         | Present only when parsing or decoding fails                                                                                                                                                                   |
-| Strategy         | Executor             | `browser` or `proxy`, for display only                                                                                                                                                                        |
+| Duration         | §3                   | Milliseconds                                                                                                                                                                                                                                                                                                                            |
+| Size             | Bytes read           | Decoded body bytes actually received (ADR-014). `Content-Length` is not used, since it can describe compressed bytes or be missing. Zero only for a genuinely empty body                                                                                                                                                                |
+| Content type     | `Content-Type`       | Stored as received, plus a derived classification                                                                                                                                                                                                                                                                                       |
+| Raw body         | §4.1                 | Text, or absent for binary or empty bodies                                                                                                                                                                                                                                                                                              |
+| Parsed body      | Parsing step         | Present only when parsing succeeds                                                                                                                                                                                                                                                                                                      |
+| Processing error | Parsing step         | Present only when parsing or decoding fails                                                                                                                                                                                                                                                                                             |
+| Strategy         | Executor             | `browser` or `proxy`, for display only                                                                                                                                                                                                                                                                                                  |
 
 ### 4.3 Content-type classification
 
-| Class          | Matches                                  | Body tab behavior                                                                   |
-| -------------- | ---------------------------------------- | ----------------------------------------------------------------------------------- |
-| JSON           | `application/json`, `+json` suffixes     | Parse; format and highlight. On parse failure, show raw text and a processing error |
-| Text           | `text/*`, XML, and similar textual types | Show as plain text                                                                  |
-| Binary / other | Images, archives, unknown                | Do not render. Show metadata and a "not displayed" message                          |
-| Empty          | Zero-length body                         | Show an explicit empty state                                                        |
+| Class          | Matches                                  | Body tab behavior                                                                        |
+| -------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------- |
+| JSON           | `application/json`, `+json` suffixes     | Parse; format and highlight. On parse failure, show raw text and a processing error      |
+| Text           | `text/*`, XML, and similar textual types | Show as plain text                                                                       |
+| Binary / other | Images, archives, unknown                | Do not render. Show metadata and a "not displayed" message                               |
+| Empty          | Zero-length body                         | Show an explicit empty state                                                             |
 | Missing type   | No `Content-Type`                        | Treat as text if it decodes cleanly (`TextDecoder` with `fatal: true`). Otherwise binary |
 
 HTML is text. It is displayed as text and never injected into the page (`ARCHITECTURE.md` §10).
@@ -102,27 +102,27 @@ HTML is text. It is displayed as text and never injected into the page (`ARCHITE
 
 Every Failure result carries one code from this shared set. Both executors use the same codes, so the UI handles them in one place.
 
-| Code                   | Meaning                                                             | Produced by        |
-| ---------------------- | ------------------------------------------------------------------- | ------------------ |
-| `NETWORK_ERROR`        | `fetch` rejected without a response (offline, DNS, refused, CORS)   | Browser, proxy executor reaching `/api/execute` |
-| `TIMEOUT`              | The timeout fired                                                   | Browser, proxy     |
-| `CANCELLED`            | The user cancelled, or the view unmounted                           | Browser, proxy executor |
-| `RESPONSE_TOO_LARGE`   | Size limit exceeded while reading                                   | Browser, proxy     |
-| `INVALID_REQUEST`      | Proxy request failed schema, content-type, or size checks          | Proxy              |
-| `FORBIDDEN_ORIGIN`     | Proxy called from another site                                      | Proxy              |
-| `DESTINATION_BLOCKED`  | Destination failed the SSRF policy                                  | Proxy              |
-| `UPSTREAM_UNREACHABLE` | DNS, connection, or TLS failure upstream                            | Proxy              |
-| `TOO_MANY_REDIRECTS`   | Redirect limit exceeded                                             | Proxy              |
-| `INTERNAL_ERROR`       | Unexpected proxy failure, or a malformed reply from `/api/execute`  | Proxy, proxy executor |
+| Code                   | Meaning                                                            | Produced by                                     |
+| ---------------------- | ------------------------------------------------------------------ | ----------------------------------------------- |
+| `NETWORK_ERROR`        | `fetch` rejected without a response (offline, DNS, refused, CORS)  | Browser, proxy executor reaching `/api/execute` |
+| `TIMEOUT`              | The timeout fired                                                  | Browser, proxy                                  |
+| `CANCELLED`            | The user cancelled, or the view unmounted                          | Browser, proxy executor                         |
+| `RESPONSE_TOO_LARGE`   | Size limit exceeded while reading                                  | Browser, proxy                                  |
+| `INVALID_REQUEST`      | Proxy request failed schema, content-type, or size checks          | Proxy                                           |
+| `FORBIDDEN_ORIGIN`     | Proxy called from another site                                     | Proxy                                           |
+| `DESTINATION_BLOCKED`  | Destination failed the SSRF policy                                 | Proxy                                           |
+| `UPSTREAM_UNREACHABLE` | DNS, connection, or TLS failure upstream                           | Proxy                                           |
+| `TOO_MANY_REDIRECTS`   | Redirect limit exceeded                                            | Proxy                                           |
+| `INTERNAL_ERROR`       | Unexpected proxy failure, or a malformed reply from `/api/execute` | Proxy, proxy executor                           |
 
 `CANCELLED` is shown as a neutral "Request cancelled" state, not as an error.
 
-| Situation                                              | Category            | Result                                     |
-| ------------------------------------------------------ | ------------------- | ------------------------------------------ |
-| Invalid URL, malformed JSON body, bad header name      | Validation          | No execution                               |
-| Any failure code above                                 | Execution           | Failure                                    |
-| Upstream 4xx / 5xx                                     | HTTP error          | Response (status, headers, and body kept)  |
-| JSON parse failure, undecodable body                   | Response-processing | Response with a processing error           |
+| Situation                                         | Category            | Result                                    |
+| ------------------------------------------------- | ------------------- | ----------------------------------------- |
+| Invalid URL, malformed JSON body, bad header name | Validation          | No execution                              |
+| Any failure code above                            | Execution           | Failure                                   |
+| Upstream 4xx / 5xx                                | HTTP error          | Response (status, headers, and body kept) |
+| JSON parse failure, undecodable body              | Response-processing | Response with a processing error          |
 
 **Browser CORS caveat.** When a browser blocks a response for CORS reasons, `fetch` rejects with a generic network error that does not say why. RestLab cannot distinguish a CORS block from an unreachable server in browser-direct mode, so both become `NETWORK_ERROR`. The UI shows a hint that CORS is a possible cause and that the proxy strategy might help. It must not switch strategies automatically (ADR-005).
 
@@ -142,16 +142,16 @@ The HTTP status of the proxy call describes the proxy, not the upstream API.
 
 **Failure.** Body contains a flag marking failure and an error object with a failure code (§5) and a user-safe message.
 
-| Code                   | Proxy HTTP status (Proposed) |
-| ---------------------- | ---------------------------- |
+| Code                   | Proxy HTTP status (Proposed)         |
+| ---------------------- | ------------------------------------ |
 | `INVALID_REQUEST`      | 400, or 415 for a wrong content type |
-| `FORBIDDEN_ORIGIN`     | 403                          |
-| `DESTINATION_BLOCKED`  | 403                          |
-| `TIMEOUT`              | 504                          |
-| `UPSTREAM_UNREACHABLE` | 502                          |
-| `RESPONSE_TOO_LARGE`   | 502                          |
-| `TOO_MANY_REDIRECTS`   | 502                          |
-| `INTERNAL_ERROR`       | 500                          |
+| `FORBIDDEN_ORIGIN`     | 403                                  |
+| `DESTINATION_BLOCKED`  | 403                                  |
+| `TIMEOUT`              | 504                                  |
+| `UPSTREAM_UNREACHABLE` | 502                                  |
+| `RESPONSE_TOO_LARGE`   | 502                                  |
+| `TOO_MANY_REDIRECTS`   | 502                                  |
+| `INTERNAL_ERROR`       | 500                                  |
 
 Messages must not reveal resolved IP addresses, internal hostnames, or stack traces. A blocked destination returns the same user-facing message regardless of why it was blocked.
 

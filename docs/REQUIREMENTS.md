@@ -104,12 +104,12 @@ The complete response information and response body must be distinguishable in t
 
 The application must distinguish four outcome categories (ADR-008):
 
-| Category            | Covers                                                           |
-| ------------------- | ---------------------------------------------------------------- |
-| Validation          | Invalid request configuration, detected before any network call  |
-| Execution           | Network failures, timeouts, cancellation, proxy failures         |
-| HTTP error response | Responses with a 4xx or 5xx status                               |
-| Response-processing | Parsing failures and unexpected or unsupported response formats  |
+| Category            | Covers                                                          |
+| ------------------- | --------------------------------------------------------------- |
+| Validation          | Invalid request configuration, detected before any network call |
+| Execution           | Network failures, timeouts, cancellation, proxy failures        |
+| HTTP error response | Responses with a 4xx or 5xx status                              |
+| Response-processing | Parsing failures and unexpected or unsupported response formats |
 
 Error messages must be understandable and provide useful information without exposing sensitive internal details.
 
