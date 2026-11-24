@@ -15,18 +15,16 @@ Verified against the repository on 2026-11-25. Re-verify before relying on it; `
 
 | Item                 | State                                                                                                                                                                                                                                                                                                                                                                              |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app/`           | Root `layout.tsx` (`<html>`, `<body>`, metadata), placeholder `page.tsx`, `globals.css` importing Tailwind                                                                                                                                                                                                                                                                         |
-| Other `src/` folders | `test/` (`setup.ts` for jsdom tests)                                                                                                                                                                                                                                                                                                                                               |
+| `src/app/`           | Root `layout.tsx` (`<html>`, `<body>`, metadata, Geist font), placeholder `page.tsx`, `globals.css` with Tailwind and the shadcn theme                                                                                                                                                                                                                                             |
+| Other `src/` folders | `lib/utils.ts` (`cn`), `test/setup.ts`; empty `domain/`, `execution/`, `server/`, `features/` (`.gitkeep`). `components/ui/` is created by the first `shadcn add`                                                                                                                                                                                                                  |
 | `next.config.ts`     | `reactCompiler: true`, `cacheComponents: true`, `partialPrefetching: true`                                                                                                                                                                                                                                                                                                         |
 | `tsconfig.json`      | `strict: true`. Path alias `@/*` maps to `./src/*`                                                                                                                                                                                                                                                                                                                                 |
-| Runtime dependencies | `next` 16.4.6, `react` / `react-dom` 19.3.0                                                                                                                                                                                                                                                                                                                                        |
+| Runtime dependencies | `next` 16.4.6, `react` / `react-dom` 19.3.0, `react-hook-form` 7.92.0, `zod` 4.6.7, `@hookform/resolvers` 7.0.9; from `shadcn init`: `radix-ui`, `cn`, `class-variance-authority`, `lucide-react`, `tw-animate-css`, `shadcn`                                                                                                                                                      |
 | Dev dependencies     | `tailwindcss` and `@tailwindcss/postcss` 4.3.3, `postcss` 8.5, `prettier` 3.10.1, `eslint-config-prettier` 10.1.8, `typescript` 5.9, `eslint` 9, `eslint-config-next` 16.4.6, `babel-plugin-react-compiler` 1.0.0, `vitest` 5.1.1, `@vitejs/plugin-react` 6.3.0, `jsdom` 31.0.1, `@testing-library/react` 16.3.3, `@testing-library/dom` 10.4.2, `@types/node` 22, `@types/react*` |
 | Scripts              | `dev`, `build`, `start`, `lint`, `typecheck`, `format`, `format:check`, `test`, `test:watch`                                                                                                                                                                                                                                                                                       |
-| Checks               | `lint`, `typecheck`, `format:check`, `test`, and `build` pass                                                                                                                                                                                                                                                                                                                      |
+| Checks               | `lint` (including import-direction rules), `typecheck`, `format:check`, `test`, and `build` pass                                                                                                                                                                                                                                                                                   |
 
-### Known gaps (all fixed in M0, `PROJECT_PLAN.md`)
-
-- Not installed: React Hook Form, Zod, `@hookform/resolvers`, shadcn/ui.
+No known gaps against the M0 target.
 
 ## 3. Architectural Principles
 
@@ -54,6 +52,7 @@ flowchart TD
     APP --> SRV
     APP --> DOM
     APP --> UIK
+    APP --> LIB
     FEAT --> UIK
     FEAT --> LIB
     FEAT --> EXE
@@ -74,7 +73,7 @@ Rules:
 
 ## 5. Folder Structure
 
-Target structure. Created in M0; only `src/app/` exists today. Paths are relative to `src/`.
+Target structure. The top-level folders were created in M0; subfolders are added as they are first needed. Paths are relative to `src/`.
 
 ```
 app/
@@ -85,7 +84,7 @@ app/
 
 components/ui/              # shadcn/ui primitives (generated by the shadcn CLI)
 
-lib/                        # small helpers shared by UI code (shadcn's cn)
+lib/                        # small helpers shared by UI code (utils.ts re-exports cn from the `cn` package)
 
 features/
   playground/

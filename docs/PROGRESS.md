@@ -1,13 +1,13 @@
 # Progress
 
 **Last updated:** 2026-11-25
-**Current milestone:** M0 Foundation, in progress (tasks 1 to 3 of 4 done)
+**Current milestone:** M0 Foundation, in progress complete
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a minimal Next.js application shell and a finalized documentation set. No product features are implemented. M0 (Foundation) is in progress: task 1 (app shell and config) task 2 (formatting and scripts), and task 3 (testing) are done.
+RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) is complete; the next step is M1 (Domain Core).
 
 ## 2. Documentation Status
 
@@ -18,14 +18,14 @@ RestLab has a minimal Next.js application shell and a finalized documentation se
 | `DECISIONS`                                                                                                              | ADR-001 to ADR-021; OD-1 to OD-11 open |
 | `PROGRESS`, `CHANGELOG`                                                                                                  | Living documents                       |
 | Root `AGENTS.md`                                                                                                         | Present                                |
-| `README.md`                                                                                                              | Empty; written in M0                   |
+| `README.md`                                                                                                              | Purpose, requirements, setup, scripts  |
 
 ## 3. Implementation Status
 
 | Area                                        | Status                                                                               |
 | ------------------------------------------- | ------------------------------------------------------------------------------------ |
 | `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported |
-| Domain, execution, server, and feature code | Not started                                                                          |
+| Domain, execution, server, and feature code | Folders created (empty); code not started                                            |
 | Tests                                       | Setup only: one page render test proves the Vitest and Testing Library setup         |
 
 ## 4. Tooling Status
@@ -36,11 +36,11 @@ RestLab has a minimal Next.js application shell and a finalized documentation se
 | React Compiler                                               | Installed and enabled                                                      |
 | Cache Components, Partial Prefetching                        | Enabled (ADR-016)                                                          |
 | TypeScript strict mode                                       | Enabled                                                                    |
-| ESLint                                                       | Installed; `npm run lint` passes                                           |
+| ESLint                                                       | Passes; layer import-direction rules enforced (ADR-021)                    |
 | Tailwind integration                                         | `@tailwindcss/postcss` 4.3.3 with `postcss.config.mjs` (ADR-003)           |
 | Path alias `@/*`                                             | Points at `./src/*` (ADR-001)                                              |
-| React Hook Form, Zod, `@hookform/resolvers`                  | Not installed                                                              |
-| shadcn/ui                                                    | Not initialized                                                            |
+| React Hook Form, Zod, `@hookform/resolvers`                  | 7.92.0, 4.6.7, 7.0.9                                                       |
+| shadcn/ui                                                    | Initialized (Radix, `radix-nova`); no components added yet                 |
 | Vitest, React Testing Library, jsdom                         | Vitest 5.1.1 with `unit` (Node) and `dom` (jsdom) projects (ADR-019)       |
 | Prettier                                                     | 3.10.1 with `eslint-config-prettier`; LF line endings via `.gitattributes` |
 | Scripts `typecheck`, `format`, `format:check`                | Present                                                                    |
@@ -48,6 +48,8 @@ RestLab has a minimal Next.js application shell and a finalized documentation se
 
 ## 5. Recent Decisions
 
+- shadcn/ui initialized on Radix with the Nova preset; `cn` package replaces `clsx` and `tailwind-merge` (2026-11-25).
+- Import-direction rules implemented; `app → lib` arrow added (ADR-021 note, 2026-11-25).
 - Vite's native `resolve.tsconfigPaths` replaces `vite-tsconfig-paths`; `@types/node` raised to `^22` for Vitest 5 (ADR-019 note, 2026-11-25).
 - Documentation finalized (2026-11-24): ADR-013 to ADR-021 added, ADR-009 accepted, one open-decisions register.
 - Theme toggle with a preference cookie (ADR-018).
@@ -60,5 +62,6 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits M0 task 3.
-2. Start M0, task 4: forms, UI kit, structure (`PROJECT_PLAN.md` §3).
+1. Project owner reviews and commits M0 task 4.
+2. Optional: decide OD-10 (CI workflow).
+3. Start M1: Domain Core (`PROJECT_PLAN.md` §3).

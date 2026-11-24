@@ -4,21 +4,21 @@
 
 ## 1. Core Technologies
 
-| Area            | Technology   | Decision                                                     |
-| --------------- | ------------ | ------------------------------------------------------------ |
-| Runtime         | Node.js      | 20.9 or later (Next.js 16 requirement). Developed on Node 24 |
-| Framework       | Next.js      | 16.4, App Router, React Compiler, Cache Components (ADR-016) |
-| UI library      | React        | 19.3, as paired with the Next.js release                     |
-| Language        | TypeScript   | 5.9, strict mode                                             |
-| Styling         | Tailwind CSS | v4 through `@tailwindcss/postcss` (ADR-003)                  |
-| Components      | shadcn/ui    | Reusable, customizable UI components                         |
-| Package manager | npm          | Use `package-lock.json` for dependency consistency           |
+| Area            | Technology   | Decision                                                         |
+| --------------- | ------------ | ---------------------------------------------------------------- |
+| Runtime         | Node.js      | 20.9 or later (Next.js 16 requirement). Developed on Node 24     |
+| Framework       | Next.js      | 16.4, App Router, React Compiler, Cache Components (ADR-016)     |
+| UI library      | React        | 19.3, as paired with the Next.js release                         |
+| Language        | TypeScript   | 5.9, strict mode                                                 |
+| Styling         | Tailwind CSS | v4 through `@tailwindcss/postcss` (ADR-003)                      |
+| Components      | shadcn/ui    | Radix base, `radix-nova` style, neutral base color, Lucide icons |
+| Package manager | npm          | Use `package-lock.json` for dependency consistency               |
 
 Installed versions are the source of truth; check `package.json`. The current state of installation is in `PROGRESS.md`.
 
 ### Dependencies brought in by shadcn/ui
 
-`shadcn init` and individual components add their own packages (typically `clsx`, `tailwind-merge`, `class-variance-authority`, `lucide-react`, `tw-animate-css`, Radix primitives, and `react-resizable-panels` for the resizable layout). Each `init` or `add` that installs packages needs approval like any other dependency. Review the package list the CLI prints before accepting it.
+`shadcn init` (CLI 4.23.0, run in M0) installed `radix-ui`, `cn` (shadcn's replacement for `clsx` and `tailwind-merge`), `class-variance-authority`, `lucide-react`, `tw-animate-css`, and `shadcn` (provides `shadcn/tailwind.css`). It also added the Geist font through `next/font/google`, which is downloaded at build time and self-hosted. Later components may add more, such as `react-resizable-panels` for the resizable layout. Each `init` or `add` that installs packages needs approval like any other dependency. Review the package list the CLI prints before accepting it.
 
 ## 2. Application Architecture
 

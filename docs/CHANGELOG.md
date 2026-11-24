@@ -24,6 +24,11 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Vitest 5.1.1 with `@vitejs/plugin-react` 6.3.0, jsdom 31.0.1, `@testing-library/react` 16.3.3, and `@testing-library/dom` 10.4.2. `vitest.config.mts` defines a `unit` project (Node, `*.test.ts`) and a `dom` project (jsdom, `*.test.tsx`), with `src/test/setup.ts` for Testing Library cleanup (ADR-019).
 - Scripts `test` (single run) and `test:watch`.
 - First test: `src/app/page.test.tsx` renders the home page heading.
+- `react-hook-form` 7.92.0, `zod` 4.6.7, and `@hookform/resolvers` 7.0.9.
+- shadcn/ui initialized (Radix base, `radix-nova` style): `components.json`, `src/lib/utils.ts`, theme variables in `globals.css`, Geist font in the root layout. Added `radix-ui`, `cn`, `class-variance-authority`, `lucide-react`, `tw-animate-css`, and `shadcn`.
+- Layer folders `src/domain`, `src/execution`, `src/server`, `src/features`.
+- ESLint `no-restricted-imports` rules enforcing the layer import direction (ADR-021).
+- `README.md` with purpose, requirements, setup, and scripts.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
@@ -33,6 +38,7 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Tailwind integration moved from `@tailwindcss/turbopack` to `@tailwindcss/postcss` (ADR-003); the `turbopack.rules` CSS entry was removed from `next.config.ts`. Rationale corrected on 2026-11-24.
 - Path alias `@/*` now points at `./src/*` (ADR-001).
 - `@types/node` raised from `^20` to `^22`, required by Vitest 5.
+- `ARCHITECTURE.md` §4 allows `app → lib`.
 - `vite-tsconfig-paths` replaced by Vite's native `resolve.tsconfigPaths` (ADR-019 note).
 - ADR-009 (proxy envelope) accepted; field names remain open.
 - Documentation finalized on 2026-11-24: statuses updated to match the repository, error categories aligned, inspector tabs defined, headers model corrected to match Fetch, execution plan revised in `PROJECT_PLAN.md`.

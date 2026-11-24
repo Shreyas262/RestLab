@@ -246,6 +246,7 @@ Template:
 - Decision: Add per-folder `no-restricted-imports` rules to `eslint.config.mjs` that block imports against the allowed direction.
 - Consequences: Violations fail `npm run lint`. No new dependency. The rules are updated whenever §4 changes.
 - Alternatives considered: `eslint-plugin-boundaries` or `dependency-cruiser` (extra dependencies); review only.
+- Note (2026-11-25): Implemented in `eslint.config.mjs` from an allowed-imports map that mirrors `ARCHITECTURE.md` §4. Regex patterns match both `@/layer/...` and relative `../layer/...` specifiers. An `app → lib` arrow was added to §4 because the root layout uses `cn`. `src/test/` is not restricted.
 
 ## 5. Open Decisions Register
 
