@@ -18,13 +18,20 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Requirements for execution strategy selection, cancellation, timeout, row enable toggles, and light and dark themes (FR-08).
 - Shared failure codes for both executors and proposed proxy origin and content-type checks (`API_INTEGRATION.md`).
 - Single open-decisions register (`DECISIONS.md` §5).
+- `postcss.config.mjs` and dev dependencies `@tailwindcss/postcss` 4.3.3 and `postcss` 8.5.33 (ADR-003).
+- Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
 ### Changed
 
 - Documentation location settled as root `docs/`, with application code under `src/` (ADR-001, ADR-002).
-- Tailwind integration planned to move from `@tailwindcss/turbopack` to `@tailwindcss/postcss` (ADR-003). Not yet applied to `package.json`. Rationale corrected on 2026-11-24.
+- Tailwind integration moved from `@tailwindcss/turbopack` to `@tailwindcss/postcss` (ADR-003); the `turbopack.rules` CSS entry was removed from `next.config.ts`. Rationale corrected on 2026-11-24.
+- Path alias `@/*` now points at `./src/*` (ADR-001).
 - ADR-009 (proxy envelope) accepted; field names remain open.
 - Documentation finalized on 2026-11-24: statuses updated to match the repository, error categories aligned, inspector tabs defined, headers model corrected to match Fetch, execution plan revised in `PROJECT_PLAN.md`.
+
+### Removed
+
+- Dev dependency `@tailwindcss/turbopack`.
 
 ### Notes
 

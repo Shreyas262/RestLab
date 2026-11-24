@@ -1,13 +1,13 @@
 # Progress
 
-**Last updated:** 2026-11-24
-**Current milestone:** M0 Foundation, not started
+**Last updated:** 2026-11-25
+**Current milestone:** M0 Foundation, in progress (task 1 of 4 done)
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a stub Next.js application and a finalized documentation set. No product features are implemented. The next step is M0 (Foundation).
+RestLab has a minimal Next.js application shell and a finalized documentation set. No product features are implemented. M0 (Foundation) is in progress: task 1 (app shell and config) is done.
 
 ## 2. Documentation Status
 
@@ -24,7 +24,7 @@ RestLab has a stub Next.js application and a finalized documentation set. No pro
 
 | Area                                       | Status                                                                 |
 | ------------------------------------------ | ---------------------------------------------------------------------- |
-| `src/app` (layout, page, globals)          | Stubs. Root layout lacks `<html>`/`<body>`; fixed in M0               |
+| `src/app` (layout, page, globals)          | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported |
 | Domain, execution, server, and feature code | Not started                                                           |
 | Tests                                      | Not started                                                            |
 
@@ -37,8 +37,8 @@ RestLab has a stub Next.js application and a finalized documentation set. No pro
 | Cache Components, Partial Prefetching                       | Enabled (ADR-016)                                                   |
 | TypeScript strict mode                                      | Enabled                                                             |
 | ESLint                                                      | Installed; `npm run lint` passes                                    |
-| Tailwind integration                                        | `@tailwindcss/turbopack`; to be replaced by `@tailwindcss/postcss` (ADR-003) |
-| Path alias `@/*`                                            | Points at `./*`; to be changed to `./src/*` (ADR-001)               |
+| Tailwind integration                                        | `@tailwindcss/postcss` 4.3.3 with `postcss.config.mjs` (ADR-003)    |
+| Path alias `@/*`                                            | Points at `./src/*` (ADR-001)                                       |
 | React Hook Form, Zod, `@hookform/resolvers`                 | Not installed                                                       |
 | shadcn/ui                                                   | Not initialized                                                     |
 | Vitest, React Testing Library, jsdom                        | Not installed                                                       |
@@ -58,5 +58,5 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits the documentation changes.
-2. Start M0, task 1: app shell and config (`PROJECT_PLAN.md` §3).
+1. Project owner reviews and commits M0 task 1.
+2. Start M0, task 2: formatting and scripts (`PROJECT_PLAN.md` §3).
