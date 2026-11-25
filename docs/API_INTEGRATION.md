@@ -64,7 +64,7 @@ User-triggered requests must never reuse cached responses.
 
 ### 4.1 Reading the body
 
-The body is read once, as bytes, counting bytes as they arrive so the size limit (§4.4) can stop the read. The bytes are then decoded to text with `TextDecoder` when the content is textual, using the charset from `Content-Type` (default UTF-8). The raw text is preserved. Parsing happens afterwards from that text (ADR-007).
+The body is read once, as bytes, counting bytes as they arrive so the size limit (§4.4) can stop the read. The bytes are then decoded to text with `TextDecoder` when the content is textual, using the charset from `Content-Type` (default UTF-8). Byte sequences that are invalid in that charset are replaced with U+FFFD, so one bad byte does not hide a readable body. An unknown charset label gives a `DECODE_ERROR` processing error and no raw text. The raw text is preserved. Parsing happens afterwards from that text (ADR-007).
 
 ### 4.2 Normalized response fields
 

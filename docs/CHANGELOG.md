@@ -34,6 +34,7 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `src/domain/errors`: the shared failure codes with user-safe messages, processing error codes (`JSON_PARSE_ERROR`, `DECODE_ERROR`), and the validation issue type.
 - `src/domain/request`: Zod request schema as the single request model (ADR-006), `validateRequest`, `buildFinalUrl`, `prepareRequest` (derived `Content-Type`, no GET body), and forbidden-header detection from the MDN list.
 - Request fixtures in `src/test/fixtures/requests.ts` and unit tests for errors and request handling.
+- `src/domain/response`: the `NormalizedResponse` model (ADR-007), content-type parsing and classification (JSON, text, binary, empty), charset decoding that replaces invalid bytes with U+FFFD and reports `DECODE_ERROR` only for an unknown charset, JSON parsing that keeps the raw body on failure, and `normalizeResponse`. It builds a normalized response from received status, headers, and body bytes, with size taken from the bytes read (ADR-014). Unit tests cover each part.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 

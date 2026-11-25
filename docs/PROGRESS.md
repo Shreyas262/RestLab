@@ -1,13 +1,13 @@
 # Progress
 
 **Last updated:** 2026-11-25
-**Current milestone:** M1 Domain Core, in progress (part 1 of 3 done)
+**Current milestone:** M1 Domain Core, in progress (parts 1 and 2 of 3 done)
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) is complete. M1 (Domain Core) is in progress: part 1 (errors and request) is done; part 2 (response) and part 3 (execution contract) remain.
+RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) is complete. M1 (Domain Core) is in progress: part 1 (errors and request) and part 2 (response) are done; part 3 (execution contract) remains.
 
 ## 2. Documentation Status
 
@@ -22,11 +22,11 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 3. Implementation Status
 
-| Area                                        | Status                                                                                                                          |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported                                            |
-| Domain, execution, server, and feature code | `domain/errors` and `domain/request` done with tests; response, contract, and the rest not started                              |
-| Tests                                       | 89 passing: page render, failure and processing codes, request validation, URL building, request preparation, forbidden headers |
+| Area                                        | Status                                                                                                                      |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported                                        |
+| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, and `domain/response` done with tests; contract and the rest not started                 |
+| Tests                                       | 155 passing: page, error codes, request validation, URL building and preparation, forbidden headers, response normalization |
 
 ## 4. Tooling Status
 
@@ -64,5 +64,5 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits M1 part 1.
-2. M1 part 2: response model, classification, decoding, parsing, normalization.
+1. Project owner reviews and commits M1 part 2.
+2. M1 part 3: `ExecutionResult` and proxy envelope types in `execution/contract`; close OD-1.
