@@ -41,6 +41,11 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `src/features/playground/hooks/use-execution.ts`: the execution state hook (ADR-010) with idle, executing, and completed states. It creates an `AbortController` per execution, ignores Send while executing, settles Cancel immediately as `CANCELLED`, aborts on unmount, and drops results from cancelled or unmounted executions. The executor is injectable and defaults to the browser executor. Hook tests use a controllable fake executor.
 - shadcn/ui components `button`, `input`, `label`, `tabs`, `textarea`, `checkbox`, and `native-select` in `src/components/ui/`, formatted with Prettier. A native `<select>` is used for the method and body type instead of Radix Select.
 - Dev dependency `@testing-library/user-event` 14.6.13 for keyboard and pointer interaction tests, with a smoke test in `src/components/ui/primitives.test.tsx`.
+- `src/features/playground/playground.tsx`: the client boundary for the editor. It runs React Hook Form with `zodResolver(requestSchema)`, calls `useExecution` once, and passes state down as props. Default values are in `default-request.ts` (strategy fixed to browser-direct, ADR-020).
+- Request bar with a labelled method select, URL input with its error shown next to the field (`aria-invalid`, `aria-describedby`), and one Send/Cancel button that keeps focus when its label changes. Enter in the URL field sends. Validation runs on the first Send, then on change.
+- Final URL preview built with `buildFinalUrl`.
+- Temporary result output: a status region with text for idle, executing, response (HTTP error labelled in words), processing error, failure with code, and a neutral cancelled state. The body is not shown until the M4 inspector.
+- Test helpers `src/test/fake-executor.ts` and `src/test/fixtures/responses.ts`; playground, result output, and page tests.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
@@ -59,6 +64,7 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Documentation finalized on 2026-11-24: statuses updated to match the repository, error categories aligned, inspector tabs defined, headers model corrected to match Fetch, execution plan revised in `PROJECT_PLAN.md`.
 
 - Existing files formatted with Prettier.
+- The home page renders the playground below the heading instead of a placeholder.
 
 ### Removed
 

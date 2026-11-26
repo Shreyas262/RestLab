@@ -1,13 +1,13 @@
 # Progress
 
 **Last updated:** 2026-11-27
-**Current milestone:** M3 Request Editor, in progress (UI primitives added; URL bar and playground wiring next)
+**Current milestone:** M3 Request Editor, in progress (URL bar, Send/Cancel, and playground wiring done; Params, Headers, and Body tabs next)
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. M2 (Browser Execution and State) is complete: the browser executor and the execution state hook are implemented and tested. In M3, the shadcn/ui primitives for the request editor are added.
+RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. M2 (Browser Execution and State) is complete: the browser executor and the execution state hook are implemented and tested. In M3, the shadcn/ui primitives are added and the page has a working request bar: method, URL, final URL preview, Send/Cancel, and a temporary result summary.
 
 ## 2. Documentation Status
 
@@ -22,11 +22,11 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 3. Implementation Status
 
-| Area                                        | Status                                                                                                                                                                                                 |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported                                                                                                                   |
-| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response`, `execution/contract`, the browser executor, and the `features/playground` execution state hook done with tests; proxy executor not started       |
-| Tests                                       | 193 passing: page, error codes, request validation, URL building and preparation, forbidden headers, response normalization, execution contract, browser executor, execution state hook, UI primitives |
+| Area                                        | Status                                                                                                                                                                                                                                                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; page renders the playground; Tailwind imported                                                                                                                                                         |
+| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response`, `execution/contract`, the browser executor, and `features/playground` (execution state hook, request bar, final URL preview, temporary result output) done with tests; proxy executor not started |
+| Tests                                       | 210 passing: page, playground, result output, error codes, request validation, URL building and preparation, forbidden headers, response normalization, execution contract, browser executor, execution state hook, UI primitives                       |
 
 ## 4. Tooling Status
 
@@ -49,6 +49,7 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 5. Recent Decisions
 
+- Request form validates on the first Send, then re-validates on change; form errors are read with `useFormState` so React Compiler memoization cannot serve stale errors (2026-11-27).
 - Native `<select>` (shadcn `native-select`) for the method and body type instead of Radix Select; generated shadcn files follow the project's Prettier style (2026-11-27).
 - Cancel settles the execution state to `CANCELLED` immediately instead of waiting for the executor (ADR-010 implementation, 2026-11-27).
 - OD-3 first half decided: 15 s timeout and 5 MB response size limit (2026-11-26).
@@ -68,6 +69,5 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits the UI primitives.
-2. M3.2: URL input, method selector, Send/Cancel, final URL preview, playground wiring, and a minimal result output.
-3. M3.3: Params, Headers, and Body tabs.
+1. Project owner reviews and commits the request bar and playground wiring.
+2. M3.3: Params, Headers, and Body tabs, with the forbidden-header warning.
