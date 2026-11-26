@@ -38,6 +38,7 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `src/execution/contract`: the `ExecutionResult` union with `responseResult` and `failureResult` constructors, the `Executor` type, and the `ProxyEnvelope` types with the failure-code-to-proxy-status map. Unit tests cover the constructors and the map.
 - `src/execution/browser-executor.ts`: the browser-direct executor. It sends the prepared request with `cache: "no-store"`, combines cancellation with a 15 s timeout, reads the body once while counting bytes against a 5 MB limit, and normalizes the result. Rejections map to `NETWORK_ERROR`, `TIMEOUT`, or `CANCELLED`; HTTP 4xx and 5xx are returned as responses. `src/execution/limits.ts` holds the two limits. Unit tests use a mocked `fetch`.
 - OD-3 first half decided: 15 s timeout and 5 MB response size limit.
+- `src/features/playground/hooks/use-execution.ts`: the execution state hook (ADR-010) with idle, executing, and completed states. It creates an `AbortController` per execution, ignores Send while executing, settles Cancel immediately as `CANCELLED`, aborts on unmount, and drops results from cancelled or unmounted executions. The executor is injectable and defaults to the browser executor. Hook tests use a controllable fake executor.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 

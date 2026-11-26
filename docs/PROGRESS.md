@@ -1,13 +1,13 @@
 # Progress
 
-**Last updated:** 2026-11-26
-**Current milestone:** M2 Browser Execution and State, in progress (browser executor done; execution state hook next)
+**Last updated:** 2026-11-27
+**Current milestone:** M2 Browser Execution and State, complete; M3 Request Editor next
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. In M2, the browser executor is implemented and tested.
+RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. M2 (Browser Execution and State) is complete: the browser executor and the execution state hook are implemented and tested.
 
 ## 2. Documentation Status
 
@@ -22,11 +22,11 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 3. Implementation Status
 
-| Area                                        | Status                                                                                                                                                            |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported                                                                              |
-| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response`, `execution/contract`, and the browser executor done with tests; proxy executor not started                  |
-| Tests                                       | 180 passing: page, error codes, request validation, URL building and preparation, forbidden headers, response normalization, execution contract, browser executor |
+| Area                                        | Status                                                                                                                                                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported                                                                                                             |
+| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response`, `execution/contract`, the browser executor, and the `features/playground` execution state hook done with tests; proxy executor not started |
+| Tests                                       | 191 passing: page, error codes, request validation, URL building and preparation, forbidden headers, response normalization, execution contract, browser executor, execution state hook          |
 
 ## 4. Tooling Status
 
@@ -49,6 +49,7 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 5. Recent Decisions
 
+- Cancel settles the execution state to `CANCELLED` immediately instead of waiting for the executor (ADR-010 implementation, 2026-11-27).
 - OD-3 first half decided: 15 s timeout and 5 MB response size limit (2026-11-26).
 - ADR-009 field names fixed; OD-1 resolved (2026-11-26).
 - CI with GitHub Actions; OD-10 resolved (ADR-022, 2026-11-25).
@@ -66,5 +67,5 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits the browser executor.
-2. M2: the execution state hook with Cancel and unmount abort (ADR-010).
+1. Project owner reviews and commits the execution state hook.
+2. M3: the request editor (URL input, method selector, Send/Cancel, Params, Headers, and Body tabs).
