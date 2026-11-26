@@ -46,6 +46,11 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Final URL preview built with `buildFinalUrl`.
 - Temporary result output: a status region with text for idle, executing, response (HTTP error labelled in words), processing error, failure with code, and a neutral cancelled state. The body is not shown until the M4 inspector.
 - Test helpers `src/test/fake-executor.ts` and `src/test/fixtures/responses.ts`; playground, result output, and page tests.
+- Params, Headers, and Body tabs in the request editor. Parameter and header rows can be added, edited, removed, enabled, and disabled, with numbered labels and errors under the field they concern. Adding a row focuses its name; removing one moves focus to the Add button.
+- Forbidden-header warning on header rows in browser-direct mode. It does not block Send.
+- Body editor with a None, JSON, or Text type and a `Content-Type` hint. For GET the controls are disabled and the content is kept but not sent (ADR-017). With None the editor is hidden and its content kept.
+- After a failed Send, the editor switches to the tab holding the first error, and that tab is marked as having errors in text as well as with an icon.
+- Tests for params, headers, body, and tab selection, with a shared `renderPlayground` helper in `src/features/playground/test-utils.tsx`.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
@@ -65,6 +70,7 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 
 - Existing files formatted with Prettier.
 - The home page renders the playground below the heading instead of a placeholder.
+- `src/test/setup.ts` adds a no-op `ResizeObserver` when it is missing, because jsdom lacks it and Radix Checkbox needs it.
 
 ### Removed
 
