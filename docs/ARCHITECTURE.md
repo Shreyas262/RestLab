@@ -138,8 +138,10 @@ Defines one executor contract: given a validated request and an abort signal, re
 
 `ExecutionResult` is one of:
 
-- **Response:** a normalized response, including HTTP 4xx/5xx, optionally carrying a processing error.
-- **Failure:** an execution error (network, timeout, cancelled, response too large, proxy failure) with a failure code and no HTTP response.
+- **Response** (`kind: "response"`, `response`): a normalized response, including HTTP 4xx/5xx, optionally carrying a processing error.
+- **Failure** (`kind: "failure"`, `failure`, `strategy`): an execution error (network, timeout, cancelled, response too large, proxy failure) with a failure code and no HTTP response. `strategy` records which executor ran, since there is no response to carry it.
+
+An executor never rejects: every outcome resolves to an `ExecutionResult`. It receives the validated `RequestConfig`, so the proxy executor can send it for server-side re-validation.
 
 Validation errors occur before an executor is called and never produce an `ExecutionResult`.
 

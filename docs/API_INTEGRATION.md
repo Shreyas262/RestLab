@@ -134,13 +134,15 @@ Every Failure result carries one code from this shared set. Both executors use t
 - Accepts the request model as JSON. Responds with the envelope in §6.2.
 - Uses the Web `Request` and `Response` APIs. Only `POST` is exported, so other methods receive `405`.
 
-### 6.2 Envelope (ADR-009, field names to finalize)
+### 6.2 Envelope (ADR-009)
 
 The HTTP status of the proxy call describes the proxy, not the upstream API.
 
-**Success.** HTTP 200. Body contains a flag marking success and the normalized response. This applies to every upstream status, including 404 and 500.
+**Success.** HTTP 200. Body is `{ "ok": true, "response": NormalizedResponse }`. This applies to every upstream status, including 404 and 500.
 
-**Failure.** Body contains a flag marking failure and an error object with a failure code (§5) and a user-safe message.
+**Failure.** Body is `{ "ok": false, "error": { "code": FailureCode, "message": string } }`, with a failure code from §5 and a user-safe message.
+
+The types are `ProxyEnvelope` and `PROXY_FAILURE_STATUS` in `src/execution/contract/envelope.ts`. `NETWORK_ERROR` and `CANCELLED` arise only in the client; the proxy never sends them, and they map to 500 if it does.
 
 | Code                   | Proxy HTTP status (Proposed)         |
 | ---------------------- | ------------------------------------ |

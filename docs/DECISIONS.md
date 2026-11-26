@@ -132,12 +132,13 @@ Template:
 
 ## ADR-009: Proxy envelope separates proxy status from upstream status
 
-- Status: Accepted (field names open, OD-1)
-- Date: 2026-11-20; accepted 2026-11-24
+- Status: Accepted
+- Date: 2026-11-20; accepted 2026-11-24; field names fixed 2026-11-26
 - Context: If the proxy returned the upstream status as its own transport status, an upstream 404 would be indistinguishable from a missing proxy route, which breaks ADR-008.
 - Decision: A successful proxy call returns HTTP 200 with a normalized response, including upstream 4xx and 5xx. Proxy-level problems return a separate failure shape carrying a failure code from the shared set in `API_INTEGRATION.md` §5. The proxy executor maps both into the same execution result as the browser executor.
 - Consequences: Defines the proxy contract the client and server must both follow. Exact field names are fixed when the types are written in M1.
 - Alternatives considered: Passing the upstream status through as the proxy's HTTP status.
+- Note (2026-11-26, closes OD-1): The envelope is `{ ok: true, response }` or `{ ok: false, error }`, where `error` is a `Failure` (`code`, `message`). The client-side `ExecutionResult` is `{ kind: "response", response }` or `{ kind: "failure", failure, strategy }`. Different discriminants keep the wire format and the internal result from being confused. Types live in `src/execution/contract`.
 
 ## ADR-010: Execution state machine with per-execution abort
 
@@ -264,7 +265,6 @@ This is the only list of open decisions. Other documents link here.
 
 | ID    | Decision                                              | Notes                                                                                  | Decide in |
 | ----- | ----------------------------------------------------- | -------------------------------------------------------------------------------------- | --------- |
-| OD-1  | Envelope and result field names                       | ADR-009 shape is settled; names are fixed when types are written                       | M1        |
 | OD-2  | Pinning the validated address (DNS rebinding)         | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent    | M6 spike  |
 | OD-3  | Limit values                                          | Proposed: 15 s timeout and 5 MB size (needed in M2); 3 redirects and ports 80/443 (M6) | M2, M6    |
 | OD-4  | Proxy request body and header limits                  | Values to set                                                                          | M6        |
@@ -275,4 +275,4 @@ This is the only list of open decisions. Other documents link here.
 | OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                            | M8        |
 | OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                                 | M8        |
 
-Resolved: OD-10 (continuous integration) by ADR-022 on 2026-11-25.
+Resolved: OD-1 (envelope and result field names) by the ADR-009 note on 2026-11-26; OD-10 (continuous integration) by ADR-022 on 2026-11-25.

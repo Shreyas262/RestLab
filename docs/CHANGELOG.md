@@ -35,6 +35,7 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `src/domain/request`: Zod request schema as the single request model (ADR-006), `validateRequest`, `buildFinalUrl`, `prepareRequest` (derived `Content-Type`, no GET body), and forbidden-header detection from the MDN list.
 - Request fixtures in `src/test/fixtures/requests.ts` and unit tests for errors and request handling.
 - `src/domain/response`: the `NormalizedResponse` model (ADR-007), content-type parsing and classification (JSON, text, binary, empty), charset decoding that replaces invalid bytes with U+FFFD and reports `DECODE_ERROR` only for an unknown charset, JSON parsing that keeps the raw body on failure, and `normalizeResponse`. It builds a normalized response from received status, headers, and body bytes, with size taken from the bytes read (ADR-014). Unit tests cover each part.
+- `src/execution/contract`: the `ExecutionResult` union with `responseResult` and `failureResult` constructors, the `Executor` type, and the `ProxyEnvelope` types with the failure-code-to-proxy-status map. Unit tests cover the constructors and the map.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
@@ -48,6 +49,7 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `API_INTEGRATION.md` §2.1 and §2.3: query values are encoded with `encodeURIComponent` (`%20` for spaces); header values containing CR, LF, or NUL fail validation.
 - `vite-tsconfig-paths` replaced by Vite's native `resolve.tsconfigPaths` (ADR-019 note).
 - ADR-009 (proxy envelope) accepted; field names remain open.
+- ADR-009 field names fixed and OD-1 resolved; `API_INTEGRATION.md` §6.2 and `ARCHITECTURE.md` §6.4 name the fields.
 - Documentation finalized on 2026-11-24: statuses updated to match the repository, error categories aligned, inspector tabs defined, headers model corrected to match Fetch, execution plan revised in `PROJECT_PLAN.md`.
 
 - Existing files formatted with Prettier.

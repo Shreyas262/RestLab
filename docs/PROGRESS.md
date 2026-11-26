@@ -1,13 +1,13 @@
 # Progress
 
-**Last updated:** 2026-11-25
-**Current milestone:** M1 Domain Core, in progress (parts 1 and 2 of 3 done)
+**Last updated:** 2026-11-26
+**Current milestone:** M1 Domain Core, complete; M2 Browser Execution and State next
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) is complete. M1 (Domain Core) is in progress: part 1 (errors and request) and part 2 (response) are done; part 3 (execution contract) remains.
+RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI.
 
 ## 2. Documentation Status
 
@@ -15,18 +15,18 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
 | `PROJECT_OVERVIEW`, `REQUIREMENTS`, `SYSTEM_DESIGN`, `ARCHITECTURE`, `API_INTEGRATION`, `TECH_STACK`, `UI_UX_GUIDELINES` | Accepted, reviewed 2026-11-24                   |
 | `TESTING_STRATEGY`, `ROADMAP`, `PROJECT_PLAN`                                                                            | Accepted, reviewed 2026-11-24                   |
-| `DECISIONS`                                                                                                              | ADR-001 to ADR-022; OD-1 to OD-9 and OD-11 open |
+| `DECISIONS`                                                                                                              | ADR-001 to ADR-022; OD-2 to OD-9 and OD-11 open |
 | `PROGRESS`, `CHANGELOG`                                                                                                  | Living documents                                |
 | Root `AGENTS.md`                                                                                                         | Present                                         |
 | `README.md`                                                                                                              | Purpose, requirements, setup, scripts           |
 
 ## 3. Implementation Status
 
-| Area                                        | Status                                                                                                                      |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported                                        |
-| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, and `domain/response` done with tests; contract and the rest not started                 |
-| Tests                                       | 155 passing: page, error codes, request validation, URL building and preparation, forbidden headers, response normalization |
+| Area                                        | Status                                                                                                                                          |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported                                                            |
+| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response`, and `execution/contract` done with tests; executors not started                           |
+| Tests                                       | 162 passing: page, error codes, request validation, URL building and preparation, forbidden headers, response normalization, execution contract |
 
 ## 4. Tooling Status
 
@@ -49,6 +49,7 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 5. Recent Decisions
 
+- ADR-009 field names fixed; OD-1 resolved (2026-11-26).
 - CI with GitHub Actions; OD-10 resolved (ADR-022, 2026-11-25).
 - shadcn/ui initialized on Radix with the Nova preset; `cn` package replaces `clsx` and `tailwind-merge` (2026-11-25).
 - Import-direction rules implemented; `app → lib` arrow added (ADR-021 note, 2026-11-25).
@@ -64,5 +65,5 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits M1 part 2.
-2. M1 part 3: `ExecutionResult` and proxy envelope types in `execution/contract`; close OD-1.
+1. Project owner reviews and commits M1 part 3.
+2. M2: confirm the timeout and size values (OD-3, first half), then the browser executor and execution state hook.
