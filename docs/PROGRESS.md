@@ -1,13 +1,13 @@
 # Progress
 
 **Last updated:** 2026-11-27
-**Current milestone:** M2 Browser Execution and State, complete; M3 Request Editor next
+**Current milestone:** M3 Request Editor, in progress (UI primitives added; URL bar and playground wiring next)
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. M2 (Browser Execution and State) is complete: the browser executor and the execution state hook are implemented and tested.
+RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. No product features are implemented. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. M2 (Browser Execution and State) is complete: the browser executor and the execution state hook are implemented and tested. In M3, the shadcn/ui primitives for the request editor are added.
 
 ## 2. Documentation Status
 
@@ -22,33 +22,34 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 3. Implementation Status
 
-| Area                                        | Status                                                                                                                                                                                           |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported                                                                                                             |
-| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response`, `execution/contract`, the browser executor, and the `features/playground` execution state hook done with tests; proxy executor not started |
-| Tests                                       | 191 passing: page, error codes, request validation, URL building and preparation, forbidden headers, response normalization, execution contract, browser executor, execution state hook          |
+| Area                                        | Status                                                                                                                                                                                                 |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; placeholder page; Tailwind imported                                                                                                                   |
+| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response`, `execution/contract`, the browser executor, and the `features/playground` execution state hook done with tests; proxy executor not started       |
+| Tests                                       | 193 passing: page, error codes, request validation, URL building and preparation, forbidden headers, response normalization, execution contract, browser executor, execution state hook, UI primitives |
 
 ## 4. Tooling Status
 
-| Item                                                         | State                                                                      |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------- |
-| Next.js 16.4.6, React 19.3.0, TypeScript 5.9, Tailwind 4.3.3 | Installed                                                                  |
-| React Compiler                                               | Installed and enabled                                                      |
-| Cache Components, Partial Prefetching                        | Enabled (ADR-016)                                                          |
-| TypeScript strict mode                                       | Enabled                                                                    |
-| ESLint                                                       | Passes; layer import-direction rules enforced (ADR-021)                    |
-| Tailwind integration                                         | `@tailwindcss/postcss` 4.3.3 with `postcss.config.mjs` (ADR-003)           |
-| Path alias `@/*`                                             | Points at `./src/*` (ADR-001)                                              |
-| React Hook Form, Zod, `@hookform/resolvers`                  | 7.92.0, 4.6.7, 7.0.9                                                       |
-| shadcn/ui                                                    | Initialized (Radix, `radix-nova`); no components added yet                 |
-| Vitest, React Testing Library, jsdom                         | Vitest 5.1.1 with `unit` (Node) and `dom` (jsdom) projects (ADR-019)       |
-| Prettier                                                     | 3.10.1 with `eslint-config-prettier`; LF line endings via `.gitattributes` |
-| Scripts `typecheck`, `format`, `format:check`                | Present                                                                    |
-| Scripts `test`, `test:watch`                                 | Present                                                                    |
-| Continuous integration                                       | GitHub Actions on push and PR to `main` (ADR-022)                          |
+| Item                                                         | State                                                                                                                |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| Next.js 16.4.6, React 19.3.0, TypeScript 5.9, Tailwind 4.3.3 | Installed                                                                                                            |
+| React Compiler                                               | Installed and enabled                                                                                                |
+| Cache Components, Partial Prefetching                        | Enabled (ADR-016)                                                                                                    |
+| TypeScript strict mode                                       | Enabled                                                                                                              |
+| ESLint                                                       | Passes; layer import-direction rules enforced (ADR-021)                                                              |
+| Tailwind integration                                         | `@tailwindcss/postcss` 4.3.3 with `postcss.config.mjs` (ADR-003)                                                     |
+| Path alias `@/*`                                             | Points at `./src/*` (ADR-001)                                                                                        |
+| React Hook Form, Zod, `@hookform/resolvers`                  | 7.92.0, 4.6.7, 7.0.9                                                                                                 |
+| shadcn/ui                                                    | Initialized (Radix, `radix-nova`); `button`, `input`, `label`, `tabs`, `textarea`, `checkbox`, `native-select` added |
+| Vitest, React Testing Library, jsdom                         | Vitest 5.1.1 with `unit` (Node) and `dom` (jsdom) projects (ADR-019); `user-event` 14.6.13                           |
+| Prettier                                                     | 3.10.1 with `eslint-config-prettier`; LF line endings via `.gitattributes`                                           |
+| Scripts `typecheck`, `format`, `format:check`                | Present                                                                                                              |
+| Scripts `test`, `test:watch`                                 | Present                                                                                                              |
+| Continuous integration                                       | GitHub Actions on push and PR to `main` (ADR-022)                                                                    |
 
 ## 5. Recent Decisions
 
+- Native `<select>` (shadcn `native-select`) for the method and body type instead of Radix Select; generated shadcn files follow the project's Prettier style (2026-11-27).
 - Cancel settles the execution state to `CANCELLED` immediately instead of waiting for the executor (ADR-010 implementation, 2026-11-27).
 - OD-3 first half decided: 15 s timeout and 5 MB response size limit (2026-11-26).
 - ADR-009 field names fixed; OD-1 resolved (2026-11-26).
@@ -67,5 +68,6 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits the execution state hook.
-2. M3: the request editor (URL input, method selector, Send/Cancel, Params, Headers, and Body tabs).
+1. Project owner reviews and commits the UI primitives.
+2. M3.2: URL input, method selector, Send/Cancel, final URL preview, playground wiring, and a minimal result output.
+3. M3.3: Params, Headers, and Body tabs.

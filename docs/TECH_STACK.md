@@ -74,8 +74,9 @@ Following the Next.js 16.4 Vitest guide (ADR-019):
 - `@vitejs/plugin-react` — Vitest integration. The `@/` alias resolves through Vite's native `resolve.tsconfigPaths` (ADR-019 note).
 - React Testing Library (`@testing-library/react`, `@testing-library/dom`) — component tests.
 - jsdom — DOM environment for component tests only.
+- `@testing-library/user-event` — realistic keyboard and pointer interactions, needed to test keyboard operability (added in M3).
 
-Optional, each approved separately when first needed: `@testing-library/user-event` for realistic interactions, `@testing-library/jest-dom` for DOM matchers.
+Optional, approved separately when first needed: `@testing-library/jest-dom` for DOM matchers.
 
 ### Future scope
 

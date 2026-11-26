@@ -39,6 +39,8 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `src/execution/browser-executor.ts`: the browser-direct executor. It sends the prepared request with `cache: "no-store"`, combines cancellation with a 15 s timeout, reads the body once while counting bytes against a 5 MB limit, and normalizes the result. Rejections map to `NETWORK_ERROR`, `TIMEOUT`, or `CANCELLED`; HTTP 4xx and 5xx are returned as responses. `src/execution/limits.ts` holds the two limits. Unit tests use a mocked `fetch`.
 - OD-3 first half decided: 15 s timeout and 5 MB response size limit.
 - `src/features/playground/hooks/use-execution.ts`: the execution state hook (ADR-010) with idle, executing, and completed states. It creates an `AbortController` per execution, ignores Send while executing, settles Cancel immediately as `CANCELLED`, aborts on unmount, and drops results from cancelled or unmounted executions. The executor is injectable and defaults to the browser executor. Hook tests use a controllable fake executor.
+- shadcn/ui components `button`, `input`, `label`, `tabs`, `textarea`, `checkbox`, and `native-select` in `src/components/ui/`, formatted with Prettier. A native `<select>` is used for the method and body type instead of Radix Select.
+- Dev dependency `@testing-library/user-event` 14.6.13 for keyboard and pointer interaction tests, with a smoke test in `src/components/ui/primitives.test.tsx`.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
