@@ -54,7 +54,7 @@ User-triggered requests must never reuse cached responses.
 ## 3. Execution and Timing
 
 - Each execution creates one `AbortController` (ADR-010). Its signal is combined with a timeout signal, so one signal covers cancellation, unmount, and timeout. The failure code records which one fired (§5).
-- **Timeout (Proposed):** 15 seconds in both strategies. A timeout is an execution failure, not an HTTP response.
+- **Timeout:** 15 seconds in both strategies (OD-3, decided 2026-11-26). A timeout is an execution failure, not an HTTP response.
 - **Duration** is measured with `performance.now()` from just before the call starts to just after the response body is fully read. In proxy mode, the server-measured upstream duration is reported; the round trip to the proxy is not included. The Metadata tab labels which one is shown.
 - **Redirects:**
   - Browser-direct: the browser follows redirects automatically and does not expose intermediate hops. The final response is what RestLab sees.
@@ -95,7 +95,7 @@ HTML is text. It is displayed as text and never injected into the page (`ARCHITE
 
 ### 4.4 Large responses
 
-- Both strategies stop reading and return a `RESPONSE_TOO_LARGE` failure once the size limit is exceeded (Proposed: 5 MB). The proxy enforces it regardless of what the client sends.
+- Both strategies stop reading and return a `RESPONSE_TOO_LARGE` failure once the size limit of 5 MB (5 × 1024 × 1024 bytes; OD-3, decided 2026-11-26) is exceeded. The proxy enforces it regardless of what the client sends.
 - Display thresholds for formatting and highlighting are separate (open item OD-6).
 
 ## 5. Failure Codes and Error Mapping

@@ -16,7 +16,7 @@ Verified against the repository on 2026-11-25. Re-verify before relying on it; `
 | Item                 | State                                                                                                                                                                                                                                                                                                                                                                              |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/app/`           | Root `layout.tsx` (`<html>`, `<body>`, metadata, Geist font), placeholder `page.tsx`, `globals.css` with Tailwind and the shadcn theme                                                                                                                                                                                                                                             |
-| Other `src/` folders | `lib/utils.ts` (`cn`), `test/setup.ts`; empty `domain/`, `execution/`, `server/`, `features/` (`.gitkeep`). `components/ui/` is created by the first `shadcn add`                                                                                                                                                                                                                  |
+| Other `src/` folders | `lib/utils.ts` (`cn`), `test/setup.ts`; `domain/` with `errors/`, `request/`, `response/`; `execution/contract/` with `executor.ts`, `result.ts`, `envelope.ts`; `execution/browser-executor.ts`, `execution/limits.ts`; empty `server/`, `features/` (`.gitkeep`). `components/ui/` is created by the first `shadcn add`                                                          |
 | `next.config.ts`     | `reactCompiler: true`, `cacheComponents: true`, `partialPrefetching: true`                                                                                                                                                                                                                                                                                                         |
 | `tsconfig.json`      | `strict: true`. Path alias `@/*` maps to `./src/*`                                                                                                                                                                                                                                                                                                                                 |
 | Runtime dependencies | `next` 16.4.6, `react` / `react-dom` 19.3.0, `react-hook-form` 7.92.0, `zod` 4.6.7, `@hookform/resolvers` 7.0.9; from `shadcn init`: `radix-ui`, `cn`, `class-variance-authority`, `lucide-react`, `tw-animate-css`, `shadcn`                                                                                                                                                      |
@@ -103,7 +103,7 @@ execution/
   contract                  # executor interface, ExecutionResult, proxy envelope types
   browser-executor          # browser-direct strategy
   proxy-executor            # calls the Route Handler, maps the envelope
-  normalize                 # shared Response -> normalized response
+  limits                    # timeout and response size limit (OD-3)
 
 server/
   proxy/                    # SSRF guard, upstream transport, timeout, size limit, header policy
@@ -145,7 +145,7 @@ An executor never rejects: every outcome resolves to an `ExecutionResult`. It re
 
 Validation errors occur before an executor is called and never produce an `ExecutionResult`.
 
-Both executors use the same normalization function, so the response model is identical regardless of strategy. The executor is chosen by the user's explicit strategy choice. There is no fallback logic anywhere in this layer (ADR-005).
+Both executors use the same normalization function, `normalizeResponse` in `domain/response`, so the response model is identical regardless of strategy. The executor is chosen by the user's explicit strategy choice. There is no fallback logic anywhere in this layer (ADR-005).
 
 The proxy envelope types live in `execution/contract`, because both `server/` (producer) and `execution/proxy-executor` (consumer) depend on them and both may import `execution/`.
 
@@ -221,7 +221,7 @@ Error messages shown to users must not expose internal details (stack traces, in
 
 Detailed in `TESTING_STRATEGY.md` §4. The structure supports it directly:
 
-- `domain/` and `execution/normalize`: pure unit tests (Vitest, Node environment), no React.
+- `domain/` and `execution/contract`: pure unit tests (Vitest, Node environment), no React.
 - `server/proxy`: unit tests with a fake DNS resolver and a fake upstream transport; security cases written before the handler is exposed.
 - Executors: unit tests with a mocked `fetch`.
 - `features/`: React Testing Library in jsdom (ADR-019).

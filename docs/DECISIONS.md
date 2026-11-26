@@ -263,16 +263,16 @@ Template:
 
 This is the only list of open decisions. Other documents link here.
 
-| ID    | Decision                                              | Notes                                                                                  | Decide in |
-| ----- | ----------------------------------------------------- | -------------------------------------------------------------------------------------- | --------- |
-| OD-2  | Pinning the validated address (DNS rebinding)         | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent    | M6 spike  |
-| OD-3  | Limit values                                          | Proposed: 15 s timeout and 5 MB size (needed in M2); 3 redirects and ports 80/443 (M6) | M2, M6    |
-| OD-4  | Proxy request body and header limits                  | Values to set                                                                          | M6        |
-| OD-5  | Proxy content-type and origin checks                  | Proposed in `API_INTEGRATION.md` §6.3                                                  | M6        |
-| OD-6  | Large-response display threshold                      | Above it, no formatting or highlighting                                                | M4        |
-| OD-7  | Binary response display                               | MVP default: metadata and a "not displayed" message only                               | M4        |
-| OD-8  | Theme implementation                                  | Cookie read on server vs pre-paint script; Cache Components impact; library or not     | M7        |
-| OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                            | M8        |
-| OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                                 | M8        |
+| ID    | Decision                                              | Notes                                                                               | Decide in |
+| ----- | ----------------------------------------------------- | ----------------------------------------------------------------------------------- | --------- |
+| OD-2  | Pinning the validated address (DNS rebinding)         | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent | M6 spike  |
+| OD-3  | Limit values                                          | 15 s timeout and 5 MB size decided 2026-11-26; proposed: 3 redirects, ports 80/443  | M6        |
+| OD-4  | Proxy request body and header limits                  | Values to set                                                                       | M6        |
+| OD-5  | Proxy content-type and origin checks                  | Proposed in `API_INTEGRATION.md` §6.3                                               | M6        |
+| OD-6  | Large-response display threshold                      | Above it, no formatting or highlighting                                             | M4        |
+| OD-7  | Binary response display                               | MVP default: metadata and a "not displayed" message only                            | M4        |
+| OD-8  | Theme implementation                                  | Cookie read on server vs pre-paint script; Cache Components impact; library or not  | M7        |
+| OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                         | M8        |
+| OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                              | M8        |
 
 Resolved: OD-1 (envelope and result field names) by the ADR-009 note on 2026-11-26; OD-10 (continuous integration) by ADR-022 on 2026-11-25.

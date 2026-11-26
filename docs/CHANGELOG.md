@@ -36,6 +36,8 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Request fixtures in `src/test/fixtures/requests.ts` and unit tests for errors and request handling.
 - `src/domain/response`: the `NormalizedResponse` model (ADR-007), content-type parsing and classification (JSON, text, binary, empty), charset decoding that replaces invalid bytes with U+FFFD and reports `DECODE_ERROR` only for an unknown charset, JSON parsing that keeps the raw body on failure, and `normalizeResponse`. It builds a normalized response from received status, headers, and body bytes, with size taken from the bytes read (ADR-014). Unit tests cover each part.
 - `src/execution/contract`: the `ExecutionResult` union with `responseResult` and `failureResult` constructors, the `Executor` type, and the `ProxyEnvelope` types with the failure-code-to-proxy-status map. Unit tests cover the constructors and the map.
+- `src/execution/browser-executor.ts`: the browser-direct executor. It sends the prepared request with `cache: "no-store"`, combines cancellation with a 15 s timeout, reads the body once while counting bytes against a 5 MB limit, and normalizes the result. Rejections map to `NETWORK_ERROR`, `TIMEOUT`, or `CANCELLED`; HTTP 4xx and 5xx are returned as responses. `src/execution/limits.ts` holds the two limits. Unit tests use a mocked `fetch`.
+- OD-3 first half decided: 15 s timeout and 5 MB response size limit.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
@@ -46,6 +48,7 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Path alias `@/*` now points at `./src/*` (ADR-001).
 - `@types/node` raised from `^20` to `^22`, required by Vitest 5.
 - `ARCHITECTURE.md` §4 allows `app → lib`.
+- `ARCHITECTURE.md`: repository state lists the domain and execution files; the planned `execution/normalize` module is dropped because executors use `normalizeResponse` from `domain/response`.
 - `API_INTEGRATION.md` §2.1 and §2.3: query values are encoded with `encodeURIComponent` (`%20` for spaces); header values containing CR, LF, or NUL fail validation.
 - `vite-tsconfig-paths` replaced by Vite's native `resolve.tsconfigPaths` (ADR-019 note).
 - ADR-009 (proxy envelope) accepted; field names remain open.
