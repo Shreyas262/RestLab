@@ -201,7 +201,8 @@ The theme toggle and the code that reads and writes the theme preference cookie 
 
 - Render response content as text. Never use `dangerouslySetInnerHTML` with response content, including HTML responses.
 - JSON highlighting is an in-house tokenizer that emits React text nodes inside styled spans (ADR-015). No highlighting library and no lazy loading.
-- Large bodies: above the display threshold, skip formatting and highlighting and show plain text (threshold is open item OD-6 in `DECISIONS.md`).
+- Large bodies: above the display threshold, skip formatting and highlighting and show plain text (256 KB, ADR-023). JSON is formatted from the raw text, not the parsed value (ADR-025).
+- Images: raster image bodies are shown in an `<img>` through an object URL built from the base64 bytes, never as HTML (ADR-024).
 - Rendering code reads the normalized response and does no parsing of its own.
 
 ## 11. Error Handling Architecture

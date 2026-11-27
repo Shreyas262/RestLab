@@ -1,6 +1,6 @@
 # RestLab — Requirements
 
-**Status:** Accepted · **Last reviewed:** 2026-11-24
+**Status:** Accepted · **Last reviewed:** 2026-11-27
 
 ## 1. Purpose
 
@@ -94,6 +94,7 @@ The application must provide structured response information.
 - Display formatted JSON responses.
 - Provide syntax highlighting for JSON.
 - Display plain-text responses.
+- Preview common raster image responses (PNG, JPEG, GIF, WebP, AVIF, BMP, ICO).
 - Display a meaningful fallback for unsupported content types.
 - Provide a separate, easily identifiable response data view.
 - Allow users to copy response content.

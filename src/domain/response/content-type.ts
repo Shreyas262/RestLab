@@ -5,7 +5,7 @@ export interface MediaType {
   charset: string | null;
 }
 
-export type DeclaredClass = "json" | "text" | "binary";
+export type DeclaredClass = "json" | "text" | "image" | "binary";
 
 const TOKEN = "[!#$%&'*+.^_`|~0-9a-z-]+";
 const ESSENCE_PATTERN = new RegExp(`^${TOKEN}/${TOKEN}$`);
@@ -20,6 +20,18 @@ const TEXT_ESSENCES = new Set([
   "application/x-yaml",
   "application/x-ndjson",
   "application/graphql",
+]);
+
+// Raster formats an <img> can show. SVG is not here: it is +xml, so it stays text and is never drawn (ADR-024).
+const IMAGE_ESSENCES = new Set([
+  "image/png",
+  "image/jpeg",
+  "image/gif",
+  "image/webp",
+  "image/avif",
+  "image/bmp",
+  "image/x-icon",
+  "image/vnd.microsoft.icon",
 ]);
 
 /** Returns `null` for a missing or malformed value, which callers treat as a missing type (API_INTEGRATION.md §4.3). */
@@ -59,5 +71,6 @@ export function classifyMediaType(essence: string): DeclaredClass {
   ) {
     return "text";
   }
+  if (IMAGE_ESSENCES.has(essence)) return "image";
   return "binary";
 }

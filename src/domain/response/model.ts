@@ -1,7 +1,13 @@
 import type { ProcessingError } from "../errors/processing-errors";
 import type { ExecutionStrategy } from "../request/schema";
 
-export const BODY_CLASSES = ["json", "text", "binary", "empty"] as const;
+export const BODY_CLASSES = [
+  "json",
+  "text",
+  "image",
+  "binary",
+  "empty",
+] as const;
 export type BodyClass = (typeof BODY_CLASSES)[number];
 
 export interface ResponseHeader {
@@ -24,6 +30,8 @@ export interface NormalizedResponse {
   bodyClass: BodyClass;
   /** Absent for binary and empty bodies, and when the declared charset is unknown. */
   rawBody?: string;
+  /** Present only for image bodies: the body bytes, base64-encoded so the response stays JSON (ADR-024). */
+  imageBase64?: string;
   /** Present only when JSON parsing succeeded. */
   parsedBody?: unknown;
   processingError?: ProcessingError;

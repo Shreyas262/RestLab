@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { createProcessingError } from "../errors/processing-errors";
+import { base64ToBytes } from "./base64";
 import { normalizeResponse, type ReceivedResponse } from "./normalize-response";
 
 const utf8 = (text: string) => new TextEncoder().encode(text);
@@ -175,14 +176,49 @@ describe("normalizeResponse (FR-05, FR-06, NFR-04)", () => {
   test("does not decode binary types", () => {
     const response = normalizeResponse(
       received({
-        headers: [["content-type", "image/png"]],
+        headers: [["content-type", "application/octet-stream"]],
         bytes: new Uint8Array([0x89, 0x50, 0x4e, 0x47]),
       }),
     );
     expect(response.bodyClass).toBe("binary");
     expect(response.sizeBytes).toBe(4);
     expect(response).not.toHaveProperty("rawBody");
+    expect(response).not.toHaveProperty("imageBase64");
     expect(response).not.toHaveProperty("processingError");
+  });
+
+  test("keeps image bytes as base64 without decoding them as text", () => {
+    const bytes = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a]);
+    const response = normalizeResponse(
+      received({ headers: [["content-type", "image/png"]], bytes }),
+    );
+    expect(response.bodyClass).toBe("image");
+    expect(response.sizeBytes).toBe(6);
+    expect(response.imageBase64).toBeDefined();
+    expect(base64ToBytes(response.imageBase64 ?? "")).toEqual(bytes);
+    expect(response).not.toHaveProperty("rawBody");
+    expect(response).not.toHaveProperty("processingError");
+  });
+
+  test("keeps SVG as text, never as an image", () => {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"/>';
+    const response = normalizeResponse(
+      received({
+        headers: [["content-type", "image/svg+xml"]],
+        bytes: utf8(svg),
+      }),
+    );
+    expect(response.bodyClass).toBe("text");
+    expect(response.rawBody).toBe(svg);
+    expect(response).not.toHaveProperty("imageBase64");
+  });
+
+  test("classifies an empty image body as empty", () => {
+    const response = normalizeResponse(
+      received({ headers: [["content-type", "image/png"]] }),
+    );
+    expect(response.bodyClass).toBe("empty");
+    expect(response).not.toHaveProperty("imageBase64");
   });
 
   test("classifies a zero-length body as empty whatever the content type says", () => {
@@ -279,6 +315,16 @@ describe("normalizeResponse (FR-05, FR-06, NFR-04)", () => {
       received({
         headers: [["content-type", "application/json"]],
         bytes: utf8('{"a":[1,"b",null]}'),
+      }),
+    );
+    expect(JSON.parse(JSON.stringify(response))).toEqual(response);
+  });
+
+  test("is JSON-serializable without loss for an image body", () => {
+    const response = normalizeResponse(
+      received({
+        headers: [["content-type", "image/gif"]],
+        bytes: new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0xff]),
       }),
     );
     expect(JSON.parse(JSON.stringify(response))).toEqual(response);

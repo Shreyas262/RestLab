@@ -54,6 +54,9 @@ Template:
 | 020 | Browser-direct by default; strategy selector ships with M6   | Accepted |
 | 021 | Enforce import direction with ESLint `no-restricted-imports` | Accepted |
 | 022 | Continuous integration with GitHub Actions                   | Accepted |
+| 023 | Plain text above a 256 KB display limit                      | Accepted |
+| 024 | Preview raster image responses                               | Accepted |
+| 025 | Format JSON from the raw text, not the parsed value          | Accepted |
 
 ## 4. Records
 
@@ -193,6 +196,7 @@ Template:
 - Context: The MVP highlights JSON only. Highlighting libraries add bundle weight and usually need lazy loading. Some produce HTML strings, which conflicts with the rule against injecting HTML.
 - Decision: Write a small tokenizer over the formatted JSON text that returns React elements (text inside styled spans). No highlighting library.
 - Consequences: No dependency, no `dangerouslySetInnerHTML`, easy to test. Large bodies above the display threshold (OD-6) skip highlighting. Revisit if other languages need highlighting.
+- Note (2026-11-27): The threshold is 256 KB (ADR-023). The same tokenizer also formats the JSON (ADR-025); it lives in `src/domain/response/json-tokens.ts`.
 - Alternatives considered: Shiki, Prism-based libraries, highlight.js.
 
 ## ADR-016: Keep Cache Components and Partial Prefetching enabled
@@ -260,6 +264,33 @@ Template:
 - Consequences: Every check in `TESTING_STRATEGY.md` §8 item 3 runs on each push. The build downloads the Geist font from Google Fonts, so a Fonts outage can fail CI. Windows and other Node versions are not tested in CI.
 - Alternatives considered: A Node 22 and 24 matrix; pinning actions to commit SHAs; no CI until M8.
 
+## ADR-023: Plain text above a 256 KB display limit
+
+- Status: Accepted
+- Date: 2026-11-27
+- Context: OD-6. Highlighting gives every JSON token its own element. Around 256 KB of JSON that is roughly 30,000 to 40,000 elements, which still renders without a noticeable freeze; well above it the page would hang. The 5 MB response limit (OD-3) still applies.
+- Decision: JSON bodies whose decoded size (ADR-014) is at most 256 KB (256 × 1024 bytes) are formatted and highlighted. Above that, the raw text is shown as plain text with a note saying why. The limit is `FORMAT_LIMIT_BYTES` in `src/domain/response/display.ts`.
+- Consequences: Large bodies stay readable and copyable, just unformatted. The limit is measured on the same byte count as the size shown to the user.
+- Alternatives considered: 1 MB, which risks freezing the page; 256 KB with a "Format anyway" button.
+
+## ADR-024: Preview raster image responses
+
+- Status: Accepted
+- Date: 2026-11-27
+- Context: OD-7. The MVP default was to show only metadata for binary bodies. Images are common API responses and are more useful shown than skipped. The normalized response must stay JSON-serializable, because the proxy sends it inside the envelope (ADR-009).
+- Decision: A new body class, `image`, covers declared `image/png`, `image/jpeg`, `image/gif`, `image/webp`, `image/avif`, `image/bmp`, `image/x-icon`, and `image/vnd.microsoft.icon`. For these the body bytes are kept base64-encoded in `imageBase64`. The Body tab decodes them into a `Blob`, shows it in an `<img>` through an object URL, and revokes the URL when the view goes away. The type comes from `Content-Type` only; the bytes are never sniffed. SVG stays text (`+xml`) and is never drawn. Other binary types keep the "not displayed" message. The Overview tab replaces the base64 data with a short placeholder.
+- Consequences: An `<img>` never runs scripts, so the rule against rendering response content as HTML holds. Base64 adds about a third: a 5 MB image becomes about 6.7 MB of text in memory. Bytes that are not a valid image show a "could not be displayed" message. A future Content-Security-Policy must allow `img-src blob:`.
+- Alternatives considered: Metadata only (the earlier default); keeping raw bytes in the model, which breaks JSON serialization; data URLs, which put the whole image into a DOM attribute; drawing SVG.
+
+## ADR-025: Format JSON from the raw text, not the parsed value
+
+- Status: Accepted
+- Date: 2026-11-27
+- Context: `JSON.stringify(JSON.parse(text))` changes what the server sent: numbers beyond double precision lose digits, only the last of a duplicate key survives, and escapes are rewritten.
+- Decision: The Body tab formats JSON by re-indenting the tokens of the raw text (`formatJson` in `src/domain/response/json-tokens.ts`), with the same layout as `JSON.stringify(value, null, 2)`. The tokens drive highlighting too. Parsing still decides whether the body is valid JSON.
+- Consequences: The formatted view shows every value exactly as received. Formatting and highlighting share one tokenizer and one set of tests.
+- Alternatives considered: Formatting the parsed value with `JSON.stringify`.
+
 ## 5. Open Decisions Register
 
 This is the only list of open decisions. Other documents link here.
@@ -270,10 +301,8 @@ This is the only list of open decisions. Other documents link here.
 | OD-3  | Limit values                                          | 15 s timeout and 5 MB size decided 2026-11-26; proposed: 3 redirects, ports 80/443  | M6        |
 | OD-4  | Proxy request body and header limits                  | Values to set                                                                       | M6        |
 | OD-5  | Proxy content-type and origin checks                  | Proposed in `API_INTEGRATION.md` §6.3                                               | M6        |
-| OD-6  | Large-response display threshold                      | Above it, no formatting or highlighting                                             | M4        |
-| OD-7  | Binary response display                               | MVP default: metadata and a "not displayed" message only                            | M4        |
 | OD-8  | Theme implementation                                  | Cookie read on server vs pre-paint script; Cache Components impact; library or not  | M7        |
 | OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                         | M8        |
 | OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                              | M8        |
 
-Resolved: OD-1 (envelope and result field names) by the ADR-009 note on 2026-11-26; OD-10 (continuous integration) by ADR-022 on 2026-11-25.
+Resolved: OD-1 (envelope and result field names) by the ADR-009 note on 2026-11-26; OD-10 (continuous integration) by ADR-022 on 2026-11-25; OD-6 (display threshold) by ADR-023 and OD-7 (binary display) by ADR-024 on 2026-11-27.

@@ -39,10 +39,11 @@ Pure unit tests, no mocks needed.
 
 - Request schemas: valid and invalid URLs, schemes, credentials in URLs, header names, JSON bodies, body types per method (GET never sends a body; DELETE body optional), duplicate parameters.
 - URL building: parameter merging, encoding, disabled and empty-key rows skipped, preserved existing query strings.
-- Response normalization and classification: JSON, text, empty, binary, missing content type, charset decoding.
+- Response normalization and classification: JSON, text, image, empty, binary, missing content type, charset decoding.
 - Parsing: valid JSON, malformed JSON (raw body and metadata kept), empty body.
 - Error categories and failure codes: each maps to the correct category.
-- JSON highlighter tokenizer: correct tokens for every JSON value type; output contains text only.
+- JSON highlighter tokenizer: correct tokens for every JSON value type; output contains text only; formatting keeps large numbers and duplicate keys as received.
+- Display limit and base64 helpers.
 - Presets: every preset passes the request schema.
 
 ### 4.2 Execution (`src/execution`)
@@ -82,7 +83,7 @@ React Testing Library. Query by role and label, as users do, which doubles as an
 - Execution states: initial, executing, success, HTTP error, execution failure, cancelled, processing error each render distinctly and not by color alone.
 - No permanent loading state after failure, timeout, or cancel.
 - A result from an aborted request does not overwrite newer state.
-- Response inspector: three tabs, keyboard operable; Body tab for JSON, text, empty, binary, and unparseable; copy action gives feedback.
+- Response inspector: three tabs, keyboard operable; Body tab for JSON, JSON above the display limit, text, image, invalid image data, empty, binary, and unparseable; copy action gives feedback.
 - Strategy selector (M6): default is browser-direct; CORS hint after `NETWORK_ERROR`; strategy never changes on its own.
 - Presets: loading one fills the editor; every field remains editable.
 - Theme toggle: switches theme and writes the preference cookie.

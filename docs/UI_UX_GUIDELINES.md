@@ -1,6 +1,6 @@
 # UI/UX Guidelines
 
-**Status:** Accepted · **Last reviewed:** 2026-11-24
+**Status:** Accepted · **Last reviewed:** 2026-11-27
 
 ## 1. Design Direction
 
@@ -68,7 +68,7 @@ A one-line summary (outcome, status, duration, size) followed by the complete no
 
 ### Body
 
-The response body only. Formatted and highlighted JSON, plain text for textual types, an explicit empty state, and a "not displayed" message for binary content. Copy button for textual bodies.
+The response body only. Formatted and highlighted JSON (plain text above 256 KB, with a note; ADR-023), plain text for textual types, a preview for raster images (ADR-024), an explicit empty state, and a "not displayed" message for other binary content. Copy button for textual bodies.
 
 ### Metadata
 

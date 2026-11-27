@@ -1,5 +1,6 @@
 import { createProcessingError } from "../errors/processing-errors";
 import type { ExecutionStrategy } from "../request/schema";
+import { bytesToBase64 } from "./base64";
 import { classifyMediaType, parseContentType } from "./content-type";
 import { decodeText } from "./decode";
 import type { NormalizedResponse, ResponseHeader } from "./model";
@@ -50,6 +51,14 @@ export function normalizeResponse(
   const declared = classifyMediaType(mediaType.essence);
   if (declared === "binary") {
     return { ...base, bodyClass: "binary" };
+  }
+
+  if (declared === "image") {
+    return {
+      ...base,
+      bodyClass: "image",
+      imageBase64: bytesToBase64(received.bytes),
+    };
   }
 
   const decoded = decodeText(received.bytes, mediaType.charset);

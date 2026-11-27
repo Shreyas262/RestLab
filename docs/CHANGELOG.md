@@ -52,6 +52,9 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - After a failed Send, the editor switches to the tab holding the first error, and that tab is marked as having errors in text as well as with an icon.
 - Tests for params, headers, body, and tab selection, with a shared `renderPlayground` helper in `src/features/playground/test-utils.tsx`.
 - `.gitattributes` enforcing LF line endings, so `format:check` passes on Windows checkouts with `core.autocrlf`.
+- ADR-023 to ADR-025; OD-6 and OD-7 resolved. FR-05 now includes previews of raster image responses.
+- `image` body class for declared PNG, JPEG, GIF, WebP, AVIF, BMP, and ICO responses, with the bytes kept base64-encoded in `imageBase64` (ADR-024). SVG stays text.
+- `src/domain/response/base64.ts` (`bytesToBase64`, `base64ToBytes`), `json-tokens.ts` (`tokenizeJson`, `formatJson`, `tokensToText`), and `display.ts` (`FORMAT_LIMIT_BYTES` of 256 KB, `isWithinFormatLimit`), with unit tests.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
 ### Changed
@@ -71,6 +74,8 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - The home page renders the playground below the heading instead of a placeholder.
 - `src/test/setup.ts` adds a no-op `ResizeObserver` when it is missing, because jsdom lacks it and Radix Checkbox needs it.
 - Test names reference the requirements they cover: every top-level `describe`, and every `test` outside one, ends with its requirement IDs, for example `(FR-01)` (`TESTING_STRATEGY.md` §6).
+- The existing "does not decode binary types" test uses `application/octet-stream`, because `image/png` is now an image.
+- `API_INTEGRATION.md` §4.2 to §4.4, `ARCHITECTURE.md` §10, `UI_UX_GUIDELINES.md` §4, and `TESTING_STRATEGY.md` §4 describe image bodies, the display limit, and formatting from the raw text.
 - Documentation brought in line with the code: `ARCHITECTURE.md` §2 repository state re-verified and the stale M0 notes removed; `ARCHITECTURE.md` §9 and an ADR-010 note describe Send turning into Cancel instead of being disabled; `API_INTEGRATION.md` §8 no longer lists the resolved OD-1; the outdated "no product features" note removed from this file.
 
 ### Removed

@@ -76,27 +76,28 @@ The body is read once, as bytes, counting bytes as they arrive so the size limit
 | Duration         | §3                   | Milliseconds                                                                                                                                                                                                                                                                                                                            |
 | Size             | Bytes read           | Decoded body bytes actually received (ADR-014). `Content-Length` is not used, since it can describe compressed bytes or be missing. Zero only for a genuinely empty body                                                                                                                                                                |
 | Content type     | `Content-Type`       | Stored as received, plus a derived classification                                                                                                                                                                                                                                                                                       |
-| Raw body         | §4.1                 | Text, or absent for binary or empty bodies                                                                                                                                                                                                                                                                                              |
+| Raw body         | §4.1                 | Text, or absent for image, binary, or empty bodies                                                                                                                                                                                                                                                                                      |
 | Parsed body      | Parsing step         | Present only when parsing succeeds                                                                                                                                                                                                                                                                                                      |
 | Processing error | Parsing step         | Present only when parsing or decoding fails                                                                                                                                                                                                                                                                                             |
 | Strategy         | Executor             | `browser` or `proxy`, for display only                                                                                                                                                                                                                                                                                                  |
 
 ### 4.3 Content-type classification
 
-| Class          | Matches                                  | Body tab behavior                                                                        |
-| -------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------- |
-| JSON           | `application/json`, `+json` suffixes     | Parse; format and highlight. On parse failure, show raw text and a processing error      |
-| Text           | `text/*`, XML, and similar textual types | Show as plain text                                                                       |
-| Binary / other | Images, archives, unknown                | Do not render. Show metadata and a "not displayed" message                               |
-| Empty          | Zero-length body                         | Show an explicit empty state                                                             |
-| Missing type   | No `Content-Type`                        | Treat as text if it decodes cleanly (`TextDecoder` with `fatal: true`). Otherwise binary |
+| Class          | Matches                                                                           | Body tab behavior                                                                        |
+| -------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| JSON           | `application/json`, `+json` suffixes                                              | Parse; format and highlight. On parse failure, show raw text and a processing error      |
+| Text           | `text/*`, XML, and similar textual types                                          | Show as plain text                                                                       |
+| Image          | `image/png`, `jpeg`, `gif`, `webp`, `avif`, `bmp`, `x-icon`, `vnd.microsoft.icon` | Keep the bytes as base64 and show them as an image (ADR-024). SVG is text                |
+| Binary / other | Archives, other images, unknown                                                   | Do not render. Show metadata and a "not displayed" message                               |
+| Empty          | Zero-length body                                                                  | Show an explicit empty state                                                             |
+| Missing type   | No `Content-Type`                                                                 | Treat as text if it decodes cleanly (`TextDecoder` with `fatal: true`). Otherwise binary |
 
 HTML is text. It is displayed as text and never injected into the page (`ARCHITECTURE.md` §10).
 
 ### 4.4 Large responses
 
 - Both strategies stop reading and return a `RESPONSE_TOO_LARGE` failure once the size limit of 5 MB (5 × 1024 × 1024 bytes; OD-3, decided 2026-11-26) is exceeded. The proxy enforces it regardless of what the client sends.
-- Display thresholds for formatting and highlighting are separate (open item OD-6).
+- The display limit is separate: JSON above 256 KB is shown as plain text without formatting or highlighting (ADR-023).
 
 ## 5. Failure Codes and Error Mapping
 
