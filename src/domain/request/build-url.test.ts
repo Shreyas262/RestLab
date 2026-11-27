@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { row } from "@/test/fixtures/requests";
 import { buildFinalUrl } from "./build-url";
 
-describe("buildFinalUrl", () => {
+describe("buildFinalUrl (FR-01)", () => {
   test("returns the URL unchanged apart from normalization when there are no params", () => {
     expect(buildFinalUrl("https://example.com", [])).toBe(
       "https://example.com/",

@@ -22,7 +22,7 @@ function renderPlayground() {
   };
 }
 
-describe("Playground request bar", () => {
+describe("Playground request bar (FR-01, FR-02)", () => {
   test("renders labelled controls with every supported method", () => {
     const { method, url, button, status } = renderPlayground();
 
@@ -77,7 +77,7 @@ describe("Playground request bar", () => {
   });
 });
 
-describe("Playground execution", () => {
+describe("Playground execution (FR-04, FR-07)", () => {
   test("sends the configured request and shows the response", async () => {
     const { user, method, url, button, status, executor, calls } =
       renderPlayground();
@@ -136,7 +136,7 @@ describe("Playground execution", () => {
   });
 });
 
-describe("Playground keyboard use", () => {
+describe("Playground keyboard use (NFR-06)", () => {
   test("moves through method, URL, and Send in order", async () => {
     const { user, method, url, button } = renderPlayground();
 

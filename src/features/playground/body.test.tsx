@@ -7,7 +7,7 @@ const bodyType = () =>
 const bodyContent = () =>
   screen.getByRole<HTMLTextAreaElement>("textbox", { name: "Body" });
 
-describe("Body tab", () => {
+describe("Body tab (FR-01)", () => {
   test("starts with no body and hides the editor", async () => {
     const { user, tab } = renderPlayground();
     await user.click(tab("Body"));

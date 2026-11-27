@@ -20,7 +20,7 @@ const notFound: NormalizedResponse = {
   strategy: "browser",
 };
 
-describe("responseResult", () => {
+describe("responseResult (FR-06)", () => {
   test("wraps an HTTP error status as a response, not a failure", () => {
     expect(responseResult(notFound)).toEqual({
       kind: "response",
@@ -29,7 +29,7 @@ describe("responseResult", () => {
   });
 });
 
-describe("failureResult", () => {
+describe("failureResult (FR-06)", () => {
   test("carries the failure code, its user-facing message, and the strategy", () => {
     expect(failureResult("TIMEOUT", "proxy")).toEqual({
       kind: "failure",

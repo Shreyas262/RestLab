@@ -67,15 +67,12 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - ADR-009 (proxy envelope) accepted; field names remain open.
 - ADR-009 field names fixed and OD-1 resolved; `API_INTEGRATION.md` §6.2 and `ARCHITECTURE.md` §6.4 name the fields.
 - Documentation finalized on 2026-11-24: statuses updated to match the repository, error categories aligned, inspector tabs defined, headers model corrected to match Fetch, execution plan revised in `PROJECT_PLAN.md`.
-
 - Existing files formatted with Prettier.
 - The home page renders the playground below the heading instead of a placeholder.
 - `src/test/setup.ts` adds a no-op `ResizeObserver` when it is missing, because jsdom lacks it and Radix Checkbox needs it.
+- Test names reference the requirements they cover: every top-level `describe`, and every `test` outside one, ends with its requirement IDs, for example `(FR-01)` (`TESTING_STRATEGY.md` §6).
+- Documentation brought in line with the code: `ARCHITECTURE.md` §2 repository state re-verified and the stale M0 notes removed; `ARCHITECTURE.md` §9 and an ADR-010 note describe Send turning into Cancel instead of being disabled; `API_INTEGRATION.md` §8 no longer lists the resolved OD-1; the outdated "no product features" note removed from this file.
 
 ### Removed
 
 - Dev dependency `@tailwindcss/turbopack`.
-
-### Notes
-
-- No product features are implemented yet. The repository contains a stub Next.js app (`src/app`) and documentation.

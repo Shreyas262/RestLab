@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { classifyMediaType, parseContentType } from "./content-type";
 
-describe("parseContentType", () => {
+describe("parseContentType (FR-05)", () => {
   test("returns null when the header is missing", () => {
     expect(parseContentType(null)).toBeNull();
   });
@@ -38,7 +38,7 @@ describe("parseContentType", () => {
   );
 });
 
-describe("classifyMediaType", () => {
+describe("classifyMediaType (FR-05)", () => {
   test.each([
     ["application/json", "json"],
     ["application/problem+json", "json"],

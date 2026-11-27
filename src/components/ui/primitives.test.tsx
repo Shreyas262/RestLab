@@ -5,7 +5,7 @@ import { Button } from "./button";
 import { Label } from "./label";
 import { NativeSelect, NativeSelectOption } from "./native-select";
 
-test("a button can be focused with Tab and pressed with Enter", async () => {
+test("a button can be focused with Tab and pressed with Enter (NFR-06)", async () => {
   const user = userEvent.setup();
   const onClick = vi.fn();
   render(<Button onClick={onClick}>Send</Button>);
@@ -19,7 +19,7 @@ test("a button can be focused with Tab and pressed with Enter", async () => {
   expect(onClick).toHaveBeenCalledTimes(1);
 });
 
-test("a labelled native select changes value", async () => {
+test("a labelled native select changes value (NFR-06)", async () => {
   const user = userEvent.setup();
   render(
     <>

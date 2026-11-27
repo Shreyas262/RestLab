@@ -5,7 +5,7 @@ import {
   isForbiddenRequestHeader,
 } from "./forbidden-headers";
 
-describe("isForbiddenRequestHeader", () => {
+describe("isForbiddenRequestHeader (FR-01)", () => {
   test.each([
     "Host",
     "cookie",
@@ -55,7 +55,7 @@ describe("isForbiddenRequestHeader", () => {
   });
 });
 
-describe("findForbiddenHeaders", () => {
+describe("findForbiddenHeaders (FR-01)", () => {
   test("reports enabled forbidden rows with their index", () => {
     const warnings = findForbiddenHeaders([
       row("Accept", "*/*"),

@@ -55,7 +55,7 @@ function streamOf(...chunks: Uint8Array[]) {
   });
 }
 
-describe("executeInBrowser", () => {
+describe("executeInBrowser (FR-04, FR-06, NFR-04)", () => {
   test("returns a normalized response for a 200", async () => {
     respondWith(
       new Response('{"id":1}', {

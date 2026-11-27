@@ -10,7 +10,7 @@ const bodyError: FieldErrors<RequestConfig> = {
   body: { content: { type: "custom", message: "bad JSON" } },
 };
 
-describe("tabToShowForErrors", () => {
+describe("tabToShowForErrors (FR-01)", () => {
   test("keeps the active tab when there are no tab errors", () => {
     const urlOnly: FieldErrors<RequestConfig> = {
       url: { type: "custom", message: "Enter a URL." },
@@ -33,7 +33,7 @@ describe("tabToShowForErrors", () => {
   });
 });
 
-test("isRequestTab accepts only known tabs", () => {
+test("isRequestTab accepts only known tabs (FR-01)", () => {
   expect(isRequestTab("headers")).toBe(true);
   expect(isRequestTab("cookies")).toBe(false);
 });

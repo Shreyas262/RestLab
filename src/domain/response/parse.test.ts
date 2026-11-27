@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { createProcessingError } from "../errors/processing-errors";
 import { parseJson } from "./parse";
 
-describe("parseJson", () => {
+describe("parseJson (FR-06, NFR-04)", () => {
   test.each([
     ['{"a":1}', { a: 1 }],
     ["[1,2]", [1, 2]],

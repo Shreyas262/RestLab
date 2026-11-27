@@ -37,7 +37,7 @@ function controllableExecutor() {
   return { executor, calls };
 }
 
-describe("useExecution", () => {
+describe("useExecution (FR-04, FR-07, NFR-04)", () => {
   test("starts idle", () => {
     const { executor } = controllableExecutor();
     const { result } = renderHook(() => useExecution(executor));

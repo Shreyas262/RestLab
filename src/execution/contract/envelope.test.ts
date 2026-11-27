@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { FAILURE_CODES } from "@/domain/errors/failure-codes";
 import { PROXY_FAILURE_STATUS, PROXY_SUCCESS_STATUS } from "./envelope";
 
-describe("proxy statuses", () => {
+describe("proxy statuses (FR-06)", () => {
   test("success uses 200, which no failure status shares", () => {
     expect(PROXY_SUCCESS_STATUS).toBe(200);
     for (const code of FAILURE_CODES) {

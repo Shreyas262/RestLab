@@ -16,7 +16,7 @@ function received(overrides: Partial<ReceivedResponse> = {}): ReceivedResponse {
   };
 }
 
-describe("normalizeResponse", () => {
+describe("normalizeResponse (FR-05, FR-06, NFR-04)", () => {
   test("parses a JSON body and keeps the raw text", () => {
     const raw = '{"id":1,"tags":["a"]}';
     const response = normalizeResponse(

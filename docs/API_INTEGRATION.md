@@ -1,6 +1,6 @@
 # API Integration
 
-**Status:** Accepted, with values marked Proposed still to confirm · **Last reviewed:** 2026-11-24
+**Status:** Accepted, with values marked Proposed still to confirm · **Last reviewed:** 2026-11-27
 **Depends on:** `SYSTEM_DESIGN.md`, `ARCHITECTURE.md`, `DECISIONS.md`
 
 ## 1. Purpose
@@ -220,7 +220,7 @@ Rate limiting, per-client quotas, and hosting-specific protections depend on whe
 
 ## 8. Open Decisions
 
-Tracked in one place: `DECISIONS.md` §5 (OD-1 to OD-5 and OD-9 concern this document).
+Tracked in one place: `DECISIONS.md` §5 (OD-2 to OD-5 and OD-9 concern this document; OD-1 is resolved).
 
 ## 9. References
 

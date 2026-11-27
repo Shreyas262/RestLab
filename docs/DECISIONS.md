@@ -1,6 +1,6 @@
 # Decisions
 
-**Status:** Living document · **Last reviewed:** 2026-11-24
+**Status:** Living document · **Last reviewed:** 2026-11-27
 
 ## 1. Purpose
 
@@ -148,6 +148,7 @@ Template:
 - Decision: Model execution as a small state machine (idle, executing, completed with a result) owned by one hook. Create an `AbortController` per execution. Disable Send while executing. Cancel and unmount abort the current execution.
 - Consequences: A cancelled or superseded request cannot update state. Timeouts and aborts map to the `TIMEOUT` and `CANCELLED` failure codes. The state shape is easy to test without rendering components.
 - Alternatives considered: Independent boolean flags for loading and error; disabling the button only.
+- Note (2026-11-27): "Disable Send while executing" is implemented as one button that reads Cancel while executing (`UI_UX_GUIDELINES.md` §3), and the hook ignores any Send that arrives before the current execution settles. Cancel settles the state to `CANCELLED` at once, without waiting for the executor.
 
 ## ADR-011: Minimal dependencies: native Fetch, no Redux
 

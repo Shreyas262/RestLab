@@ -5,7 +5,7 @@ import { failureResult, responseResult } from "@/execution/contract/result";
 import { makeResponse } from "@/test/fixtures/responses";
 import { ExecutionOutput } from "./execution-output";
 
-describe("ExecutionOutput", () => {
+describe("ExecutionOutput (FR-07)", () => {
   test("shows a prompt before anything is sent", () => {
     render(<ExecutionOutput state={{ status: "idle" }} />);
 

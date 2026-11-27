@@ -3,7 +3,7 @@ import { decodeText } from "./decode";
 
 const utf8 = (text: string) => new TextEncoder().encode(text);
 
-describe("decodeText", () => {
+describe("decodeText (FR-05, NFR-04)", () => {
   test("decodes UTF-8 by default", () => {
     expect(decodeText(utf8("héllo ✓"))).toEqual({
       ok: true,

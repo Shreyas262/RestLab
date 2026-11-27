@@ -1,6 +1,6 @@
 # Testing Strategy
 
-**Status:** Accepted · **Last reviewed:** 2026-11-24
+**Status:** Accepted · **Last reviewed:** 2026-11-27
 **Depends on:** `TECH_STACK.md` §7, `ARCHITECTURE.md` §12, `REQUIREMENTS.md`, `API_INTEGRATION.md`
 
 ## 1. Purpose
@@ -109,13 +109,14 @@ Candidate flows: configure and send with each method; HTTP error handling; strat
 | NFR-05 Security             | Server, components (safe rendering)   |
 | NFR-06 Accessibility        | Components, end-to-end, manual        |
 
-Keep this table current when requirements change. Test names should reference the requirement they cover.
+Keep this table current when requirements change. Test names reference the requirements they cover (§6).
 
 ## 6. Conventions
 
 - Tests sit next to the code they cover and are named `*.test.ts` or `*.test.tsx`.
 - The extension selects the environment (Vitest projects in `vitest.config.mts`): `*.test.ts` runs in Node, `*.test.tsx` runs in jsdom with `src/test/setup.ts`. Hook and component tests use `.tsx`.
 - Test files import `describe`, `test`, and `expect` from `vitest`; globals are off.
+- Every top-level `describe`, and every `test` outside a `describe`, ends with the requirement IDs it covers in parentheses, for example `describe("buildFinalUrl (FR-01)", …)`. The IDs then appear in every full test name and in Vitest output.
 - Shared fixtures (sample responses, request configs) live in `src/test/`. Fixtures represent realistic API output, including large, malformed, and empty payloads.
 - No snapshot tests for large rendered output. Assert on specific content.
 - No arbitrary time delays. Use fake timers for timeout and duration tests.

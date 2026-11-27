@@ -49,6 +49,7 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 5. Recent Decisions
 
+- Test names carry the requirement IDs they cover, on each top-level `describe` (`TESTING_STRATEGY.md` §6); documentation audited against the code (2026-11-27).
 - After a failed Send, the editor switches to the tab holding the first error, because inactive tab panels are unmounted. GET body controls use the DOM `disabled` attribute so the kept content still submits. jsdom gets a no-op `ResizeObserver` stub for Radix (2026-11-27).
 - Request form validates on the first Send, then re-validates on change; form errors are read with `useFormState` so React Compiler memoization cannot serve stale errors (2026-11-27).
 - Native `<select>` (shadcn `native-select`) for the method and body type instead of Radix Select; generated shadcn files follow the project's Prettier style (2026-11-27).
@@ -70,6 +71,5 @@ None.
 
 ## 7. Next Actions
 
-1. Project owner reviews and commits the request tabs.
-2. Manual keyboard check of the editor in a real browser (tabs, checkboxes, Send/Cancel).
-3. M4: the response inspector. Decide OD-6 (display threshold) and OD-7 (binary display) first.
+1. Manual keyboard check of the editor in a real browser (tabs, checkboxes, Send/Cancel).
+2. M4: the response inspector. Decide OD-6 (display threshold) and OD-7 (binary display) first.

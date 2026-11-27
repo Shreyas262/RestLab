@@ -4,7 +4,7 @@ import { renderPlayground } from "./test-utils";
 
 const BASE = "https://api.example.com/items";
 
-describe("Params tab", () => {
+describe("Params tab (FR-01)", () => {
   test("is the initially selected tab and starts empty", () => {
     const { tab } = renderPlayground();
 
@@ -107,7 +107,7 @@ describe("Params tab", () => {
   });
 });
 
-describe("Request tabs keyboard use", () => {
+describe("Request tabs keyboard use (NFR-06)", () => {
   test("arrow keys move between tabs and show their panels", async () => {
     const { user, tab } = renderPlayground();
 

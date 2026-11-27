@@ -2,7 +2,7 @@ import { describe, expect, test } from "vitest";
 import { makeRequest, row } from "@/test/fixtures/requests";
 import { prepareRequest } from "./prepare-request";
 
-describe("prepareRequest", () => {
+describe("prepareRequest (FR-02, FR-04)", () => {
   test("builds the final URL and keeps the method", () => {
     const prepared = prepareRequest(
       makeRequest({

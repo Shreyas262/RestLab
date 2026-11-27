@@ -11,7 +11,7 @@ import {
   PROCESSING_ERROR_MESSAGES,
 } from "./processing-errors";
 
-describe("failure codes", () => {
+describe("failure codes (FR-06)", () => {
   test("contains the shared set from API_INTEGRATION.md §5", () => {
     expect([...FAILURE_CODES].sort()).toEqual(
       [
@@ -51,7 +51,7 @@ describe("failure codes", () => {
   });
 });
 
-describe("processing errors", () => {
+describe("processing errors (FR-06)", () => {
   test("are distinct from failure codes", () => {
     for (const code of PROCESSING_ERROR_CODES) {
       expect(isFailureCode(code)).toBe(false);

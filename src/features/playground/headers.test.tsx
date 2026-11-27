@@ -2,7 +2,7 @@ import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { renderPlayground } from "./test-utils";
 
-describe("Headers tab", () => {
+describe("Headers tab (FR-01)", () => {
   test("header rows are sent to the executor", async () => {
     const { user, tab, calls, sendTo } = renderPlayground();
     await user.click(tab("Headers"));

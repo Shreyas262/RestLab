@@ -11,7 +11,7 @@ function pathsFor(input: unknown) {
   return issuesFor(input).map((issue) => issue.path);
 }
 
-describe("validateRequest: URL", () => {
+describe("validateRequest: URL (FR-01, NFR-05)", () => {
   test("accepts http and https URLs", () => {
     expect(
       validateRequest(makeRequest({ url: "https://example.com" })).ok,
@@ -56,7 +56,7 @@ describe("validateRequest: URL", () => {
   });
 });
 
-describe("validateRequest: headers", () => {
+describe("validateRequest: headers (FR-01)", () => {
   test("accepts valid header names", () => {
     const request = makeRequest({
       headers: [
@@ -108,7 +108,7 @@ describe("validateRequest: headers", () => {
   });
 });
 
-describe("validateRequest: parameters", () => {
+describe("validateRequest: parameters (FR-01)", () => {
   test("allows duplicate keys and any characters in keys and values", () => {
     const request = makeRequest({
       params: [
@@ -122,7 +122,7 @@ describe("validateRequest: parameters", () => {
   });
 });
 
-describe("validateRequest: body", () => {
+describe("validateRequest: body (FR-01)", () => {
   test("accepts valid JSON for methods that send a body", () => {
     for (const method of ["POST", "PUT", "PATCH", "DELETE"] as const) {
       const request = makeRequest({
@@ -180,7 +180,7 @@ describe("validateRequest: body", () => {
   });
 });
 
-describe("validateRequest: untrusted input", () => {
+describe("validateRequest: untrusted input (FR-01, NFR-05)", () => {
   test.each([
     ["null", null],
     ["a string", "https://example.com"],
