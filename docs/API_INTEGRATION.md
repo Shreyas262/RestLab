@@ -199,7 +199,7 @@ Goal: the proxy must not be an unrestricted network relay (`SYSTEM_DESIGN.md` §
 - Forward only user-configured headers. Never forward headers from the incoming request to RestLab (cookies, `Authorization`, `Host`, forwarding headers).
 - Strip hop-by-hop headers and anything that would alter connection semantics.
 - Upstream `Set-Cookie` is returned only as data inside the envelope, so it has no effect on the RestLab origin.
-- RestLab stores nothing about requests (no history or persistence in the MVP).
+- The proxy stores nothing about requests. Saved templates live only in the user's browser (ADR-026) and are never sent to the server. The proxy sees a template's request only when the user sends it.
 - Users may type credentials into header values. The proxy treats them as sensitive in transit and never writes them to logs.
 
 ### 6.6 Private and local APIs
@@ -210,13 +210,13 @@ The proxy blocks private and loopback destinations by design. A user who wants t
 
 Rate limiting, per-client quotas, and hosting-specific protections depend on where RestLab is deployed (open item OD-9). They must be decided and in place before the proxy is publicly exposed.
 
-## 7. Presets and Example APIs
+## 7. Public API Directory and Samples
 
-- Presets are data conforming to the request model, in two groups: generic method-based templates and public API examples.
-- Initial examples come from JSONPlaceholder (`https://jsonplaceholder.typicode.com/`) and DummyJSON (`https://dummyjson.com/`). Presets are not limited to these.
-- A preset is a starting configuration. Loading one fills the editor and the user can change anything, including the execution strategy.
-- Preset behavior must be confirmed against each service's current documentation when written, and again when problems are reported. JSONPlaceholder's documentation states that write requests are simulated and not persisted. Do not present a successful `POST` as proof of storage.
-- A preset may suggest an execution strategy. Loading it sets that strategy as a starting value only, since CORS behavior can change.
+- There are no predefined generic presets (ADR-026). Users save their own templates (`REQUIREMENTS.md` FR-03).
+- The public API directory (FR-09, ADR-028) lists free APIs, starting with JSONPlaceholder (`https://jsonplaceholder.typicode.com/`) and DummyJSON (`https://dummyjson.com/`) but not limited to them. Each "Try it" sample is data that passes `requestSchema`.
+- Samples are chosen to work browser-direct, so they need APIs that allow cross-origin requests and need no key.
+- A sample is a starting configuration. "Try it" fills the editor and the user can change anything, including the execution strategy.
+- Each entry must be confirmed against the service's current documentation when written, and again when problems are reported. The directory shows the date of the last check. JSONPlaceholder's documentation states that write requests are simulated and not persisted. Do not present a successful `POST` as proof of storage.
 - External API availability and behavior are outside RestLab's control (`REQUIREMENTS.md` §6).
 
 ## 8. Open Decisions

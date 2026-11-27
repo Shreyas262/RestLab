@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Accepted · **Last reviewed:** 2026-11-24
+**Status:** Accepted · **Last reviewed:** 2026-11-27
 **Depends on:** `PROJECT_OVERVIEW.md`, `REQUIREMENTS.md`
 
 ## 1. Purpose
@@ -32,7 +32,7 @@ Everything listed under "MVP Scope" in `REQUIREMENTS.md`:
 - Request configuration (URL, method, parameters, headers, JSON and plain-text body).
 - Request execution with user-selected browser-direct or backend proxy strategy, cancellation, and timeout.
 - Response inspection (Overview, Body, Metadata) with JSON formatting and highlighting, and copy.
-- Generic presets and public API examples.
+- User-saved request templates with optional passphrase encryption, guide pages, and a public API directory with "Try it" examples (ADR-026 to ADR-028).
 - Distinct handling of validation, execution, HTTP, and processing outcomes.
 - Responsive layout, light and dark themes, and accessibility baseline.
 - A proxy with the security controls in `API_INTEGRATION.md` §6 in place.
@@ -51,16 +51,16 @@ Raise confidence before sharing the tool more widely.
 
 Listed in `PROJECT_OVERVIEW.md` §8 and not yet scheduled. Order depends on actual need.
 
-| Enhancement                   | Notes                                                                                                      |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Request history               | Introduces persistence. Needs a storage decision. The request model is already designed to be serializable |
-| Saved requests                | Builds on history and persistence                                                                          |
-| Collections and folders       | Builds on saved requests                                                                                   |
-| Authentication support        | Requires care with credential handling in the browser and proxy                                            |
-| Environment variables         | Substitution in URLs, headers, and bodies                                                                  |
-| cURL import and export        | Depends on the request model staying stable                                                                |
-| Response search and filtering | Particularly useful for large JSON                                                                         |
-| OpenAPI integration           | Largest of the group                                                                                       |
+| Enhancement                   | Notes                                                                                   |
+| ----------------------------- | --------------------------------------------------------------------------------------- |
+| Request history               | Can reuse the template storage (ADR-026)                                                |
+| Template import and export    | A file format for moving templates between browsers; encrypted templates stay encrypted |
+| Collections and folders       | Builds on saved templates                                                               |
+| Authentication support        | Requires care with credential handling in the browser and proxy                         |
+| Environment variables         | Substitution in URLs, headers, and bodies                                               |
+| cURL import and export        | Depends on the request model staying stable                                             |
+| Response search and filtering | Particularly useful for large JSON                                                      |
+| OpenAPI integration           | Largest of the group                                                                    |
 
 ## 7. Explicitly Out of Scope for Now
 

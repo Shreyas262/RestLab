@@ -27,11 +27,17 @@ Use a resizable split layout:
 
 Users should be able to allocate space according to their current task.
 
+A saved-templates panel sits to the left of the request editor as a narrow, collapsible sidebar.
+
 ### Tablet and Mobile
 
-Use a stacked layout instead of the desktop split.
+Use a stacked layout instead of the desktop split. The saved-templates panel becomes a collapsible section above the request editor, collapsed by default.
 
 Ensure controls and response content remain usable without horizontal overflow.
+
+### Navigation
+
+A slim header on every page holds the RestLab name and links to the Playground, the Guide, and the Public APIs directory (§11). The current page is marked with `aria-current="page"`.
 
 ## 3. Request Editor
 
@@ -40,6 +46,7 @@ The request editor should contain:
 - URL input.
 - HTTP method selector.
 - Send button, which becomes Cancel while a request is executing.
+- Save button next to Send (§3, Saved templates).
 - Execution strategy selector (browser-direct or proxy; browser-direct by default). Added in M6 with the proxy (ADR-020).
 - A read-only preview of the final URL, including enabled query parameters.
 - Tabs for Params, Headers, and Body.
@@ -57,6 +64,22 @@ Support:
 
 - After a browser-direct `NETWORK_ERROR`, show a hint that CORS may be the cause and that the proxy strategy might help. Never switch strategy automatically.
 - After a proxy `DESTINATION_BLOCKED`, explain that private and local addresses can only be reached with browser-direct execution.
+
+### Saved templates
+
+Templates are the user's own saved requests (ADR-026). Behavior:
+
+- **Save.** On a new request, Save opens a dialog that asks for a name and a storage choice. On a loaded template, Save updates it, and a "Save as new" action is next to it.
+- **Storage choice** in the save dialog, with no default selected:
+  - "Encrypt with a passphrase": passphrase and confirmation fields, at least 8 characters, and the note that a forgotten passphrase cannot be recovered and that the name stays readable.
+  - "Save without encryption": the warning "Saved in this browser as plain text. Anyone or anything with access to this browser profile can read it, including tokens in headers."
+- **List.** Most recently updated first. Each entry shows the name, the method, and a lock icon with a text label for encrypted templates. The loaded template is marked.
+- **Load.** Selecting a plain template fills the editor at once. An encrypted, locked template asks for its passphrase first. A wrong passphrase shows "The passphrase is wrong, or the template data is damaged." next to the field. Loading never sends the request and does not clear the current response.
+- **Modified.** When the editor differs from the loaded template, the template name shows a "Modified" marker in text, not only in color.
+- **Lock.** An unlocked encrypted template offers a Lock action that forgets its key. A reload locks every template.
+- **Rename and delete.** Rename edits the name in place. Delete asks for confirmation and names the template.
+- **Errors.** Storage messages (unavailable, full, limit of 50, name taken, damaged records) appear in the panel next to the action that caused them. Damaged records are counted, with an action to delete them.
+- Dialogs trap focus, close on Escape, and return focus to the control that opened them.
 
 ## 4. Response Inspector
 
@@ -149,3 +172,12 @@ Optimize the interface for frequent API experimentation.
 5. Design for realistic API responses, including large and malformed payloads.
 6. Prefer responsive behavior over simply shrinking desktop components.
 7. Avoid introducing interactions that do not provide meaningful value.
+
+## 11. Guide and Public API Directory
+
+Help for first-time users lives on its own pages, so the playground stays uncluttered (ADR-028).
+
+- **Guide.** Short pages, each with one topic: sending a first request; parameters, headers, and body; reading the Overview, Body, and Metadata tabs; execution strategies and CORS; saved templates, storage, and encryption limits. Plain prose with short examples, a table of contents, and links between topics.
+- **Public APIs directory.** One entry per API: name, what it offers, base URL, whether it needs a key, whether it works browser-direct, and when it was last checked. Each entry has a "Try it" link that opens the playground with the sample request in the editor. The sample is not sent automatically.
+- **Entry point.** Before the first Send, the empty response area shows "New here? Read the guide or try a public API," linking to both pages.
+- The pages follow the same theme, typography, and accessibility rules as the playground.

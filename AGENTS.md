@@ -100,7 +100,7 @@ Details are in `docs/ARCHITECTURE.md`. The essentials:
 - Never switch execution strategy silently after a failure.
 - Never render response content as HTML. No `dangerouslySetInnerHTML` with response data.
 - User-triggered requests must not be served from cache.
-- No request history, persistence, or browser storage of request data in the MVP. The theme preference cookie is the only stored value (ADR-018).
+- No request history in the MVP. Request data is stored only when the user saves a template: in IndexedDB, plain or passphrase-encrypted as the user chose (ADR-026, ADR-027). Never in `localStorage`, cookies, or on the server. The theme preference cookie is the only other stored value (ADR-018).
 
 ## Security
 

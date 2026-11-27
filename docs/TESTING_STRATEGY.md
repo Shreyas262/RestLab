@@ -25,6 +25,7 @@ This document defines what RestLab tests, with which tools, at which layer, and 
 | End-to-end              | Playwright                               | Future scope             |
 | Static checks           | TypeScript strict mode, ESLint           | Present (`strict: true`) |
 | Formatting check        | Prettier                                 | Present (`format:check`) |
+| IndexedDB in tests      | `fake-indexeddb` (ADR-026)               | Present                  |
 | Continuous integration  | GitHub Actions (ADR-022)                 | Present                  |
 
 Scripts: `dev`, `build`, `start`, `lint`, `typecheck`, `format`, `format:check`, `test` (single run), `test:watch`.
@@ -44,7 +45,8 @@ Pure unit tests, no mocks needed.
 - Error categories and failure codes: each maps to the correct category.
 - JSON highlighter tokenizer: correct tokens for every JSON value type; output contains text only; formatting keeps large numbers and duplicate keys as received.
 - Display limit and base64 helpers.
-- Presets: every preset passes the request schema.
+- Templates: stored-template schemas accept plain and encrypted records, accept unfinished requests, and reject malformed records; name rules and sorting.
+- Public API directory: every "Try it" sample passes the request schema.
 
 ### 4.2 Execution (`src/execution`)
 
@@ -85,14 +87,17 @@ React Testing Library. Query by role and label, as users do, which doubles as an
 - A result from an aborted request does not overwrite newer state.
 - Response inspector: three tabs, keyboard operable; Body tab for JSON, JSON above the display limit, text, image, invalid image data, empty, binary, and unparseable; copy action gives feedback.
 - Strategy selector (M6): default is browser-direct; CORS hint after `NETWORK_ERROR`; strategy never changes on its own.
-- Presets: loading one fills the editor; every field remains editable.
+- Template storage (Node, `fake-indexeddb`): create, read, update, delete; records survive reopening; name collisions, the 50-template limit, and missing records are refused; damaged records are skipped and counted; no IndexedDB reports unavailable storage.
+- Template encryption (Node Web Crypto): round trip; the URL, headers, and body are absent from the stored record; a new salt per key and IV per encryption; wrong passphrase, altered ciphertext, and a ciphertext moved to another id are refused.
+- Templates UI: save with and without encryption, the plain-text warning, load fills the editor and every field stays editable, unlock and wrong passphrase, lock, Modified marker, rename, delete with confirmation, storage errors shown.
+- Guide and directory pages: render their topics and entries; "Try it" fills the editor without sending.
 - Theme toggle: switches theme and writes the preference cookie.
 
 ### 4.5 End-to-end (future)
 
 Playwright once the core flows are stable. Network is stubbed at the browser or server boundary, not live.
 
-Candidate flows: configure and send with each method; HTTP error handling; strategy selection; preset use; theme persistence across reloads; responsive layouts at desktop, tablet, and mobile widths; keyboard-only operation.
+Candidate flows: configure and send with each method; HTTP error handling; strategy selection; saving a template and loading it after a reload; "Try it" from the directory; theme persistence across reloads; responsive layouts at desktop, tablet, and mobile widths; keyboard-only operation.
 
 ## 5. Requirements Traceability
 
@@ -100,12 +105,13 @@ Candidate flows: configure and send with each method; HTTP error handling; strat
 | --------------------------- | ------------------------------------- |
 | FR-01 Request configuration | Domain, components                    |
 | FR-02 Method support        | Domain, execution                     |
-| FR-03 Presets               | Domain, components                    |
+| FR-03 Saved templates       | Domain, features, components          |
 | FR-04 Execution             | Execution, components                 |
 | FR-05 Response inspection   | Domain, components                    |
 | FR-06 Error handling        | Domain, execution, server, components |
 | FR-07 Application state     | Components                            |
 | FR-08 Theme                 | Components, manual                    |
+| FR-09 Guide and directory   | Domain, components, manual            |
 | NFR-04 Reliability          | Execution, components                 |
 | NFR-05 Security             | Server, components (safe rendering)   |
 | NFR-06 Accessibility        | Components, end-to-end, manual        |
@@ -121,7 +127,7 @@ Keep this table current when requirements change. Test names reference the requi
 - Shared fixtures (sample responses, request configs) live in `src/test/`. Fixtures represent realistic API output, including large, malformed, and empty payloads.
 - No snapshot tests for large rendered output. Assert on specific content.
 - No arbitrary time delays. Use fake timers for timeout and duration tests.
-- Mock only at boundaries (`fetch`, DNS, upstream transport). Do not mock domain functions to test other domain functions.
+- Mock only at boundaries (`fetch`, DNS, upstream transport, IndexedDB). Do not mock domain functions to test other domain functions.
 
 ## 7. Manual Checks
 
@@ -132,7 +138,8 @@ Not all qualities are automated. Before the MVP is considered complete:
 - Contrast check in both light and dark themes.
 - No flash of the wrong theme on reload.
 - Resize and device check at desktop, tablet, and mobile widths.
-- Behavior against the real example APIs, once each, to confirm presets still work. This is a manual check, not part of the automated suite.
+- Behavior against the real directory APIs, once each, to confirm every "Try it" sample still works. This is a manual check, not part of the automated suite.
+- Templates in a real browser: plain and encrypted templates survive a reload, encrypted ones ask for the passphrase again, and private browsing shows the unavailable message if storage is blocked.
 
 ## 8. Definition of Done for a Milestone or Feature
 

@@ -40,26 +40,20 @@ The application must support:
 
 Each method must produce an appropriately configured HTTP request.
 
-### FR-03: Request Presets
+### FR-03: Saved Request Templates
 
-The application must provide predefined request configurations.
+Users must be able to save their own requests as templates and send them again later (ADR-026).
 
-Two categories are required:
+- Save the current request (URL, method, parameters, headers, body, strategy) as a named template. Names are unique, ignoring case.
+- List saved templates and load one into the editor. Everything stays editable after loading.
+- Update a loaded template, save it as a new template, rename it, and delete it after a confirmation.
+- Show when the editor differs from the loaded template.
+- When saving, let the user choose between encrypting the template with a passphrase and saving it without encryption. Saving without encryption shows a warning that the data is stored as plain text (ADR-027).
+- An encrypted template asks for its passphrase before it loads. It stays unlocked until the page reloads or the user locks it. A forgotten passphrase cannot be recovered.
+- Templates are stored only in the user's browser. They are never sent to the server, and there is no account or sync.
+- Damaged stored data, full storage, or a browser without storage must produce a clear message and must not break the rest of the application.
 
-**Generic presets**
-
-- Method-based default configurations.
-- Reusable request templates.
-- Configurations that users can customize for their APIs.
-
-**Public API examples**
-
-- Ready-to-execute example requests.
-- Examples sourced from public APIs.
-- Examples must not be restricted to JSONPlaceholder or DummyJSON.
-- Users must be able to inspect and modify example configurations.
-
-Presets must act as starting configurations rather than restricting customization.
+Predefined generic presets are not provided (ADR-026). Ready-made examples are part of FR-09.
 
 ### FR-04: Request Execution
 
@@ -129,13 +123,21 @@ The application must provide appropriate states for:
 - Cancelled request.
 - Response-processing failure.
 
-Request configurations will remain temporary during the initial MVP.
-
-No request history, saved requests, or persistent storage of request data is required. The only stored value is the user's theme preference, kept in a cookie (ADR-018).
+The request in the editor is temporary: it is lost on reload unless the user saves it as a template (FR-03). No request history is kept. The stored values are saved templates in IndexedDB (ADR-026) and the theme preference cookie (ADR-018).
 
 ### FR-08: Theme
 
 The application must offer light and dark themes with a visible toggle. The default follows the operating system preference. The user's choice persists across visits.
+
+### FR-09: Guide and Public API Directory
+
+The application must help first-time users without getting in the way of experienced ones (ADR-028).
+
+- Guide pages that explain how to use RestLab: sending a first request, parameters, headers, and body, reading the response tabs, execution strategies and CORS, and saved templates with their storage and encryption limits.
+- A directory of free public APIs. Each entry states what the API offers, its base URL, whether it needs a key, whether it works browser-direct, and the date it was last checked.
+- Entries are not restricted to JSONPlaceholder or DummyJSON.
+- Each entry has a "Try it" action that opens the playground with a sample request. The sample is fully editable and can be saved as a template.
+- The guide is reachable from the main navigation and from the empty response area.
 
 ## 3. Non-Functional Requirements
 
@@ -175,7 +177,7 @@ Specific performance targets will be established during implementation and optim
 
 - Validate and handle user-provided URLs safely.
 - Avoid exposing sensitive information in error messages.
-- Do not store request information.
+- Store request information only when the user saves a template, only in the user's browser, and offer passphrase encryption (ADR-026, ADR-027). Never send stored templates to the server.
 - Protect the backend proxy against Server-Side Request Forgery and abuse (`API_INTEGRATION.md` §6).
 - Prevent unsafe rendering of external response content.
 
@@ -205,8 +207,8 @@ The initial MVP includes:
 4. Query parameter management.
 5. Request header management.
 6. JSON and plain-text request bodies.
-7. Generic request presets.
-8. Public API example requests.
+7. User-saved request templates, optionally encrypted with a passphrase.
+8. Guide pages and a public API directory with "Try it" examples.
 9. Custom request configuration.
 10. Request execution with a user-selected strategy: browser-direct or backend proxy.
 11. Request cancellation and timeout.
@@ -223,7 +225,8 @@ The initial MVP includes:
 The following are deferred:
 
 - Request history.
-- Saved requests.
+- Predefined generic request presets (replaced by saved templates, ADR-026).
+- Template import, export, and sync between browsers.
 - Collections and folders.
 - Authentication management.
 - Environment variables.
@@ -243,7 +246,7 @@ Initial development will use:
 - JSONPlaceholder: https://jsonplaceholder.typicode.com/
 - DummyJSON: https://dummyjson.com/
 
-Additional public APIs may be used for reusable examples and testing.
+The public API directory (FR-09) adds further APIs, each checked against its current documentation.
 
 External API availability, response behavior, and browser access policies are outside RestLab's direct control.
 
@@ -251,7 +254,7 @@ External API availability, response behavior, and browser access policies are ou
 
 - The application is browser-based.
 - The initial release does not require user authentication.
-- Request configurations are temporary.
+- Request configurations are temporary unless the user saves them as templates.
 - External APIs may impose CORS restrictions. In browser-direct mode a CORS block cannot be told apart from an unreachable server.
 - Different APIs may require different request headers, payload structures, and authentication mechanisms.
 - Response content types and response sizes may vary.
@@ -267,8 +270,8 @@ The MVP will be considered functionally complete when:
 - Users can cancel an executing request.
 - Users can manage query parameters and request headers.
 - Users can submit JSON and plain-text request bodies.
-- Users can use and customize generic presets.
-- Users can execute public API examples.
+- Users can save, load, update, rename, and delete their own templates, with or without passphrase encryption, and the templates survive a reload.
+- Users can read the guide and run a public API example from the directory with "Try it".
 - Users can inspect complete response metadata and response data separately.
 - Users can identify HTTP errors and network failures.
 - Users can copy response content.

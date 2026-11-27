@@ -1,6 +1,6 @@
 # Project Plan
 
-**Status:** Accepted · **Last reviewed:** 2026-11-24
+**Status:** Accepted · **Last reviewed:** 2026-11-27
 **Depends on:** `ROADMAP.md`, `ARCHITECTURE.md`, `TESTING_STRATEGY.md`, `DECISIONS.md`
 
 ## 1. Purpose
@@ -85,17 +85,18 @@ Optional: decide OD-10 and add a CI workflow that runs lint, typecheck, format c
 
 **Acceptance.** Inspector component tests pass. Empty, malformed, binary, and large responses display usefully. Response content is never injected as HTML.
 
-### M5: Presets
+### M5: Saved Templates and Guide
 
-**Goal.** Quick starting points for common cases.
+**Goal.** Let users save and re-send their own requests, and help first-time users get started (ADR-026 to ADR-028).
 
 **Deliverables**
 
-- Generic method-based templates.
-- Public API examples (JSONPlaceholder, DummyJSON) verified against current documentation.
-- A preset picker. Loading a preset fills the editor and everything stays editable.
+1. Scope change recorded: FR-03 rewritten, FR-09 added, ADR-026 to ADR-028, OD-12 opened.
+2. Template model (`domain/templates`), IndexedDB store, and Web Crypto encryption (`features/templates`), with tests using `fake-indexeddb`.
+3. Templates UI: a saved-templates panel, Save and Save as new, the encryption choice with the plain-text warning, unlock and lock, rename, delete with confirmation, and a "Modified" marker.
+4. Guide pages, the public API directory with "Try it" links, a header navigation, and a guide link in the empty response area. Close OD-12 first. Each directory entry is checked against its current documentation.
 
-**Acceptance.** All presets pass the request schema. Manual run of each example against its real API.
+**Acceptance.** Templates survive a reload, and encrypted ones need their passphrase again after it. Damaged records and missing storage show a message instead of breaking the page. Every directory sample passes the request schema. Manual run of each "Try it" sample against its real API.
 
 ### M6: Backend Proxy
 
@@ -130,7 +131,7 @@ Optional: decide OD-10 and add a CI workflow that runs lint, typecheck, format c
 **Deliverables**
 
 - Walkthrough of every acceptance criterion and manual check.
-- Review of error messages for leaked detail, and a security review of the proxy.
+- Review of error messages for leaked detail, and a security review of the proxy and of template storage and encryption.
 - Decide the deployment target and rate limiting (OD-9) before any public deployment. Decide OD-11.
 - Documentation brought in line with the implementation.
 
@@ -143,13 +144,14 @@ flowchart LR
     M0 --> M1 --> M2 --> M3 --> M4 --> M7 --> M8
     M1 --> M5
     M3 --> M5
+    M4 --> M5
     M2 --> M6
     M3 --> M6
     M6 --> M8
     M5 --> M8
 ```
 
-M0 comes before everything. M5 and M6 can run in either order once M3 is done. M7 follows M4 and should include the strategy selector if M6 is done by then.
+M0 comes before everything. M5 and M6 can run in either order. M6 needs M3; M5 also needs M4, for the guide link in the empty response area. M7 follows M4 and should include the strategy selector if M6 is done by then.
 
 ## 5. Risks
 
@@ -158,7 +160,8 @@ M0 comes before everything. M5 and M6 can run in either order once M3 is done. M
 | SSRF protection incomplete or bypassable         | Test matrix first, proxy kept private until M6 acceptance, security review in M8 before public exposure   |
 | DNS rebinding cannot be closed with native Fetch | Spike at the start of M6; `node:https` with a custom `lookup` is a no-dependency fallback                 |
 | CORS limits browser-direct usefulness            | Clear UI hints; user-chosen proxy strategy; documented limits                                             |
-| Public example APIs change or go down            | Presets treated as starting points; manual verification step; no live APIs in automated tests             |
+| Public example APIs change or go down            | Directory samples are starting points with a "last checked" date; manual check; no live APIs in tests     |
+| Secrets saved in browser storage                 | Per-template passphrase encryption (ADR-027), a plain-text warning, never sent to the server, M8 review   |
 | Large responses freeze the UI                    | Size limit while reading (M2); display threshold and plain-text fallback (M4)                             |
 | Theme flash or Cache Components friction         | OD-8 decided at the start of M7, checked against the bundled Next.js docs                                 |
 | Version drift in Next.js, React, or Tailwind     | Check official documentation before version-sensitive work; record upgrades in `CHANGELOG.md`             |

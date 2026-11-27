@@ -1,6 +1,6 @@
 # System Design
 
-**Status:** Accepted · **Last reviewed:** 2026-11-24
+**Status:** Accepted · **Last reviewed:** 2026-11-27
 
 ## 1. Purpose
 
@@ -63,7 +63,7 @@ The model must represent:
 - Execution strategy.
 - Relevant request configuration needed for execution.
 
-The model should support presets, validation, and both execution strategies without coupling the domain representation to individual UI components.
+The model should support saved templates, validation, and both execution strategies without coupling the domain representation to individual UI components.
 
 ### API source and execution strategy
 
@@ -321,12 +321,14 @@ flowchart TD
 
 For the MVP:
 
-- Request configuration exists temporarily in the active application session.
-- No request history or saved requests.
-- No persistent storage of request data. The theme preference cookie is the only stored value (ADR-018).
+- The request in the editor exists only in the active session until the user saves it as a template.
+- Saved templates are stored in the user's browser in IndexedDB, as plain records or encrypted with a passphrase chosen per template (ADR-026, ADR-027). They are validated on every read and are never sent to the server.
+- An unlocked template's key lives in memory only, until reload or lock.
+- No request history.
+- The theme preference cookie is the only other stored value (ADR-018).
 - No account or cloud synchronization.
 
-The design should avoid making future persistence impossible, but should not introduce persistence infrastructure prematurely.
+Request history, if it comes later, can reuse the template storage rather than adding a second mechanism.
 
 ## 10. Design Principles
 

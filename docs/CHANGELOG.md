@@ -57,6 +57,12 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `src/domain/response/base64.ts` (`bytesToBase64`, `base64ToBytes`), `json-tokens.ts` (`tokenizeJson`, `formatJson`, `tokensToText`), and `display.ts` (`FORMAT_LIMIT_BYTES` of 256 KB, `isWithinFormatLimit`), with unit tests.
 - Response inspector in `src/features/playground/components/response/`, replacing the temporary result output. A status line states the outcome in words and is the only live region. Overview shows the summary and the normalized response as highlighted JSON, without `parsedBody` and with image data replaced by a placeholder. Body shows formatted, highlighted JSON up to 256 KB and plain text above it with a note, raw text with the processing error for malformed JSON, text bodies including HTML as text, an image preview through an object URL that is revoked on unmount, and explicit messages for empty, binary, and undecodable bodies. Metadata lists status, status text, duration, decoded size, content type, strategy, outcome, a headers table, and the CORS header note in browser-direct mode. Copy buttons confirm inline with "Copied" or "Copy failed".
 - `src/features/playground/response-view.ts`: byte and duration formatting, outcome wording, the Body tab decision (`bodyView`), and the Overview value (`overviewValue`), with unit tests. Component tests for each tab, the image preview, and the copy button.
+- ADR-026 to ADR-028 and open item OD-12: user-saved templates in IndexedDB, optional passphrase encryption per template, and a guide with a public API directory instead of predefined examples.
+- FR-09 (guide and public API directory) in `REQUIREMENTS.md`; M5 is now "Saved Templates and Guide" in `PROJECT_PLAN.md`.
+- `src/domain/templates/`: stored-template schemas for plain and encrypted records (`model.ts`), name and passphrase rules, the 50-template limit, and template error codes with user-safe messages (`errors.ts`), with unit tests.
+- `src/features/templates/template-store.ts`: an IndexedDB adapter that validates every record it reads, skips and counts damaged ones, refuses duplicate names, missing records, and a 51st template in the same transaction as the write, and maps quota errors to `STORAGE_FULL`. Tests run against `fake-indexeddb`.
+- `src/features/templates/template-crypto.ts`: PBKDF2-SHA-256 key derivation (600,000 iterations, 16-byte salt) and AES-GCM encryption (12-byte IV, template id as additional data) through Web Crypto, with tests for the round trip, wrong passphrases, altered data, and moved ciphertext.
+- Dev dependency `fake-indexeddb` 6.2.8 and the fixture `src/test/fixtures/templates.ts`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
 ### Changed
@@ -79,9 +85,12 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - The existing "does not decode binary types" test uses `application/octet-stream`, because `image/png` is now an image.
 - `API_INTEGRATION.md` §4.2 to §4.4, `ARCHITECTURE.md` §10, `UI_UX_GUIDELINES.md` §4, and `TESTING_STRATEGY.md` §4 describe image bodies, the display limit, and formatting from the raw text.
 - `UI_UX_GUIDELINES.md` §4 describes the status line, the default tab, what Overview leaves out, and what copy copies.
+- FR-03 is now saved request templates instead of predefined presets. FR-07, NFR-05, the MVP scope, the out-of-scope list, and the acceptance criteria follow. `SYSTEM_DESIGN.md` §9, `ARCHITECTURE.md` (§2, §4, §5, §6.7 to §6.9, §7, §9), `UI_UX_GUIDELINES.md` (§2 navigation and panel, §3 saved templates, new §11), `API_INTEGRATION.md` §6.5 and §7, `TESTING_STRATEGY.md`, `TECH_STACK.md` §5 and §7, `PROJECT_OVERVIEW.md`, `ROADMAP.md`, and the storage rule in `AGENTS.md` updated to match. ADR-006 and ADR-018 have dated notes.
+- `requestShape` is exported from `src/domain/request/schema.ts` so stored templates can check structure without the field rules.
 - Documentation brought in line with the code: `ARCHITECTURE.md` §2 repository state re-verified and the stale M0 notes removed; `ARCHITECTURE.md` §9 and an ADR-010 note describe Send turning into Cancel instead of being disabled; `API_INTEGRATION.md` §8 no longer lists the resolved OD-1; the outdated "no product features" note removed from this file.
 
 ### Removed
 
 - Dev dependency `@tailwindcss/turbopack`.
 - The temporary `execution-output` component and its test, replaced by the response inspector.
+- Generic presets and the preset picker from the plan (ADR-026, ADR-028).

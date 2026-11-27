@@ -1,6 +1,6 @@
 # Tech Stack
 
-**Status:** Accepted · **Last reviewed:** 2026-11-24
+**Status:** Accepted · **Last reviewed:** 2026-11-27
 
 ## 1. Core Technologies
 
@@ -51,7 +51,7 @@ Use shared validation schemas where appropriate to maintain consistent request v
 - Use React component state for local UI state.
 - Use Context only when state genuinely needs to be shared across component boundaries.
 - Do not use Redux Toolkit for the MVP.
-- No browser storage for request data. The theme preference cookie is the only stored value (ADR-018).
+- Saved templates are the only request data kept in the browser: IndexedDB through a small in-house wrapper, with optional Web Crypto encryption and no library (ADR-026, ADR-027). The theme preference cookie is the only other stored value (ADR-018).
 - Keep request configuration and execution state organized around the agreed domain model.
 
 Reconsider external state management only if application complexity demonstrates a need.
@@ -75,6 +75,7 @@ Following the Next.js 16.4 Vitest guide (ADR-019):
 - React Testing Library (`@testing-library/react`, `@testing-library/dom`) — component tests.
 - jsdom — DOM environment for component tests only.
 - `@testing-library/user-event` — realistic keyboard and pointer interactions, needed to test keyboard operability (added in M3).
+- `fake-indexeddb` — an in-memory IndexedDB for testing template storage in Node (ADR-026, added in M5).
 
 Optional, approved separately when first needed: `@testing-library/jest-dom` for DOM matchers.
 

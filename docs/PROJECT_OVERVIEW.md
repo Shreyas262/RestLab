@@ -1,6 +1,6 @@
 # RestLab — Project Overview
 
-**Status:** Accepted · **Last reviewed:** 2026-11-24
+**Status:** Accepted · **Last reviewed:** 2026-11-27
 
 ## 1. Project Vision
 
@@ -14,7 +14,7 @@ RestLab prioritizes request configuration, comprehensive response inspection, an
 
 - Provide an intuitive environment for experimenting with REST APIs.
 - Support common HTTP methods and request configurations.
-- Offer predefined request configurations and customizable requests.
+- Let users save their own requests as reusable templates and guide first-time users with in-app help.
 - Display complete HTTP response information in a structured format.
 - Make response data easy to identify, inspect, and understand.
 - Provide clear and informative error handling.
@@ -47,8 +47,7 @@ Its focus is on simplifying API experimentation rather than replicating every ca
 - Query parameter management.
 - Request header management.
 - Request body configuration.
-- Method-based request defaults.
-- Predefined request templates.
+- Saved request templates, optionally encrypted with a passphrase.
 - Custom request configuration.
 
 ### Request Execution
@@ -85,7 +84,7 @@ RestLab will initially use public APIs for development and experimentation.
 - JSONPlaceholder: https://jsonplaceholder.typicode.com/
 - DummyJSON: https://dummyjson.com/
 
-Additional API sources may be introduced when required.
+The in-app public API directory lists further APIs (`REQUIREMENTS.md` FR-09).
 
 ## 7. Platform and User Experience
 
@@ -110,7 +109,7 @@ The initial development will prioritize:
 - Request execution, browser-direct and through the backend proxy.
 - Comprehensive response inspection.
 - Error handling.
-- Predefined request configurations.
+- Saved request templates, guide pages, and a public API directory.
 
 The exact MVP boundary is defined in `REQUIREMENTS.md` §4 and §5.
 
@@ -118,7 +117,7 @@ The exact MVP boundary is defined in `REQUIREMENTS.md` §4 and §5.
 
 The following capabilities are potential future additions:
 
-- Request history and saved requests.
+- Request history.
 - Collections and folders.
 - Authentication support.
 - Environment variables.

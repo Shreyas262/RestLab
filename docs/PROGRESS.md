@@ -1,32 +1,32 @@
 # Progress
 
 **Last updated:** 2026-11-27
-**Current milestone:** M4 Response Inspector, complete; M5 Presets or M6 Backend Proxy next
+**Current milestone:** M5 Saved Templates and Guide, in progress (tasks 1 and 2 of 4 done)
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. M2 (Browser Execution and State) is complete: the browser executor and the execution state hook are implemented and tested. M3 (Request Editor) is complete: method, URL, final URL preview, Send/Cancel, Params, Headers, and Body tabs with row enable toggles, validation next to each field, the forbidden-header warning. M4 (Response Inspector) is complete: a status line in words, and Overview, Body, and Metadata tabs. JSON is formatted from the raw text and highlighted up to 256 KB (ADR-023, ADR-025), raster images are previewed (ADR-024), and empty, binary, malformed, and undecodable bodies each have their own display. Copy buttons give inline feedback.
+RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. M2 (Browser Execution and State) is complete: the browser executor and the execution state hook are implemented and tested. M3 (Request Editor) is complete: method, URL, final URL preview, Send/Cancel, Params, Headers, and Body tabs with row enable toggles, validation next to each field, the forbidden-header warning. M4 (Response Inspector) is complete: a status line in words, and Overview, Body, and Metadata tabs. JSON is formatted from the raw text and highlighted up to 256 KB (ADR-023, ADR-025), raster images are previewed (ADR-024), and empty, binary, malformed, and undecodable bodies each have their own display. Copy buttons give inline feedback. M5 replaces predefined presets with user-saved templates and adds a guide and public API directory (ADR-026 to ADR-028). Tasks 1 and 2 are done: the scope change is documented, and the template model, IndexedDB store, and optional passphrase encryption are implemented and tested, with no UI yet. Task 3, the templates UI, is next.
 
 ## 2. Documentation Status
 
-| Document                                                                                  | Status                                                       |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `REQUIREMENTS`, `ARCHITECTURE`, `API_INTEGRATION`, `UI_UX_GUIDELINES`, `TESTING_STRATEGY` | Accepted, reviewed 2026-11-27                                |
-| `PROJECT_OVERVIEW`, `SYSTEM_DESIGN`, `TECH_STACK`, `ROADMAP`, `PROJECT_PLAN`              | Accepted, reviewed 2026-11-24                                |
-| `DECISIONS`                                                                               | ADR-001 to ADR-025; OD-2 to OD-5, OD-8, OD-9, and OD-11 open |
-| `PROGRESS`, `CHANGELOG`                                                                   | Living documents                                             |
-| Root `AGENTS.md`                                                                          | Present                                                      |
-| `README.md`                                                                               | Purpose, requirements, setup, scripts                        |
+| Document                                                                                  | Status                                                              |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `REQUIREMENTS`, `ARCHITECTURE`, `API_INTEGRATION`, `UI_UX_GUIDELINES`, `TESTING_STRATEGY` | Accepted, reviewed 2026-11-27                                       |
+| `PROJECT_OVERVIEW`, `SYSTEM_DESIGN`, `TECH_STACK`, `ROADMAP`, `PROJECT_PLAN`              | Accepted, reviewed 2026-11-27                                       |
+| `DECISIONS`                                                                               | ADR-001 to ADR-028; OD-2 to OD-5, OD-8, OD-9, OD-11, and OD-12 open |
+| `PROGRESS`, `CHANGELOG`                                                                   | Living documents                                                    |
+| Root `AGENTS.md`                                                                          | Present                                                             |
+| `README.md`                                                                               | Purpose, requirements, setup, scripts                               |
 
 ## 3. Implementation Status
 
-| Area                                        | Status                                                                                                                                                                                                                                                                                                                                                                                                                |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; page renders the playground; Tailwind imported                                                                                                                                                                                                                                                                                                                       |
-| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response` (including image bodies, JSON tokens and formatting, display limit), `execution/contract`, the browser executor, and `features/playground` (execution state hook, request bar, final URL preview, Params/Headers/Body tabs, response inspector) done with tests; proxy executor not started                                                                      |
-| Tests                                       | 338 passing: page, playground, params, headers, body, tab selection, response inspector, Overview, Body, and Metadata tabs, image preview, copy button, response view helpers, error codes, request validation, URL building and preparation, forbidden headers, response normalization, JSON tokens and formatting, base64, display limit, execution contract, browser executor, execution state hook, UI primitives |
+| Area                                        | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; page renders the playground; Tailwind imported                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response` (including image bodies, JSON tokens and formatting, display limit), `execution/contract`, the browser executor, and `features/playground` (execution state hook, request bar, final URL preview, Params/Headers/Body tabs, response inspector), `domain/templates` (stored-template schemas, error codes), and `features/templates` (IndexedDB store, Web Crypto encryption) done with tests; templates UI, guide, and proxy executor not started |
+| Tests                                       | 388 passing: template schemas, template store, template encryption, page, playground, params, headers, body, tab selection, response inspector, Overview, Body, and Metadata tabs, image preview, copy button, response view helpers, error codes, request validation, URL building and preparation, forbidden headers, response normalization, JSON tokens and formatting, base64, display limit, execution contract, browser executor, execution state hook, UI primitives                            |
 
 ## 4. Tooling Status
 
@@ -41,7 +41,7 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 | Path alias `@/*`                                             | Points at `./src/*` (ADR-001)                                                                                        |
 | React Hook Form, Zod, `@hookform/resolvers`                  | 7.92.0, 4.6.7, 7.0.9                                                                                                 |
 | shadcn/ui                                                    | Initialized (Radix, `radix-nova`); `button`, `input`, `label`, `tabs`, `textarea`, `checkbox`, `native-select` added |
-| Vitest, React Testing Library, jsdom                         | Vitest 5.1.1 with `unit` (Node) and `dom` (jsdom) projects (ADR-019); `user-event` 14.6.13                           |
+| Vitest, React Testing Library, jsdom                         | Vitest 5.1.1 with `unit` (Node) and `dom` (jsdom) projects (ADR-019); `user-event` 14.6.13; `fake-indexeddb` 6.2.8   |
 | Prettier                                                     | 3.10.1 with `eslint-config-prettier`; LF line endings via `.gitattributes`                                           |
 | Scripts `typecheck`, `format`, `format:check`                | Present                                                                                                              |
 | Scripts `test`, `test:watch`                                 | Present                                                                                                              |
@@ -49,6 +49,7 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 5. Recent Decisions
 
+- Predefined presets dropped. Users save their own templates in IndexedDB (ADR-026), each optionally encrypted with its own passphrase: PBKDF2-SHA-256 with 600,000 iterations and AES-GCM (ADR-027). Guide pages and a public API directory with "Try it" links replace the examples (ADR-028); OD-12 opened (2026-11-27).
 - Inspector: only the status line is a live region; Body is the default tab and the selection survives new responses; Overview leaves out `parsedBody` and replaces image data with a placeholder; copy copies the text as shown (2026-11-27).
 - OD-6: JSON above 256 KB is shown as plain text (ADR-023). OD-7: raster images are previewed from base64 bytes, SVG stays text, other binary is not displayed (ADR-024). JSON is formatted from the raw text so values appear as received (ADR-025) (2026-11-27).
 - Test names carry the requirement IDs they cover, on each top-level `describe` (`TESTING_STRATEGY.md` §6); documentation audited against the code (2026-11-27).
@@ -75,4 +76,5 @@ None.
 
 1. Manual keyboard check of the editor in a real browser (tabs, checkboxes, Send/Cancel).
 2. Manual check of the inspector in a real browser: a JSON API (for example `https://jsonplaceholder.typicode.com/posts/1`), an image URL, a 404, and an unreachable host.
-3. M5 (presets) or M6 (proxy); they can run in either order (`PROJECT_PLAN.md` §4).
+3. M5 task 3: the templates UI (panel, save dialog with the encryption choice, unlock, lock, rename, delete), wired into the playground form.
+4. M5 task 4: decide OD-12, then the guide pages, the public API directory, and "Try it".

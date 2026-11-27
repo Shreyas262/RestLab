@@ -18,7 +18,8 @@ export const requestBodySchema = z.object({
   content: z.string(),
 });
 
-const requestShape = z.object({
+/** The request structure without the field rules. Saved templates use it (ADR-026). */
+export const requestShape = z.object({
   url: z.string(),
   method: z.enum(HTTP_METHODS),
   params: z.array(keyValueRowSchema),

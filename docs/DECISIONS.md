@@ -114,6 +114,7 @@ Template:
 - Decision: Define one domain-level request model. Express its validation as Zod schemas used by React Hook Form on the client and re-applied by the Route Handler on the server.
 - Consequences: Client validation is a convenience; server validation is the control. Presets are data conforming to the same model. Schemas live in the domain layer with no React or Next.js imports.
 - Alternatives considered: Separate form and execution models; client-only validation.
+- Note (2026-11-27): Presets were replaced by user-saved templates (ADR-026). Stored templates use the same model; their structure is checked with `requestShape`, the schema without the field rules.
 
 ## ADR-007: Preserve raw response; derive parsed data separately
 
@@ -219,12 +220,13 @@ Template:
 
 ## ADR-018: Theme toggle with a preference cookie
 
-- Status: Accepted
+- Status: Accepted; the "only stored value" statement is amended by ADR-026
 - Date: 2026-11-24
 - Context: A developer tool should offer light and dark themes, and users who dislike the default need a visible way to change it. The MVP stores no request data.
 - Decision: Provide a theme toggle. The default follows the operating system preference. The user's explicit choice is stored in a single first-party cookie holding only the theme value. This is the only stored value in the MVP; the "no persistence" rule applies to request data.
 - Consequences: The theme must be applied before first paint to avoid a flash of the wrong theme. How to read the cookie under Cache Components (ADR-016), and whether a library is warranted, is open item OD-8, decided in M7. The cookie is not `HttpOnly` if client code must read it, and is never used for anything else.
 - Alternatives considered: System preference only, no toggle; `localStorage`.
+- Note (2026-11-27): ADR-026 adds user-saved templates in IndexedDB, so the cookie is no longer the only stored value. The cookie still holds only the theme.
 
 ## ADR-019: Vitest with jsdom for component tests
 
@@ -291,18 +293,52 @@ Template:
 - Consequences: The formatted view shows every value exactly as received. Formatting and highlighting share one tokenizer and one set of tests.
 - Alternatives considered: Formatting the parsed value with `JSON.stringify`.
 
+## ADR-026: User-saved request templates in IndexedDB
+
+- Status: Accepted
+- Date: 2026-11-27
+- Context: FR-03 asked for predefined generic presets and public API examples. A generic template with a placeholder URL saves almost nothing over the empty editor. The real need is to set up one's own request once and send it again many times while testing an API. That needs storage, which the MVP had ruled out (`REQUIREMENTS.md` §5, ADR-018).
+- Decision: Predefined presets are dropped. Users save their own requests as named templates, stored only in their browser in IndexedDB (database `restlab`, object store `templates`, key `id`). A record holds an id, a name (at most 100 characters, unique ignoring case and surrounding spaces), creation and update times, and either the request (`encrypted: false`) or its ciphertext (`encrypted: true`, ADR-027). The whole request is saved, including the strategy; loading a template restores it as the user's own earlier choice. Stored requests are checked for structure only (`requestShape`), so an unfinished request can be saved; Send validates as usual. Every record is validated with Zod when read. A record that fails is skipped, counted, and can still be deleted. At most 50 templates. Templates are never sent to the server. The model lives in `src/domain/templates/`, the IndexedDB adapter in `src/features/templates/`. Tests use the dev dependency `fake-indexeddb`.
+- Consequences: Request data is now stored, so ADR-018's statement that the theme cookie is the only stored value no longer holds. Templates are lost when the user clears site data, and there is no sync or export. Any script running on the RestLab origin can read unencrypted templates. A change to the record shape needs a database version bump and a migration.
+- Alternatives considered: `localStorage` (synchronous, small, strings only); server storage (needs accounts); no storage (keeps the old rule but leaves the use case unsolved).
+
+## ADR-027: Optional passphrase encryption per template
+
+- Status: Accepted
+- Date: 2026-11-27
+- Context: Templates may hold tokens or API keys in headers. Encrypting with a key stored next to the data protects little: any script on the page can use that key, even if it cannot export it.
+- Decision: When saving, the user chooses either to encrypt the template with a passphrase or to save it as plain text after a warning that it is readable by anything with access to the browser profile. Encryption uses Web Crypto with no dependency:
+  - PBKDF2-HMAC-SHA-256 with 600,000 iterations, the OWASP Password Storage Cheat Sheet value (checked 2026-11-27). The count is stored per record, so it can be raised later without breaking older records.
+  - A random 16-byte salt per template (the NIST SP 800-132 minimum).
+  - A 256-bit AES-GCM key and a random 12-byte IV for every encryption, with the template id as additional authenticated data, so a ciphertext cannot be moved into another record.
+  - The encrypted part is the whole request (URL, parameters, headers, body, strategy). The name, times, and encryption parameters stay readable so the list can be shown.
+  - One passphrase per template, at least 8 characters. A wrong passphrase and altered data give the same message.
+  - After unlocking, the key is kept in memory only, as a non-extractable `CryptoKey`, until the page reloads or the user locks the template. Updates re-encrypt with the same key and a new IV.
+- Consequences: Encrypted templates are protected at rest: against other people using the device, copies of the browser profile, and scripts that run while the template is locked. They are not protected while unlocked. A forgotten passphrase cannot be recovered; the template can only be deleted. Unlocking takes a noticeable fraction of a second, by design. Template names are visible.
+- Alternatives considered: Always encrypting with a key kept in IndexedDB (little real protection); one passphrase for all templates; Argon2id (not in Web Crypto, needs a WebAssembly dependency).
+
+## ADR-028: In-app guide and public API directory instead of predefined examples
+
+- Status: Accepted
+- Date: 2026-11-27
+- Context: Ready-made examples help first-time users, but a preset picker in the editor is harder to find than typing a URL, and is in the way for users testing their own APIs.
+- Decision: The preset picker is dropped. Static guide pages explain how to use RestLab, and a directory page lists free public APIs: what each offers, base URL, whether it needs a key, whether it works browser-direct, and the date it was last checked. Each entry has a "Try it" link that opens the playground with a sample request, which stays fully editable. Samples are data that pass `requestSchema`, chosen to work browser-direct. The pages are Server Components. How "Try it" hands the sample to the playground is open item OD-12.
+- Consequences: The editor stays uncluttered. Examples are reached from the navigation and the empty response area. Directory entries can go out of date, so the manual check against each real API stays.
+- Alternatives considered: A preset picker in the editor (the original M5); examples only as links in the empty response area.
+
 ## 5. Open Decisions Register
 
 This is the only list of open decisions. Other documents link here.
 
-| ID    | Decision                                              | Notes                                                                               | Decide in |
-| ----- | ----------------------------------------------------- | ----------------------------------------------------------------------------------- | --------- |
-| OD-2  | Pinning the validated address (DNS rebinding)         | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent | M6 spike  |
-| OD-3  | Limit values                                          | 15 s timeout and 5 MB size decided 2026-11-26; proposed: 3 redirects, ports 80/443  | M6        |
-| OD-4  | Proxy request body and header limits                  | Values to set                                                                       | M6        |
-| OD-5  | Proxy content-type and origin checks                  | Proposed in `API_INTEGRATION.md` §6.3                                               | M6        |
-| OD-8  | Theme implementation                                  | Cookie read on server vs pre-paint script; Cache Components impact; library or not  | M7        |
-| OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                         | M8        |
-| OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                              | M8        |
+| ID    | Decision                                              | Notes                                                                                                 | Decide in |
+| ----- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | --------- |
+| OD-2  | Pinning the validated address (DNS rebinding)         | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent                   | M6 spike  |
+| OD-3  | Limit values                                          | 15 s timeout and 5 MB size decided 2026-11-26; proposed: 3 redirects, ports 80/443                    | M6        |
+| OD-4  | Proxy request body and header limits                  | Values to set                                                                                         | M6        |
+| OD-5  | Proxy content-type and origin checks                  | Proposed in `API_INTEGRATION.md` §6.3                                                                 | M6        |
+| OD-8  | Theme implementation                                  | Cookie read on server vs pre-paint script; Cache Components impact; library or not                    | M7        |
+| OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                                           | M8        |
+| OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                                                | M8        |
+| OD-12 | How "Try it" hands a sample request to the playground | Search parameter with a sample id (needs a Suspense boundary under Cache Components) or another route | M5 task 4 |
 
 Resolved: OD-1 (envelope and result field names) by the ADR-009 note on 2026-11-26; OD-10 (continuous integration) by ADR-022 on 2026-11-25; OD-6 (display threshold) by ADR-023 and OD-7 (binary display) by ADR-024 on 2026-11-27.
