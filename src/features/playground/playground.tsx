@@ -5,10 +5,10 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { requestSchema, type RequestConfig } from "@/domain/request/schema";
 import type { Executor } from "@/execution/contract/executor";
-import { ExecutionOutput } from "./components/execution-output";
 import { FinalUrlPreview } from "./components/final-url-preview";
 import { RequestBar } from "./components/request-bar";
 import { RequestTabs } from "./components/request-tabs";
+import { ResponseInspector } from "./components/response/response-inspector";
 import { DEFAULT_REQUEST } from "./default-request";
 import { tabToShowForErrors, type RequestTab } from "./first-error-tab";
 import { useExecution } from "./hooks/use-execution";
@@ -54,7 +54,7 @@ export function Playground({ executor }: PlaygroundProps) {
           onTabChange={setActiveTab}
         />
       </form>
-      <ExecutionOutput state={state} />
+      <ResponseInspector state={state} />
     </div>
   );
 }

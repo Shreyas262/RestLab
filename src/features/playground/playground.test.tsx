@@ -32,7 +32,7 @@ describe("Playground request bar (FR-01, FR-02)", () => {
     expect(method().value).toBe("GET");
     expect(url().value).toBe("");
     expect(button("Send")).toBeDefined();
-    expect(status().textContent).toBe("Send a request to see the result.");
+    expect(status().textContent).toBe("Send a request to see the response.");
   });
 
   test("shows the URL error next to the field and sends nothing", async () => {

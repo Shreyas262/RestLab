@@ -1,13 +1,13 @@
 # Progress
 
 **Last updated:** 2026-11-27
-**Current milestone:** M4 Response Inspector, in progress (task 1 of 2 done)
+**Current milestone:** M4 Response Inspector, complete; M5 Presets or M6 Backend Proxy next
 
 This file is the current-status snapshot. Update it at the end of every milestone, and whenever a task changes the status below. Plans live in `PROJECT_PLAN.md`; history lives in `CHANGELOG.md`; open decisions live in `DECISIONS.md` §5.
 
 ## 1. Summary
 
-RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. M2 (Browser Execution and State) is complete: the browser executor and the execution state hook are implemented and tested. M3 (Request Editor) is complete: method, URL, final URL preview, Send/Cancel, Params, Headers, and Body tabs with row enable toggles, validation next to each field, the forbidden-header warning, and a temporary result summary. M4 task 1 is done: OD-6 and OD-7 are decided (ADR-023, ADR-024), and the domain has image classification with base64 bytes, a JSON tokenizer and formatter that keeps values as received (ADR-025), and the 256 KB display limit. Task 2, the inspector UI, is next.
+RestLab has a Next.js application shell, the full M0 toolchain, and a finalized documentation set. M0 (Foundation) and M1 (Domain Core) are complete: errors, request, response, and the execution contract are implemented and tested, with no UI. M2 (Browser Execution and State) is complete: the browser executor and the execution state hook are implemented and tested. M3 (Request Editor) is complete: method, URL, final URL preview, Send/Cancel, Params, Headers, and Body tabs with row enable toggles, validation next to each field, the forbidden-header warning. M4 (Response Inspector) is complete: a status line in words, and Overview, Body, and Metadata tabs. JSON is formatted from the raw text and highlighted up to 256 KB (ADR-023, ADR-025), raster images are previewed (ADR-024), and empty, binary, malformed, and undecodable bodies each have their own display. Copy buttons give inline feedback.
 
 ## 2. Documentation Status
 
@@ -22,11 +22,11 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 3. Implementation Status
 
-| Area                                        | Status                                                                                                                                                                                                                                                                                                                                                |
-| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; page renders the playground; Tailwind imported                                                                                                                                                                                                                                                       |
-| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response` (including image bodies, JSON tokens and formatting, display limit), `execution/contract`, the browser executor, and `features/playground` (execution state hook, request bar, final URL preview, Params/Headers/Body tabs, temporary result output) done with tests; proxy executor not started |
-| Tests                                       | 281 passing: page, playground, params, headers, body, tab selection, result output, error codes, request validation, URL building and preparation, forbidden headers, response normalization, JSON tokens and formatting, base64, display limit, execution contract, browser executor, execution state hook, UI primitives                            |
+| Area                                        | Status                                                                                                                                                                                                                                                                                                                                                                                                                |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/app` (layout, page, globals)           | Root layout with `<html>`/`<body>` and metadata; page renders the playground; Tailwind imported                                                                                                                                                                                                                                                                                                                       |
+| Domain, execution, server, and feature code | `domain/errors`, `domain/request`, `domain/response` (including image bodies, JSON tokens and formatting, display limit), `execution/contract`, the browser executor, and `features/playground` (execution state hook, request bar, final URL preview, Params/Headers/Body tabs, response inspector) done with tests; proxy executor not started                                                                      |
+| Tests                                       | 338 passing: page, playground, params, headers, body, tab selection, response inspector, Overview, Body, and Metadata tabs, image preview, copy button, response view helpers, error codes, request validation, URL building and preparation, forbidden headers, response normalization, JSON tokens and formatting, base64, display limit, execution contract, browser executor, execution state hook, UI primitives |
 
 ## 4. Tooling Status
 
@@ -49,6 +49,7 @@ RestLab has a Next.js application shell, the full M0 toolchain, and a finalized 
 
 ## 5. Recent Decisions
 
+- Inspector: only the status line is a live region; Body is the default tab and the selection survives new responses; Overview leaves out `parsedBody` and replaces image data with a placeholder; copy copies the text as shown (2026-11-27).
 - OD-6: JSON above 256 KB is shown as plain text (ADR-023). OD-7: raster images are previewed from base64 bytes, SVG stays text, other binary is not displayed (ADR-024). JSON is formatted from the raw text so values appear as received (ADR-025) (2026-11-27).
 - Test names carry the requirement IDs they cover, on each top-level `describe` (`TESTING_STRATEGY.md` §6); documentation audited against the code (2026-11-27).
 - After a failed Send, the editor switches to the tab holding the first error, because inactive tab panels are unmounted. GET body controls use the DOM `disabled` attribute so the kept content still submits. jsdom gets a no-op `ResizeObserver` stub for Radix (2026-11-27).
@@ -73,4 +74,5 @@ None.
 ## 7. Next Actions
 
 1. Manual keyboard check of the editor in a real browser (tabs, checkboxes, Send/Cancel).
-2. M4 task 2: the response inspector UI (Overview, Body, Metadata, copy, image preview), replacing the temporary result output.
+2. Manual check of the inspector in a real browser: a JSON API (for example `https://jsonplaceholder.typicode.com/posts/1`), an image URL, a 404, and an unreachable host.
+3. M5 (presets) or M6 (proxy); they can run in either order (`PROJECT_PLAN.md` §4).

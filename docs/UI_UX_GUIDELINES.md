@@ -60,15 +60,17 @@ Support:
 
 ## 4. Response Inspector
 
-Provide three tabs:
+Above the tabs, a short status line states the outcome in words (for example "Success: 200 OK · 12 ms · 1.2 KB", "HTTP error: 404 Not Found · …", "Request failed: … (TIMEOUT)", "Request cancelled."). Only this line is a live region, so a large body is never read aloud.
+
+Provide three tabs. Body is selected first, and the selected tab is kept when a new response arrives:
 
 ### Overview
 
-A one-line summary (outcome, status, duration, size) followed by the complete normalized response as read-only, formatted JSON (`SYSTEM_DESIGN.md` §7.1).
+A one-line summary (outcome, status, duration, size) followed by the complete normalized response as read-only, formatted JSON (`SYSTEM_DESIGN.md` §7.1). `parsedBody` is left out, because it duplicates `rawBody` and stringifying it would lose digits (ADR-025); image data is replaced by a short placeholder. Copy button for the JSON.
 
 ### Body
 
-The response body only. Formatted and highlighted JSON (plain text above 256 KB, with a note; ADR-023), plain text for textual types, a preview for raster images (ADR-024), an explicit empty state, and a "not displayed" message for other binary content. Copy button for textual bodies.
+The response body only. Formatted and highlighted JSON (plain text above 256 KB, with a note; ADR-023), plain text for textual types, a preview for raster images (ADR-024), an explicit empty state, and a "not displayed" message for other binary content. Copy button for textual bodies; it copies the text as shown (formatted JSON when formatted).
 
 ### Metadata
 

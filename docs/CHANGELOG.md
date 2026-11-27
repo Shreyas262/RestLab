@@ -55,6 +55,8 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - ADR-023 to ADR-025; OD-6 and OD-7 resolved. FR-05 now includes previews of raster image responses.
 - `image` body class for declared PNG, JPEG, GIF, WebP, AVIF, BMP, and ICO responses, with the bytes kept base64-encoded in `imageBase64` (ADR-024). SVG stays text.
 - `src/domain/response/base64.ts` (`bytesToBase64`, `base64ToBytes`), `json-tokens.ts` (`tokenizeJson`, `formatJson`, `tokensToText`), and `display.ts` (`FORMAT_LIMIT_BYTES` of 256 KB, `isWithinFormatLimit`), with unit tests.
+- Response inspector in `src/features/playground/components/response/`, replacing the temporary result output. A status line states the outcome in words and is the only live region. Overview shows the summary and the normalized response as highlighted JSON, without `parsedBody` and with image data replaced by a placeholder. Body shows formatted, highlighted JSON up to 256 KB and plain text above it with a note, raw text with the processing error for malformed JSON, text bodies including HTML as text, an image preview through an object URL that is revoked on unmount, and explicit messages for empty, binary, and undecodable bodies. Metadata lists status, status text, duration, decoded size, content type, strategy, outcome, a headers table, and the CORS header note in browser-direct mode. Copy buttons confirm inline with "Copied" or "Copy failed".
+- `src/features/playground/response-view.ts`: byte and duration formatting, outcome wording, the Body tab decision (`bodyView`), and the Overview value (`overviewValue`), with unit tests. Component tests for each tab, the image preview, and the copy button.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
 ### Changed
@@ -76,8 +78,10 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Test names reference the requirements they cover: every top-level `describe`, and every `test` outside one, ends with its requirement IDs, for example `(FR-01)` (`TESTING_STRATEGY.md` §6).
 - The existing "does not decode binary types" test uses `application/octet-stream`, because `image/png` is now an image.
 - `API_INTEGRATION.md` §4.2 to §4.4, `ARCHITECTURE.md` §10, `UI_UX_GUIDELINES.md` §4, and `TESTING_STRATEGY.md` §4 describe image bodies, the display limit, and formatting from the raw text.
+- `UI_UX_GUIDELINES.md` §4 describes the status line, the default tab, what Overview leaves out, and what copy copies.
 - Documentation brought in line with the code: `ARCHITECTURE.md` §2 repository state re-verified and the stale M0 notes removed; `ARCHITECTURE.md` §9 and an ADR-010 note describe Send turning into Cancel instead of being disabled; `API_INTEGRATION.md` §8 no longer lists the resolved OD-1; the outdated "no product features" note removed from this file.
 
 ### Removed
 
 - Dev dependency `@tailwindcss/turbopack`.
+- The temporary `execution-output` component and its test, replaced by the response inspector.
