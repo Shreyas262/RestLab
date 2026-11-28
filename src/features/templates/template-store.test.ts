@@ -208,6 +208,16 @@ describe("TemplateStore damaged records (FR-03)", () => {
     });
   });
 
+  test("removes every damaged record and keeps valid ones", async () => {
+    await store.create(makePlainTemplate());
+    await writeRaw({ id: "broken-1" });
+    await writeRaw({ id: "broken-2", name: 42 });
+    expect(await store.removeDamaged()).toEqual({ ok: true, value: 2 });
+    expect(await store.list()).toMatchObject({
+      value: { templates: [{ id: "template-1" }], skipped: 0 },
+    });
+  });
+
   test("lets a damaged record be removed", async () => {
     await writeRaw({ id: "broken" });
     expect((await store.remove("broken")).ok).toBe(true);

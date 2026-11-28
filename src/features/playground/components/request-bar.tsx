@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, type ReactNode } from "react";
 import {
   useFormState,
   type Control,
@@ -18,6 +18,8 @@ interface RequestBarProps {
   register: UseFormRegister<RequestConfig>;
   executing: boolean;
   onCancel: () => void;
+  /** Extra buttons after Send, such as the template Save actions. */
+  actions?: ReactNode;
 }
 
 export function RequestBar({
@@ -25,6 +27,7 @@ export function RequestBar({
   register,
   executing,
   onCancel,
+  actions,
 }: RequestBarProps) {
   const id = useId();
   const methodId = `${id}-method`;
@@ -94,6 +97,7 @@ export function RequestBar({
           Send
         </Button>
       )}
+      {actions}
     </div>
   );
 }

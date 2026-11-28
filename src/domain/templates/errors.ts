@@ -9,6 +9,7 @@ export const TEMPLATE_ERROR_CODES = [
   "NOT_FOUND",
   "INVALID_TEMPLATE",
   "WRONG_PASSPHRASE",
+  "LOCKED",
 ] as const;
 
 export type TemplateErrorCode = (typeof TEMPLATE_ERROR_CODES)[number];
@@ -32,6 +33,7 @@ export const TEMPLATE_ERROR_MESSAGES: Readonly<
   INVALID_TEMPLATE:
     "This template's stored data is damaged and cannot be used.",
   WRONG_PASSPHRASE: "The passphrase is wrong, or the template data is damaged.",
+  LOCKED: "This template is locked. Unlock it with its passphrase first.",
 };
 
 export function createTemplateError(code: TemplateErrorCode): TemplateError {

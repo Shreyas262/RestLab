@@ -28,6 +28,8 @@ export interface TemplateStore {
   create(template: StoredTemplate): Promise<TemplateResult<StoredTemplate>>;
   update(template: StoredTemplate): Promise<TemplateResult<StoredTemplate>>;
   remove(id: string): Promise<TemplateResult<void>>;
+  /** Deletes every record that fails validation and reports how many were removed. */
+  removeDamaged(): Promise<TemplateResult<number>>;
   close(): void;
 }
 
@@ -97,6 +99,25 @@ function createStore(db: IDBDatabase): TemplateStore {
     remove(id) {
       return transact<void>(db, (store, control) => {
         store.delete(id).onsuccess = () => control.succeed(undefined);
+      });
+    },
+
+    removeDamaged() {
+      return transact<number>(db, (store, control) => {
+        let removed = 0;
+        const cursorRequest = store.openCursor();
+        cursorRequest.onsuccess = () => {
+          const cursor = cursorRequest.result;
+          if (!cursor) {
+            control.succeed(removed);
+            return;
+          }
+          if (!storedTemplateSchema.safeParse(cursor.value).success) {
+            cursor.delete();
+            removed++;
+          }
+          cursor.continue();
+        };
       });
     },
 

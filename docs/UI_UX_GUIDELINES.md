@@ -27,7 +27,7 @@ Use a resizable split layout:
 
 Users should be able to allocate space according to their current task.
 
-A saved-templates panel sits to the left of the request editor as a narrow, collapsible sidebar.
+A saved-templates panel sits to the left of the request editor as a narrow sidebar (16rem), always open.
 
 ### Tablet and Mobile
 
@@ -69,16 +69,17 @@ Support:
 
 Templates are the user's own saved requests (ADR-026). Behavior:
 
-- **Save.** On a new request, Save opens a dialog that asks for a name and a storage choice. On a loaded template, Save updates it, and a "Save as new" action is next to it.
+- **Save.** Save sits next to Send and never sends the request. On a new request it opens a dialog that asks for a name and a storage choice. On a loaded template it updates the template at once (an encrypted one is re-encrypted with its unlocked key), and a "Save as new" button next to it opens the dialog.
 - **Storage choice** in the save dialog, with no default selected:
   - "Encrypt with a passphrase": passphrase and confirmation fields, at least 8 characters, and the note that a forgotten passphrase cannot be recovered and that the name stays readable.
   - "Save without encryption": the warning "Saved in this browser as plain text. Anyone or anything with access to this browser profile can read it, including tokens in headers."
-- **List.** Most recently updated first. Each entry shows the name, the method, and a lock icon with a text label for encrypted templates. The loaded template is marked.
-- **Load.** Selecting a plain template fills the editor at once. An encrypted, locked template asks for its passphrase first. A wrong passphrase shows "The passphrase is wrong, or the template data is damaged." next to the field. Loading never sends the request and does not clear the current response.
-- **Modified.** When the editor differs from the loaded template, the template name shows a "Modified" marker in text, not only in color.
-- **Lock.** An unlocked encrypted template offers a Lock action that forgets its key. A reload locks every template.
+- **List.** Most recently updated first. Each entry shows the name, then the method for plain templates or a lock icon with "Locked" or "Unlocked" for encrypted ones (their method is part of the ciphertext). The loaded template is marked with `aria-current` and "Loaded". Each entry has Lock (unlocked encrypted templates only), Rename, and Delete icon buttons with text labels for assistive technology.
+- **Load.** Selecting a plain or unlocked template fills the editor at once and opens the Body tab if the request has a body, otherwise Params. A locked template asks for its passphrase first. A wrong passphrase shows "The passphrase is wrong, or the template data is damaged." next to the field. Loading never sends the request and does not clear the current response.
+- **Loaded template line.** Below the request bar: "Template: Users list", followed by "· Modified" in text when the editor differs from the saved version. Save errors appear on this line.
+- **Lock.** Lock forgets the key. A reload locks every template. Locking the loaded template detaches the editor from it: the editor keeps its content, and Save then creates a new template.
 - **Rename and delete.** Rename edits the name in place. Delete asks for confirmation and names the template.
-- **Errors.** Storage messages (unavailable, full, limit of 50, name taken, damaged records) appear in the panel next to the action that caused them. Damaged records are counted, with an action to delete them.
+- **Errors.** A taken name appears under the name field in the save dialog. Other storage messages (unavailable, full, limit of 50, not found) appear in the panel or on the loaded template line, near the action that caused them. Damaged records are counted, with a "Delete damaged records" action.
+- **Focus.** After a rename, focus returns to that entry's Rename button. After a delete, it moves to the panel heading.
 - Dialogs trap focus, close on Escape, and return focus to the control that opened them.
 
 ## 4. Response Inspector

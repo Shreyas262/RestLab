@@ -63,6 +63,10 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `src/features/templates/template-store.ts`: an IndexedDB adapter that validates every record it reads, skips and counts damaged ones, refuses duplicate names, missing records, and a 51st template in the same transaction as the write, and maps quota errors to `STORAGE_FULL`. Tests run against `fake-indexeddb`.
 - `src/features/templates/template-crypto.ts`: PBKDF2-SHA-256 key derivation (600,000 iterations, 16-byte salt) and AES-GCM encryption (12-byte IV, template id as additional data) through Web Crypto, with tests for the round trip, wrong passphrases, altered data, and moved ciphertext.
 - Dev dependency `fake-indexeddb` 6.2.8 and the fixture `src/test/fixtures/templates.ts`.
+- Templates UI in `src/features/templates/`: the `useTemplates` hook (store connection, list, unlocked keys in memory, injectable services), a saved-templates panel (sidebar on wide screens, collapsible on small ones) with load, rename in place, lock, and delete with confirmation, Save and Save as new next to Send, a save dialog with name, storage choice (no default), passphrase and confirmation, and the plain-text warning, an unlock dialog, a "Delete damaged records" action, and a loaded-template line with a "Modified" marker.
+- `removeDamaged()` on the template store and the `LOCKED` template error code.
+- shadcn/ui components `dialog` and `alert-dialog` (no new npm dependency; they use `radix-ui`).
+- Test helper `src/test/template-services.ts` and tests for the hook and the templates UI in `src/features/playground/templates.test.tsx`.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
 ### Changed
@@ -87,6 +91,9 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `UI_UX_GUIDELINES.md` §4 describes the status line, the default tab, what Overview leaves out, and what copy copies.
 - FR-03 is now saved request templates instead of predefined presets. FR-07, NFR-05, the MVP scope, the out-of-scope list, and the acceptance criteria follow. `SYSTEM_DESIGN.md` §9, `ARCHITECTURE.md` (§2, §4, §5, §6.7 to §6.9, §7, §9), `UI_UX_GUIDELINES.md` (§2 navigation and panel, §3 saved templates, new §11), `API_INTEGRATION.md` §6.5 and §7, `TESTING_STRATEGY.md`, `TECH_STACK.md` §5 and §7, `PROJECT_OVERVIEW.md`, `ROADMAP.md`, and the storage rule in `AGENTS.md` updated to match. ADR-006 and ADR-018 have dated notes.
 - `requestShape` is exported from `src/domain/request/schema.ts` so stored templates can check structure without the field rules.
+- The playground renders the templates panel beside the editor, and the request bar takes extra actions after Send. The page is wider (`max-w-7xl`).
+- The playground keyboard test now checks the full order: the templates panel toggle, method, URL, Send, and Save. The playground tests use an in-memory template store.
+- `UI_UX_GUIDELINES.md` §2 and §3 and `ARCHITECTURE.md` §2 and §6.7 describe the templates UI as built.
 - Documentation brought in line with the code: `ARCHITECTURE.md` §2 repository state re-verified and the stale M0 notes removed; `ARCHITECTURE.md` §9 and an ADR-010 note describe Send turning into Cancel instead of being disabled; `API_INTEGRATION.md` §8 no longer lists the resolved OD-1; the outdated "no product features" note removed from this file.
 
 ### Removed

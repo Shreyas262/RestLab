@@ -1,16 +1,23 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { controllableExecutor } from "@/test/fake-executor";
+import { fakeTemplateServices } from "@/test/template-services";
+import type { TemplateServices } from "@/features/templates/hooks/use-templates";
 import { Playground } from "./playground";
 
 /** Renders the playground with a fake executor and returns common queries. */
-export function renderPlayground() {
+export function renderPlayground(
+  templateServices: TemplateServices = fakeTemplateServices(),
+) {
   const user = userEvent.setup();
   const fake = controllableExecutor();
-  render(<Playground executor={fake.executor} />);
+  const { unmount } = render(
+    <Playground executor={fake.executor} templateServices={templateServices} />,
+  );
 
   return {
     user,
+    unmount,
     ...fake,
     method: () =>
       screen.getByRole<HTMLSelectElement>("combobox", { name: "Method" }),

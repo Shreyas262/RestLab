@@ -4,13 +4,19 @@ import { describe, expect, test } from "vitest";
 import { HTTP_METHODS } from "@/domain/request/schema";
 import { failureResult, responseResult } from "@/execution/contract/result";
 import { controllableExecutor } from "@/test/fake-executor";
+import { fakeTemplateServices } from "@/test/template-services";
 import { makeResponse } from "@/test/fixtures/responses";
 import { Playground } from "./playground";
 
 function renderPlayground() {
   const user = userEvent.setup();
   const fake = controllableExecutor();
-  render(<Playground executor={fake.executor} />);
+  render(
+    <Playground
+      executor={fake.executor}
+      templateServices={fakeTemplateServices()}
+    />,
+  );
   return {
     user,
     ...fake,
@@ -137,15 +143,24 @@ describe("Playground execution (FR-04, FR-07)", () => {
 });
 
 describe("Playground keyboard use (NFR-06)", () => {
-  test("moves through method, URL, and Send in order", async () => {
+  test("moves through the templates panel, method, URL, Send, and Save in order", async () => {
     const { user, method, url, button } = renderPlayground();
+    await screen.findByText("No saved templates yet. Use Save next to Send.");
 
+    await user.tab();
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: /^Show/ }),
+    );
     await user.tab();
     expect(document.activeElement).toBe(method());
     await user.tab();
     expect(document.activeElement).toBe(url());
     await user.tab();
     expect(document.activeElement).toBe(button("Send"));
+    await user.tab();
+    expect(document.activeElement).toBe(
+      screen.getByRole("button", { name: "Save" }),
+    );
   });
 
   test("Enter in the URL field sends the request", async () => {
