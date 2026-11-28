@@ -72,6 +72,10 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Site header on every page with the RestLab name and links to the Playground and Public APIs; the current page is marked with `aria-current="page"`.
 - `src/features/playground/sample-loader.tsx`: loads the sample named in the URL into the editor without sending it, then removes the parameter. It renders inside a Suspense boundary, so the rest of the playground stays prerendered.
 - `src/test/next-navigation.ts` and a `next/navigation` mock in `src/test/setup.ts`; tests for the directory data, the directory page, the header, and loading samples.
+- Guide at `/guide`: a table of contents and five topic pages at `/guide/<topic>`, prerendered with `generateStaticParams`: sending a first request; parameters, headers, and body; reading the response; execution strategies and CORS; saved templates with their storage and encryption limits. Each page has a topic list and previous and next links. An unknown topic returns the not-found page. Topics in `src/features/guide/guide-topics.ts`, content as plain TSX in `src/features/guide/content/`.
+- A Guide link in the site header, and "New here? Read the guide or try a public API." in the empty response area, outside the status live region.
+- Tests for the guide topics, the guide pages (every link in a topic points to an existing page or directory sample), the Guide header link, and the empty response area links.
+- Search on the public API directory: a "Search APIs" field that filters entries as you type by name, description, category, and base URL, ignoring case and accents and requiring every word. Categories without matches and their links are hidden, and a status line announces the count or that nothing matches. `searchPublicApis` in `src/features/guide/search-public-apis.ts` and the `PublicApiSearch` Client Component, with unit and component tests.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
 ### Changed
@@ -102,6 +106,8 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - Documentation brought in line with the code: `ARCHITECTURE.md` §2 repository state re-verified and the stale M0 notes removed; `ARCHITECTURE.md` §9 and an ADR-010 note describe Send turning into Cancel instead of being disabled; `API_INTEGRATION.md` §8 no longer lists the resolved OD-1; the outdated "no product features" note removed from this file.
 - The home page heading is now visually hidden ("RestLab playground"), because the header shows the RestLab name. Loading a template and loading a sample share one path in the playground.
 - `ARCHITECTURE.md` §2, §5, and §6.8, `UI_UX_GUIDELINES.md` §11, and `TESTING_STRATEGY.md` §6 describe the directory, the header, the sample loader, and the router mock.
+- The `next/navigation` mock also provides `notFound`, which throws like the real one. `ARCHITECTURE.md` §2, §5, and §6.8, `UI_UX_GUIDELINES.md` §11, and `TESTING_STRATEGY.md` §6 describe the guide pages.
+- The directory entry list moved into the `PublicApiSearch` Client Component, and the entry markup into `public-api-entry.tsx` unchanged; the page is still fully prerendered. `ARCHITECTURE.md` §2, §6.8, and §7, an ADR-028 note, `UI_UX_GUIDELINES.md` §11, and `TESTING_STRATEGY.md` §4.1 and §4.4 describe the search.
 
 ### Removed
 

@@ -1,6 +1,10 @@
 import { cleanup } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
-import { navigation, resetNavigation } from "./next-navigation";
+import {
+  navigation,
+  NOT_FOUND_ERROR,
+  resetNavigation,
+} from "./next-navigation";
 
 vi.mock("next/navigation", () => ({
   usePathname: () => navigation.pathname,
@@ -13,6 +17,9 @@ vi.mock("next/navigation", () => ({
     refresh: vi.fn(),
     prefetch: vi.fn(),
   }),
+  notFound: () => {
+    throw new Error(NOT_FOUND_ERROR);
+  },
 }));
 
 // Testing Library only auto-cleans when test globals are enabled; this project keeps them off.

@@ -10,6 +10,9 @@ export const navigation = {
   replace: vi.fn<(href: string, options?: { scroll?: boolean }) => void>(),
 };
 
+/** Thrown by the mocked `notFound()`, as the real one throws to stop rendering. */
+export const NOT_FOUND_ERROR = "NEXT_NOT_FOUND";
+
 export function resetNavigation() {
   navigation.pathname = "/";
   navigation.searchParams = new URLSearchParams();

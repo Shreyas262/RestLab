@@ -326,6 +326,7 @@ Template:
 - Consequences: The editor stays uncluttered. Examples are reached from the navigation and the empty response area. Directory entries can go out of date, so the manual check against each real API stays.
 - Alternatives considered: A preset picker in the editor (the original M5); examples only as links in the empty response area.
 - Note (2026-11-28): OD-12 is resolved by ADR-029. The directory page is `/apis`.
+- Note (2026-11-28): The directory has a search field. Filtering 81 entries as the user types needs a Client Component, so the entry list moved into `public-api-search.tsx`; the page itself stays a Server Component and is still fully prerendered, with the full list in the HTML. The query is not kept in the URL, which would need `useSearchParams` with a Suspense boundary and an address update on each keystroke.
 
 ## ADR-029: "Try it" hands the sample to the playground through a search parameter
 

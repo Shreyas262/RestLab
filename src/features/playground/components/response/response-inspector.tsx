@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { useId, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { FailureResult } from "@/execution/contract/result";
+import { GUIDE_PATH } from "@/features/guide/guide-topics";
 import type { ExecutionState } from "../../hooks/use-execution";
 import { BodyTab } from "./body-tab";
 import { MetadataTab } from "./metadata-tab";
@@ -15,6 +17,9 @@ const TAB_LABELS: Readonly<Record<ResponseTab, string>> = {
   body: "Body",
   metadata: "Metadata",
 };
+
+const linkClass =
+  "rounded-sm text-foreground underline underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none";
 
 function isResponseTab(value: string): value is ResponseTab {
   return (RESPONSE_TABS as readonly string[]).includes(value);
@@ -61,6 +66,20 @@ export function ResponseInspector({ state }: ResponseInspectorProps) {
         )}
         {result?.kind === "failure" && <FailureSummary result={result} />}
       </div>
+
+      {state.status === "idle" && (
+        <p className="text-muted-foreground">
+          New here?{" "}
+          <Link href={GUIDE_PATH} className={linkClass}>
+            Read the guide
+          </Link>{" "}
+          or{" "}
+          <Link href="/apis" className={linkClass}>
+            try a public API
+          </Link>
+          .
+        </p>
+      )}
 
       {result?.kind === "response" && (
         <Tabs

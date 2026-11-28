@@ -15,7 +15,7 @@ describe("site header (FR-09)", () => {
     ).toBe("/");
   });
 
-  test("lists the Playground and Public APIs pages", () => {
+  test("lists the Playground, Guide, and Public APIs pages", () => {
     render(<SiteHeader />);
     expect(
       mainNav()
@@ -23,8 +23,24 @@ describe("site header (FR-09)", () => {
         .map((link) => [link.textContent, link.getAttribute("href")]),
     ).toEqual([
       ["Playground", "/"],
+      ["Guide", "/guide"],
       ["Public APIs", "/apis"],
     ]);
+  });
+
+  test("marks Guide as the current page on a guide topic", () => {
+    navigation.pathname = "/guide/first-request";
+    render(<SiteHeader />);
+    expect(
+      mainNav()
+        .getByRole("link", { name: "Guide" })
+        .getAttribute("aria-current"),
+    ).toBe("page");
+    expect(
+      mainNav()
+        .getByRole("link", { name: "Playground" })
+        .hasAttribute("aria-current"),
+    ).toBe(false);
   });
 
   test("marks the playground as the current page on /", () => {

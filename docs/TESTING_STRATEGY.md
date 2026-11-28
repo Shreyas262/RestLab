@@ -46,7 +46,7 @@ Pure unit tests, no mocks needed.
 - JSON highlighter tokenizer: correct tokens for every JSON value type; output contains text only; formatting keeps large numbers and duplicate keys as received.
 - Display limit and base64 helpers.
 - Templates: stored-template schemas accept plain and encrypted records, accept unfinished requests, and reject malformed records; name rules and sorting.
-- Public API directory: every "Try it" sample passes the request schema.
+- Public API directory: every "Try it" sample passes the request schema; search matches name, description, category, and base URL, ignores case and accents, and requires every word.
 
 ### 4.2 Execution (`src/execution`)
 
@@ -90,7 +90,7 @@ React Testing Library. Query by role and label, as users do, which doubles as an
 - Template storage (Node, `fake-indexeddb`): create, read, update, delete; records survive reopening; name collisions, the 50-template limit, and missing records are refused; damaged records are skipped and counted; no IndexedDB reports unavailable storage.
 - Template encryption (Node Web Crypto): round trip; the URL, headers, and body are absent from the stored record; a new salt per key and IV per encryption; wrong passphrase, altered ciphertext, and a ciphertext moved to another id are refused.
 - Templates UI: save with and without encryption, the plain-text warning, load fills the editor and every field stays editable, unlock and wrong passphrase, lock, Modified marker, rename, delete with confirmation, storage errors shown.
-- Guide and directory pages: render their topics and entries; "Try it" fills the editor without sending.
+- Guide and directory pages: render their topics and entries; the directory search filters entries and categories, announces the count, and says when nothing matches; every link in a guide topic points to an existing page or directory sample; an unknown topic is not found; "Try it" fills the editor without sending; the empty response area links to both pages.
 - Theme toggle: switches theme and writes the preference cookie.
 
 ### 4.5 End-to-end (future)
@@ -128,7 +128,8 @@ Keep this table current when requirements change. Test names reference the requi
 - No snapshot tests for large rendered output. Assert on specific content.
 - No arbitrary time delays. Use fake timers for timeout and duration tests.
 - Mock only at boundaries (`fetch`, DNS, upstream transport, IndexedDB, the Next.js router). Do not mock domain functions to test other domain functions.
-- jsdom has no App Router, so `src/test/setup.ts` mocks `next/navigation` for every jsdom test. Tests set the pathname and search parameters, and read `replace` calls, through `navigation` in `src/test/next-navigation.ts`; it is reset after each test.
+- jsdom has no App Router, so `src/test/setup.ts` mocks `next/navigation` for every jsdom test. Tests set the pathname and search parameters, and read `replace` calls, through `navigation` in `src/test/next-navigation.ts`; it is reset after each test. The mocked `notFound()` throws `NOT_FOUND_ERROR`, so a page test can expect the rejection.
+- Async Server Component pages are tested by awaiting the page function and rendering the element it returns.
 
 ## 7. Manual Checks
 

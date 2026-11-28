@@ -11,7 +11,7 @@ const completed = (
   result: Extract<ExecutionState, { status: "completed" }>["result"],
 ): ExecutionState => ({ status: "completed", result });
 
-describe("ResponseInspector (FR-05, FR-07)", () => {
+describe("ResponseInspector (FR-05, FR-07, FR-09)", () => {
   test("shows a prompt before anything is sent, without tabs", () => {
     render(<ResponseInspector state={{ status: "idle" }} />);
 
@@ -21,10 +21,25 @@ describe("ResponseInspector (FR-05, FR-07)", () => {
     expect(screen.queryByRole("tablist")).toBeNull();
   });
 
+  test("links the guide and the public API directory before anything is sent", () => {
+    render(<ResponseInspector state={{ status: "idle" }} />);
+
+    expect(
+      screen.getByRole("link", { name: "Read the guide" }).getAttribute("href"),
+    ).toBe("/guide");
+    expect(
+      screen
+        .getByRole("link", { name: "try a public API" })
+        .getAttribute("href"),
+    ).toBe("/apis");
+    expect(screen.getByText(/New here\?/).closest("[role=status]")).toBeNull();
+  });
+
   test("announces that a request is executing", () => {
     render(<ResponseInspector state={{ status: "executing" }} />);
 
     expect(screen.getByRole("status").textContent).toBe("Sending request…");
+    expect(screen.queryByRole("link", { name: "Read the guide" })).toBeNull();
   });
 
   test("summarizes a successful response and shows the three tabs", () => {

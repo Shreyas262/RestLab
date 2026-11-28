@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { GUIDE_PATH } from "../guide-topics";
 import { NavLink } from "./nav-link";
 
 const NAV_ITEMS = [
   { href: "/", label: "Playground" },
+  { href: GUIDE_PATH, label: "Guide" },
   { href: "/apis", label: "Public APIs" },
 ] as const;
 
