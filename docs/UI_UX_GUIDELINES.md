@@ -1,6 +1,6 @@
 # UI/UX Guidelines
 
-**Status:** Accepted · **Last reviewed:** 2026-11-27
+**Status:** Accepted · **Last reviewed:** 2026-11-28
 
 ## 1. Design Direction
 
@@ -179,6 +179,6 @@ Optimize the interface for frequent API experimentation.
 Help for first-time users lives on its own pages, so the playground stays uncluttered (ADR-028).
 
 - **Guide.** Short pages, each with one topic: sending a first request; parameters, headers, and body; reading the Overview, Body, and Metadata tabs; execution strategies and CORS; saved templates, storage, and encryption limits. Plain prose with short examples, a table of contents, and links between topics.
-- **Public APIs directory.** One entry per API: name, what it offers, base URL, whether it needs a key, whether it works browser-direct, and when it was last checked. Each entry has a "Try it" link that opens the playground with the sample request in the editor. The sample is not sent automatically.
+- **Public APIs directory** (`/apis`). One entry per API: name, what it offers, base URL, whether it needs a key, whether it works browser-direct, when it was last checked, and the sample request (method and final URL). Entries are grouped by category, with a list of in-page category links at the top. Each entry has a "Try it" link that opens the playground with the sample request in the editor, and a documentation link that opens in a new tab. The sample is not sent automatically (ADR-029).
 - **Entry point.** Before the first Send, the empty response area shows "New here? Read the guide or try a public API," linking to both pages.
 - The pages follow the same theme, typography, and accessibility rules as the playground.

@@ -67,6 +67,11 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - `removeDamaged()` on the template store and the `LOCKED` template error code.
 - shadcn/ui components `dialog` and `alert-dialog` (no new npm dependency; they use `radix-ui`).
 - Test helper `src/test/template-services.ts` and tests for the hook and the templates UI in `src/features/playground/templates.test.tsx`.
+- ADR-029; OD-12 resolved: "Try it" links to `/?sample=<id>`.
+- Public API directory at `/apis`: 81 free APIs that work browser-direct, in 11 categories, each with its base URL, key requirement, browser-direct support, last-checked date (2026-11-28), sample request, documentation link, and a "Try it" link. Every sample and documentation link was checked against the live service on 2026-11-28. Data in `src/features/guide/public-apis.ts`, with tests that every sample passes `requestSchema`.
+- Site header on every page with the RestLab name and links to the Playground and Public APIs; the current page is marked with `aria-current="page"`.
+- `src/features/playground/sample-loader.tsx`: loads the sample named in the URL into the editor without sending it, then removes the parameter. It renders inside a Suspense boundary, so the rest of the playground stays prerendered.
+- `src/test/next-navigation.ts` and a `next/navigation` mock in `src/test/setup.ts`; tests for the directory data, the directory page, the header, and loading samples.
 - Root layout with `<html lang="en">`, `<body>`, global CSS import, and page metadata; placeholder home page.
 
 ### Changed
@@ -95,6 +100,8 @@ Each task that changes behavior, structure, dependencies, or documentation adds 
 - The playground keyboard test now checks the full order: the templates panel toggle, method, URL, Send, and Save. The playground tests use an in-memory template store.
 - `UI_UX_GUIDELINES.md` §2 and §3 and `ARCHITECTURE.md` §2 and §6.7 describe the templates UI as built.
 - Documentation brought in line with the code: `ARCHITECTURE.md` §2 repository state re-verified and the stale M0 notes removed; `ARCHITECTURE.md` §9 and an ADR-010 note describe Send turning into Cancel instead of being disabled; `API_INTEGRATION.md` §8 no longer lists the resolved OD-1; the outdated "no product features" note removed from this file.
+- The home page heading is now visually hidden ("RestLab playground"), because the header shows the RestLab name. Loading a template and loading a sample share one path in the playground.
+- `ARCHITECTURE.md` §2, §5, and §6.8, `UI_UX_GUIDELINES.md` §11, and `TESTING_STRATEGY.md` §6 describe the directory, the header, the sample loader, and the router mock.
 
 ### Removed
 

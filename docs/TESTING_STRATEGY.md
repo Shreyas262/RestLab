@@ -1,6 +1,6 @@
 # Testing Strategy
 
-**Status:** Accepted · **Last reviewed:** 2026-11-27
+**Status:** Accepted · **Last reviewed:** 2026-11-28
 **Depends on:** `TECH_STACK.md` §7, `ARCHITECTURE.md` §12, `REQUIREMENTS.md`, `API_INTEGRATION.md`
 
 ## 1. Purpose
@@ -127,7 +127,8 @@ Keep this table current when requirements change. Test names reference the requi
 - Shared fixtures (sample responses, request configs) live in `src/test/`. Fixtures represent realistic API output, including large, malformed, and empty payloads.
 - No snapshot tests for large rendered output. Assert on specific content.
 - No arbitrary time delays. Use fake timers for timeout and duration tests.
-- Mock only at boundaries (`fetch`, DNS, upstream transport, IndexedDB). Do not mock domain functions to test other domain functions.
+- Mock only at boundaries (`fetch`, DNS, upstream transport, IndexedDB, the Next.js router). Do not mock domain functions to test other domain functions.
+- jsdom has no App Router, so `src/test/setup.ts` mocks `next/navigation` for every jsdom test. Tests set the pathname and search parameters, and read `replace` calls, through `navigation` in `src/test/next-navigation.ts`; it is reset after each test.
 
 ## 7. Manual Checks
 

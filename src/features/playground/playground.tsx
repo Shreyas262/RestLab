@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useForm, useFormState } from "react-hook-form";
 import { requestSchema, type RequestConfig } from "@/domain/request/schema";
 import type { Executor } from "@/execution/contract/executor";
@@ -19,6 +19,7 @@ import { ResponseInspector } from "./components/response/response-inspector";
 import { DEFAULT_REQUEST } from "./default-request";
 import { tabToShowForErrors, type RequestTab } from "./first-error-tab";
 import { useExecution } from "./hooks/use-execution";
+import { SampleLoader } from "./sample-loader";
 
 interface PlaygroundProps {
   /** Injected by tests; the page uses the default browser executor. */
@@ -48,9 +49,9 @@ export function Playground({ executor, templateServices }: PlaygroundProps) {
     (errors) => setActiveTab((current) => tabToShowForErrors(errors, current)),
   );
 
-  function loadTemplate(id: string, request: RequestConfig) {
+  function loadRequest(request: RequestConfig, templateId: string | null) {
     form.reset(request);
-    setLoadedId(id);
+    setLoadedId(templateId);
     setSaveError(null);
     setActiveTab(request.body.type === "none" ? "params" : "body");
   }
@@ -62,10 +63,13 @@ export function Playground({ executor, templateServices }: PlaygroundProps) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
+      <Suspense fallback={null}>
+        <SampleLoader onLoad={(request) => loadRequest(request, null)} />
+      </Suspense>
       <TemplatesPanel
         templates={templates}
         loadedId={loadedId}
-        onLoad={loadTemplate}
+        onLoad={(id, request) => loadRequest(request, id)}
         onDetach={(id) => {
           if (id === loadedId) setLoadedId(null);
         }}

@@ -1,6 +1,6 @@
 # Decisions
 
-**Status:** Living document · **Last reviewed:** 2026-11-27
+**Status:** Living document · **Last reviewed:** 2026-11-28
 
 ## 1. Purpose
 
@@ -325,20 +325,29 @@ Template:
 - Decision: The preset picker is dropped. Static guide pages explain how to use RestLab, and a directory page lists free public APIs: what each offers, base URL, whether it needs a key, whether it works browser-direct, and the date it was last checked. Each entry has a "Try it" link that opens the playground with a sample request, which stays fully editable. Samples are data that pass `requestSchema`, chosen to work browser-direct. The pages are Server Components. How "Try it" hands the sample to the playground is open item OD-12.
 - Consequences: The editor stays uncluttered. Examples are reached from the navigation and the empty response area. Directory entries can go out of date, so the manual check against each real API stays.
 - Alternatives considered: A preset picker in the editor (the original M5); examples only as links in the empty response area.
+- Note (2026-11-28): OD-12 is resolved by ADR-029. The directory page is `/apis`.
+
+## ADR-029: "Try it" hands the sample to the playground through a search parameter
+
+- Status: Accepted
+- Date: 2026-11-28
+- Context: A "Try it" link on a static directory page must open the playground with a sample request in the editor (ADR-028). With Cache Components enabled (ADR-016), reading search parameters in a Client Component requires a Suspense boundary, and only the tree inside that boundary misses prerendering (Next.js 16.4 `useSearchParams` docs).
+- Decision: "Try it" links to `/?sample=<id>`, where the id is the directory entry's slug (`sampleHref` in `src/features/guide/public-apis.ts`). The playground renders a `SampleLoader` inside `<Suspense fallback={null}>`. It renders nothing, reads the parameter with `useSearchParams`, looks the id up in the directory data, loads the sample into the form the same way a template is loaded (no template attached), and then removes the parameter with `router.replace(pathname, { scroll: false })`. The sample is never sent automatically. An unknown id is ignored and the editor keeps its default values. Samples are code, not user input, so the URL carries only an id, never a request.
+- Consequences: The playground, header, and directory remain fully prerendered; only the empty loader waits for the URL. A reload after "Try it" keeps the user's edits instead of loading the sample again. Back from the playground returns to the directory. Shared links with a sample id work as long as the entry exists. Tests mock `next/navigation` in `src/test/setup.ts`, with the state in `src/test/next-navigation.ts`.
+- Alternatives considered: A separate route such as `/try/[id]` with `generateStaticParams` (no Suspense, but a second playground page whose address stays on the sample after editing); encoding the whole request in the URL (long URLs, and the playground would load arbitrary requests from links); `sessionStorage` (conflicts with the storage rule in `AGENTS.md`).
 
 ## 5. Open Decisions Register
 
 This is the only list of open decisions. Other documents link here.
 
-| ID    | Decision                                              | Notes                                                                                                 | Decide in |
-| ----- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | --------- |
-| OD-2  | Pinning the validated address (DNS rebinding)         | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent                   | M6 spike  |
-| OD-3  | Limit values                                          | 15 s timeout and 5 MB size decided 2026-11-26; proposed: 3 redirects, ports 80/443                    | M6        |
-| OD-4  | Proxy request body and header limits                  | Values to set                                                                                         | M6        |
-| OD-5  | Proxy content-type and origin checks                  | Proposed in `API_INTEGRATION.md` §6.3                                                                 | M6        |
-| OD-8  | Theme implementation                                  | Cookie read on server vs pre-paint script; Cache Components impact; library or not                    | M7        |
-| OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                                           | M8        |
-| OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                                                | M8        |
-| OD-12 | How "Try it" hands a sample request to the playground | Search parameter with a sample id (needs a Suspense boundary under Cache Components) or another route | M5 task 4 |
+| ID    | Decision                                              | Notes                                                                               | Decide in |
+| ----- | ----------------------------------------------------- | ----------------------------------------------------------------------------------- | --------- |
+| OD-2  | Pinning the validated address (DNS rebinding)         | `node:https` with custom `lookup` (no dependency, amends ADR-011) or `undici` Agent | M6 spike  |
+| OD-3  | Limit values                                          | 15 s timeout and 5 MB size decided 2026-11-26; proposed: 3 redirects, ports 80/443  | M6        |
+| OD-4  | Proxy request body and header limits                  | Values to set                                                                       | M6        |
+| OD-5  | Proxy content-type and origin checks                  | Proposed in `API_INTEGRATION.md` §6.3                                               | M6        |
+| OD-8  | Theme implementation                                  | Cookie read on server vs pre-paint script; Cache Components impact; library or not  | M7        |
+| OD-9  | Deployment target and rate limiting                   | Must be in place before the proxy is public                                         | M8        |
+| OD-11 | Coverage reporting and automated accessibility checks | No numeric coverage target for the MVP                                              | M8        |
 
-Resolved: OD-1 (envelope and result field names) by the ADR-009 note on 2026-11-26; OD-10 (continuous integration) by ADR-022 on 2026-11-25; OD-6 (display threshold) by ADR-023 and OD-7 (binary display) by ADR-024 on 2026-11-27.
+Resolved: OD-12 ("Try it" hand-off) by ADR-029 on 2026-11-28; OD-1 (envelope and result field names) by the ADR-009 note on 2026-11-26; OD-10 (continuous integration) by ADR-022 on 2026-11-25; OD-6 (display threshold) by ADR-023 and OD-7 (binary display) by ADR-024 on 2026-11-27.
